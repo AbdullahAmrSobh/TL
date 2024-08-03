@@ -57,3 +57,6 @@ namespace TL
     {
     }
 } // namespace TL
+
+// @todo: This macro definition is out of place, move from here
+#define TL_NODISCARD [[nodiscard]]
