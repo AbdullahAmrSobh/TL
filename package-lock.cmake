@@ -48,9 +48,9 @@ CPMAddPackage(
 # 	OPTIONS
 # )
 
-CPMAddPackage(
-    NAME           fmt
-	GIT_REPOSITORY git@github.com:fmtlib/fmt.git
-	GIT_TAG        11.0.2
-	OPTIONS
-)
+# CPMAddPackage(
+#     NAME           fmt
+# 	GIT_REPOSITORY git@github.com:fmtlib/fmt.git
+# 	GIT_TAG        11.0.2
+# 	OPTIONS
+# )

@@ -23,6 +23,6 @@ target_compile_definitions(TL PUBLIC $<$<CONFIG:Debug>:TL_DEBUG>)
 target_include_directories(TL PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Include)
 
 target_link_libraries(TL PRIVATE mimalloc-static)
-target_link_libraries(TL PRIVATE fmt)
 target_link_libraries(TL PRIVATE spdlog)
+# target_link_libraries(TL PRIVATE fmt)
 # target_link_libraries(TL PRIVATE backward)
