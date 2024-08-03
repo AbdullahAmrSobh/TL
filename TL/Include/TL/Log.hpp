@@ -12,6 +12,8 @@ namespace TL
 {
     namespace Logger
     {
+        // @todo: revist this
+
         enum class Level
         {
             None,
@@ -40,14 +42,14 @@ namespace TL
         template<typename... Args>
         inline static void Debug(const char* formatString, Args&&... args)
         {
-            std::string message = std::format(formatString, std::forward(args)...);
+            std::string message = std::vformat(formatString, std::make_format_args(args)...);
             Info(message.c_str());
         }
 
         template<typename... Args>
         inline static void Debug(Stream& stream, const char* formatString, Args&&... args)
         {
-            std::string message = std::format(formatString, std::forward(args)...);
+            std::string message = std::vformat(formatString, std::make_format_args(args)...);
             Info(stream, message.c_str());
         }
 
@@ -64,14 +66,14 @@ namespace TL
         template<typename... Args>
         inline static void Info(const char* formatString, Args&&... args)
         {
-            std::string message = std::format(formatString, std::forward(args)...);
+            std::string message = std::vformat(formatString, std::make_format_args(args)...);
             Info(message.c_str());
         }
 
         template<typename... Args>
         inline static void Info(Stream& stream, const char* formatString, Args&&... args)
         {
-            std::string message = std::format(formatString, std::forward(args)...);
+            std::string message = std::vformat(formatString, std::make_format_args(args)...);
             Info(stream, message.c_str());
         }
 
@@ -88,14 +90,14 @@ namespace TL
         template<typename... Args>
         inline static void Warnning(const char* formatString, Args&&... args)
         {
-            std::string message = std::format(formatString, std::forward(args)...);
+            std::string message = std::vformat(formatString, std::make_format_args(args)...);
             Warnning(message.c_str());
         }
 
         template<typename... Args>
         inline static void Warnning(Stream& stream, const char* formatString, Args&&... args)
         {
-            std::string message = std::format(formatString, std::forward(args)...);
+            std::string message = std::vformat(formatString, std::make_format_args(args)...);
             Warnning(stream, message.c_str());
         }
 
@@ -112,14 +114,14 @@ namespace TL
         template<typename... Args>
         inline static void Error(const char* formatString, Args&&... args)
         {
-            std::string message = std::format(formatString, std::forward(args)...);
+            std::string message = std::vformat(formatString, std::make_format_args(args)...);
             Error(message.c_str());
         }
 
         template<typename... Args>
         inline static void Error(Stream& stream, const char* formatString, Args&&... args)
         {
-            std::string message = std::format(formatString, std::forward(args)...);
+            std::string message = std::vformat(formatString, std::make_format_args(args)...);
             Error(stream, message.c_str());
         }
 
