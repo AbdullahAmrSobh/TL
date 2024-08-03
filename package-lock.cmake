@@ -42,9 +42,9 @@ CPMAddPackage(
 )
 
 # CPMAddPackage(
-#     NAME           backward-cpp
-# 	GIT_REPOSITORY git@github.com:bombela/backward-cpp.git
-# 	GIT_TAG        v1.6
+#     NAME           cpptrace
+# 	GIT_REPOSITORY git@github.com:jeremy-rifkin/cpptrace.git
+# 	GIT_TAG        v0.6.3
 # 	OPTIONS
 # )
 
