@@ -41,12 +41,12 @@ CPMAddPackage(
 		# Default options are good
 )
 
-CPMAddPackage(
-    NAME           backward-cpp
-	GIT_REPOSITORY git@github.com:bombela/backward-cpp.git
-	GIT_TAG        v1.6
-	OPTIONS
-)
+# CPMAddPackage(
+#     NAME           backward-cpp
+# 	GIT_REPOSITORY git@github.com:bombela/backward-cpp.git
+# 	GIT_TAG        v1.6
+# 	OPTIONS
+# )
 
 CPMAddPackage(
     NAME           fmt

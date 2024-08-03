@@ -28,12 +28,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # Enable developer mode
 set(TL_DEVELOPER_MODE ${PROJECT_IS_TOP_LEVEL})
 
-option(TRACY_ENABLE "Enable Tracy profiler" ${PROJECT_IS_TOP_LEVEL})
-option(TL_DEBUG "Enable RHI debug mode" ${PROJECT_IS_TOP_LEVEL})
-
-if(TRACY_ENABLE)
-    add_compile_definitions(TRACY_ENABLE)
-endif()
+option(TL_DEBUG "Enable TL debug mode" ${PROJECT_IS_TOP_LEVEL})
 
 if(TL_DEBUG)
     add_compile_definitions(TL_DEBUG)

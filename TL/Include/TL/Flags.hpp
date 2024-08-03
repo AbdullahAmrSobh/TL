@@ -3,31 +3,31 @@
 #include <type_traits>
 
 #define TL_DEFINE_FLAG_OPERATORS(name)                                      \
-    inline static Flags<name> operator|(name lhs, name rhs)                 \
+    inline static ::TL::Flags<name> operator|(name lhs, name rhs)           \
     {                                                                       \
         using underlaying_type = typename std::underlying_type<name>::type; \
         auto lhs_num = static_cast<underlaying_type>(lhs);                  \
         auto rhs_num = static_cast<underlaying_type>(rhs);                  \
                                                                             \
-        return Flags<name>(lhs_num | rhs_num);                              \
+        return ::TL::Flags<name>(lhs_num | rhs_num);                        \
     }                                                                       \
                                                                             \
-    inline static Flags<name> operator&(name lhs, name rhs)                 \
+    inline static ::TL::Flags<name> operator&(name lhs, name rhs)           \
     {                                                                       \
         using underlaying_type = typename std::underlying_type<name>::type; \
         auto lhs_num = static_cast<underlaying_type>(lhs);                  \
         auto rhs_num = static_cast<underlaying_type>(rhs);                  \
                                                                             \
-        return Flags<name>(lhs_num & rhs_num);                              \
+        return ::TL::Flags<name>(lhs_num & rhs_num);                        \
     }                                                                       \
                                                                             \
-    inline static Flags<name> operator^(name lhs, name rhs)                 \
+    inline static ::TL::Flags<name> operator^(name lhs, name rhs)           \
     {                                                                       \
         using underlaying_type = typename std::underlying_type<name>::type; \
         auto lhs_num = static_cast<underlaying_type>(lhs);                  \
         auto rhs_num = static_cast<underlaying_type>(rhs);                  \
                                                                             \
-        return Flags<name>(lhs_num ^ rhs_num);                              \
+        return ::TL::Flags<name>(lhs_num ^ rhs_num);                        \
     }
 
 namespace TL

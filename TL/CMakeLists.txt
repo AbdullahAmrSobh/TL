@@ -8,7 +8,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/Log.cpp
 )
 
-include(${CMAKE_SOURCE_DIR}/CMake/add-target.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/../CMake/add-target.cmake)
 tl_add_target(
     NAME TL
     NAMESPACE TL
@@ -22,4 +22,4 @@ target_include_directories(TL PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Include)
 target_link_libraries(TL PRIVATE mimalloc-static)
 target_link_libraries(TL PRIVATE fmt)
 target_link_libraries(TL PRIVATE spdlog)
-target_link_libraries(TL PRIVATE backward)
+# target_link_libraries(TL PRIVATE backward)
