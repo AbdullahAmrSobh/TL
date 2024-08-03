@@ -8,6 +8,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Log.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Containers.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Span.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/UniquePtr.hpp
 )
 
 set(SOURCE_FILES
