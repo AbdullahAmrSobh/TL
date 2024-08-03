@@ -12,13 +12,15 @@ namespace TL
         class Stream
         {
         public:
-            spdlog::logger logger;
+            // spdlog::logger logger;
         };
 
         Stream& GetStdCoutStream()
         {
-            spdlog::error("Logging throw custom stream is not implemented yet");
-            TL_UNREACHABLE();
+            // spdlog::error("Logging throw custom stream is not implemented yet");
+            // TL_UNREACHABLE();
+            static Stream stream = Stream();
+            return stream;
         }
 
         void Log([[maybe_unused]] Stream& stream, Level level, const char* message)
