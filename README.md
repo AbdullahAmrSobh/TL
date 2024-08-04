@@ -1,3 +1,3 @@
 # C++ Template Library
 
-My own Template Library is a wrapper on top of STL library with some extra functionalities and utilities
+Template Library (TL) is a wrapper around standard template library with some extra utilities I find usefull
