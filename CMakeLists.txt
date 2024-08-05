@@ -14,9 +14,9 @@ endif()
 
 # Project declaration
 project(
-    RHI
+    TL
     VERSION 0.1.0
-    DESCRIPTION "Renderer Hardware Interface"
+    DESCRIPTION "Template Library"
     HOMEPAGE_URL "https://github.com/AbdullahAmrSobh/TL"
     LANGUAGES CXX
 )
