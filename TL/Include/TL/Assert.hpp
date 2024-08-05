@@ -1,8 +1,8 @@
 #pragma once
 
-#include <TL/Log.hpp>
+#if TL_DEBUG
+    #include <TL/Log.hpp>
 
-#ifdef TL_DEBUG
     #if defined(_WIN32)
         #define TL_DEBUG_BREAK() __debugbreak()
     #else

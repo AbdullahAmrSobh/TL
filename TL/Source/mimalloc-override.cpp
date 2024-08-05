@@ -1,24 +1,34 @@
-#include <cstdint>
 #include <mimalloc.h>
 // #include <mimalloc-new-delete.h>
+
+#include <cstdint>
+
+#if TL_ENABLE_TRACY
+    #include <tracy/Tracy.hpp>
+#endif
 
 namespace TL
 {
     inline static void OnNew([[maybe_unused]] void* ptr, [[maybe_unused]] size_t count)
     {
-#if defined(TRACY_ENABLE) && TRACY_MEM_TRACKING == 1
+#if TL_ENABLE_TRACY && TL_ENABLE_TRACY_MEMORY_TRACKING
         TracyAllocS(ptr, count, 20);
+#endif
+
+#if TL_ENABLE_LEAK_REPORTER
+        g_LeakReporter.OnAllocate(resource);
 #endif
     }
 
     inline static void OnDelete([[maybe_unused]] void* ptr)
     {
-#if defined(TRACY_ENABLE) && TRACY_MEM_TRACKING == 1
+#if TL_ENABLE_TRACY && TL_ENABLE_TRACY_MEMORY_TRACKING
         TracyFreeS(ptr, 20);
 #endif
     }
 } // namespace TL
 
+// @todo: revist this
 // #if defined(_MSC_VER) && defined(_Ret_notnull_) && defined(_Post_writable_byte_size_)
 //   // stay consistent with VCRT definitions
 //     #define mi_decl_new(n) mi_decl_nodiscard mi_decl_restrict _Ret_notnull_ _Post_writable_byte_size_(n)
@@ -27,8 +37,9 @@ namespace TL
 //     #define mi_decl_new(n) mi_decl_nodiscard mi_decl_restrict
 //     #define mi_decl_new_nothrow(n) mi_decl_nodiscard mi_decl_restrict
 // #endif
-    #define mi_decl_new(n)
-    #define mi_decl_new_nothrow(n)
+
+#define mi_decl_new(n)
+#define mi_decl_new_nothrow(n)
 
 void operator delete(void* p) noexcept
 {

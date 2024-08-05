@@ -28,10 +28,15 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # Enable developer mode
 set(TL_DEVELOPER_MODE ${PROJECT_IS_TOP_LEVEL})
 
-option(TL_DEBUG "Enable TL debug mode" ${PROJECT_IS_TOP_LEVEL})
+option(TL_ENABLE_TRACY "Enable Tracy profiler" ${PROJECT_IS_TOP_LEVEL})
 
-if(TL_DEBUG)
-    add_compile_definitions(TL_DEBUG)
+if(TL_ENABLE_TRACY)
+    add_compile_definitions(TL_ENABLE_TRACY)
+
+    option(TL_ENABLE_TRACY_MEMORY_TRACKING "Enable Tracy memory tracking (slows down application)" ${PROJECT_IS_TOP_LEVEL})
+    if(TL_ENABLE_TRACY_MEMORY_TRACKING)
+        add_compile_definitions(TL_ENABLE_TRACY_MEMORY_TRACKING)
+    endif()
 endif()
 
 # ---- Add dependencies ----

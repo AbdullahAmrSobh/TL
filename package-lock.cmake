@@ -41,6 +41,13 @@ CPMAddPackage(
 		# Default options are good
 )
 
+CPMAddPackage(
+	NAME tracy
+	GIT_REPOSITORY git@github.com:wolfpld/tracy.git
+	GIT_TAG v0.11.0
+	DOWNLOAD_ONLY YES
+)
+
 # CPMAddPackage(
 #     NAME           cpptrace
 # 	GIT_REPOSITORY git@github.com:jeremy-rifkin/cpptrace.git
