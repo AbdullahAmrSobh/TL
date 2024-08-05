@@ -48,6 +48,23 @@ CPMAddPackage(
 	DOWNLOAD_ONLY YES
 )
 
+CPMAddPackage(
+	NAME lz4
+	GIT_REPOSITORY git@github.com:lz4/lz4.git
+	GIT_TAG v1.10.0
+	DOWNLOAD_ONLY YES
+)
+
+add_subdirectory(${lz4_SOURCE_DIR}/build/cmake ${CMAKE_BINARY_DIR}/lz4)
+option(LZ4_BUILD_CLI OFF)
+
+CPMAddPackage(
+	NAME json
+	GIT_REPOSITORY git@github.com:nlohmann/json.git
+	GIT_TAG v3.11.3
+	OPTIONS
+)
+
 # CPMAddPackage(
 #     NAME           cpptrace
 # 	GIT_REPOSITORY git@github.com:jeremy-rifkin/cpptrace.git

@@ -34,5 +34,7 @@ target_include_directories(TL SYSTEM PUBLIC ${tracy_SOURCE_DIR}/public)
 
 target_link_libraries(TL PRIVATE mimalloc-static)
 target_link_libraries(TL PRIVATE spdlog)
+target_link_libraries(TL PUBLIC lz4)
+target_link_libraries(TL PUBLIC nlohmann_json::nlohmann_json)
 # target_link_libraries(TL PRIVATE fmt)
 # target_link_libraries(TL PRIVATE backward)

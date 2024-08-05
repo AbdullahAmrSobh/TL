@@ -45,7 +45,7 @@ include(package-lock.cmake)
 # ---- Declare library ----
 add_subdirectory(TL)
 
-# # ---- Examples ----
+# ---- Tests ----
 # if(TL_BUILD_TESTS)
 #     add_subdirectory(Tests)
 # endif()
