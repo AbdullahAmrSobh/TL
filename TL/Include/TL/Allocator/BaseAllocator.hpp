@@ -4,7 +4,7 @@
 
 namespace TL
 {
-    class BaseAllocator final : public Allocator
+    class BaseAllocator final : public IAllocator
     {
     public:
         ~BaseAllocator() = default;
