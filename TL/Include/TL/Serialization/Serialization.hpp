@@ -1,12 +1,14 @@
 #pragma once
 
 #include <TL/Allocator.hpp>
+#include <TL/Containers.hpp>
 
 #include <sstream>
 #include <cstring>
 
 namespace TL
 {
+    /// @brief Checks if the system is big endian
     inline static bool IsBigEndian()
     {
         union
@@ -18,6 +20,8 @@ namespace TL
         return bint.c[0] == 1;
     }
 
+    /// @brief A simple class for serializing and deserializing data.
+    /// @todo move Encode to ArchiveEncoder, and Decode to ArchiveDecoder.
     class Archive
     {
         template<typename T>
@@ -31,7 +35,9 @@ namespace TL
         Archive(Block block);
 
     public:
-        // @todo: encode should take T as const
+        /// @todo: encode should take T as const. But, this will make the
+        /// user define the Type::Serialize function as const,  which will
+        /// lead to two defintiions, to support non const types.
         template<typename T>
         static Block Encode(T& t);
 
@@ -42,46 +48,13 @@ namespace TL
         Block GetBlock() const;
 
         template<typename T>
-        void Write(T& value)
-        {
-            if (IsBigEndian())
-            {
-                T temp = SwapEndian(value);
-                m_stream.write(reinterpret_cast<char*>(&temp), sizeof(T));
-            }
-            else
-            {
-                m_stream.write(reinterpret_cast<char*>(&value), sizeof(T));
-            }
-        }
+        void Write(T& value);
 
         template<typename T>
-        void Read(T& value)
-        {
-            m_stream.read(reinterpret_cast<char*>(&value), sizeof(T));
-
-            if (IsBigEndian())
-            {
-                value = SwapEndian(value);
-            }
-        }
+        void Read(T& value);
 
         template<typename T>
-        T SwapEndian(T value)
-        {
-            union
-            {
-                T value;
-                uint8_t bytes[sizeof(T)];
-            } source, dest;
-
-            source.value = value;
-            for (size_t i = 0; i < sizeof(T); i++)
-            {
-                dest.bytes[i] = source.bytes[sizeof(T) - i - 1];
-            }
-            return dest.value;
-        }
+        T SwapEndian(T value);
 
     private:
         std::stringstream m_stream;
@@ -115,13 +88,57 @@ namespace TL
     }
 
     template<typename T>
+    void Archive::Write(T& value)
+    {
+        if (IsBigEndian())
+        {
+            T temp = SwapEndian(value);
+            m_stream.write(reinterpret_cast<char*>(&temp), sizeof(T));
+        }
+        else
+        {
+            m_stream.write(reinterpret_cast<char*>(&value), sizeof(T));
+        }
+    }
+
+    template<typename T>
+    void Archive::Read(T& value)
+    {
+        m_stream.read(reinterpret_cast<char*>(&value), sizeof(T));
+        // This has a bug, we can't know what endianess the stream is in, but this function assumes its same as current system.
+        // this means sharing data between systems that have different endianess is not supported.
+        // @todo fix this by encoding the endianess of the stream with some sort of header.
+        if (IsBigEndian())
+        {
+            value = SwapEndian(value);
+        }
+    }
+
+    template<typename T>
+    T Archive::SwapEndian(T value)
+    {
+        union
+        {
+            T value;
+            uint8_t bytes[sizeof(T)];
+        } source, dest;
+
+        source.value = value;
+        for (size_t i = 0; i < sizeof(T); i++)
+        {
+            dest.bytes[i] = source.bytes[sizeof(T) - i - 1];
+        }
+        return dest.value;
+    }
+
+    template<typename T>
     inline static void Process(ArchiveEncoder& archive, T& t)
     {
         t.Serialize(archive);
     }
 
     template<typename T>
-    inline void Process(ArchiveEncoder& archive, T* values, size_t count)
+    inline static void Process(ArchiveEncoder& archive, T* values, size_t count)
     {
         for (size_t i = 0; i < count; i++)
         {
@@ -189,6 +206,51 @@ namespace TL
         Process(archive, value.data(), value.size());
     }
 
-    // @todo: add more specialization for more container types e.g. maps, set, list ...etc
+    template<typename Key, typename Value, typename Hasher = std::hash<Key>, typename KeyEq = std::equal_to<Key>>
+    inline void Process(ArchiveEncoder& archive, std::unordered_map<Key, Value, Hasher, KeyEq, StlAllocator<std::pair<const Key, Value>>>& value)
+    {
+        auto size = value.size();
+        Process(archive, size);
+        for (auto [key, entry] : value)
+        {
+            Process(archive, key);
+            Process(archive, value);
+        }
+    }
+
+    template<typename Key, typename Value, typename Hasher = std::hash<Key>, typename KeyEq = std::equal_to<Key>>
+    inline void Process(ArchiveDecoder& archive, std::unordered_map<Key, Value, Hasher, KeyEq, StlAllocator<std::pair<const Key, Value>>>& value)
+    {
+        size_t mapEntriesCount = 0;
+        Process(archive, mapEntriesCount);
+        for (size_t i = 0; i < mapEntriesCount; i++)
+        {
+            Key keyValue;
+            Process(archive, keyValue);
+
+            Value valueValue;
+            Process(archive, valueValue);
+
+            value.emplace({ std::move(keyValue), std::move(valueValue) });
+        }
+    }
+
+    template<typename Allocator>
+    inline void Process(ArchiveEncoder& archive, std::basic_string<char, std::char_traits<char>, Allocator>& value)
+    {
+        Process(archive, value.size());
+        Process(archive, value.c_str(), value.size());
+    }
+
+    template<typename Allocator>
+    inline void Process(ArchiveDecoder& archive, std::basic_string<char, std::char_traits<char>, Allocator>& value)
+    {
+        size_t stringSize = 0;
+        Process(archive, stringSize);
+        value.resize(stringSize);
+        Process(archive, &value[0], stringSize);
+    }
+
+    // @todo: add more specialization for more container types
 } // namespace TL
 
