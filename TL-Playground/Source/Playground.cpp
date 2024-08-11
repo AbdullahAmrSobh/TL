@@ -5,6 +5,7 @@
 #include <TL/Allocator.hpp>
 #include <TL/Log.hpp>
 #include <TL/Assert.hpp>
+#include <TL/Stacktrace.hpp>
 
 struct Bar
 {
@@ -43,9 +44,13 @@ int main()
         TL_LOG_INFO("{}", i);
     }
 
+    auto stacktrace = TL::CaptureStacktrace(0);
+
+    TL_LOG_WARNNING("Stack report: {}", TL::ReportStacktrace(stacktrace));
+
     Bar b;
-    b.f = 3.14;
-    b.b = 2.16;
+    b.f = 3.14f;
+    b.b = 2.16f;
     b.n = "Hello-There";
     b.name = {
         { "Hello", "World" },

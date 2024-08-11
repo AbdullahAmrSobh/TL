@@ -16,7 +16,7 @@ namespace TL
 #endif
 
 #if TL_ENABLE_LEAK_REPORTER
-        g_LeakReporter.OnAllocate(resource);
+        // TODO: track allocation
 #endif
     }
 
