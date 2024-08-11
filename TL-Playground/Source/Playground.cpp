@@ -39,7 +39,9 @@ int main()
     // TL_ASSERT(condition, "hello");
     // TL_ASSERT(condition, "hello {}", condition);
 
-    for (auto i : TL::Span<const int> { 1, 2, 3, 4, 5, 6})
+    [[maybe_unused]] auto _unusedBlock = TL::Allocator::Allocate(12, 1);
+
+    for (auto i : TL::Span<const int>{ 1, 2, 3, 4, 5, 6 })
     {
         TL_LOG_INFO("{}", i);
     }
