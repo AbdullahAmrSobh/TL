@@ -1,13 +1,20 @@
 #pragma once
 
-#include <TL/Allocator.hpp>
-#include <TL/Containers.hpp>
+#include "TL/Allocator.hpp"
+#include "TL/Block.hpp"
+#include "TL/Containers.hpp"
 
 #include <sstream>
 #include <cstring>
+#include <stdexcept>
+#include <type_traits>
 
 namespace TL
 {
+    // TODO: rename decoding serialize to deserialize
+    // TODO: wrap process in macro, and abstract interface to add json support
+    // TODO: rename ArchiveEncoder/ArchiveDecoder to BinaryEncoder/BinaryDecoder
+
     /// @brief Checks if the system is big endian
     inline static bool IsBigEndian()
     {
@@ -25,22 +32,24 @@ namespace TL
     class Archive
     {
         template<typename T>
-        friend void Process(struct ArchiveEncoder& archive, T& t);
+        friend void Process(struct ArchiveEncoder& archive, const T& t);
 
         template<typename T>
         friend void Process(struct ArchiveDecoder& archive, T& t);
+
+        friend struct ArchiveEncoder;
+        friend struct ArchiveDecoder;
 
     protected:
         Archive();
         Archive(Block block);
 
     public:
-        /// @todo: encode should take T as const. But, this will make the
-        /// user define the Type::Serialize function as const,  which will
-        /// lead to two defintiions, to support non const types.
+        /// @brief Serializes an object into a Block.
         template<typename T>
-        static Block Encode(T& t);
+        static Block Encode(const T& t);
 
+        /// @brief Deserializes a Block into an object.
         template<typename T>
         static T Decode(Block block);
 
@@ -48,16 +57,20 @@ namespace TL
         Block GetBlock() const;
 
         template<typename T>
-        void Write(T& value);
+        void Write(const T& value);
 
         template<typename T>
         void Read(T& value);
 
         template<typename T>
-        T SwapEndian(T value);
+        T SwapEndian(T value) const;
+
+        void WriteHeader();
+        void ReadHeader();
 
     private:
         std::stringstream m_stream;
+        bool m_isBigEndianStream = false;
     };
 
     struct ArchiveEncoder : public Archive
@@ -67,13 +80,17 @@ namespace TL
     struct ArchiveDecoder : public Archive
     {
         ArchiveDecoder(Block block)
-            : Archive(block){};
+            : Archive(block)
+        {
+            ReadHeader();
+        };
     };
 
     template<typename T>
-    Block Archive::Encode(T& t)
+    Block Archive::Encode(const T& t)
     {
         ArchiveEncoder ar;
+        ar.WriteHeader();
         Process(ar, t);
         return ar.GetBlock();
     }
@@ -88,34 +105,33 @@ namespace TL
     }
 
     template<typename T>
-    void Archive::Write(T& value)
+    void Archive::Write(const T& value)
     {
-        if (IsBigEndian())
+        T temp = value;
+        if (IsBigEndian() != m_isBigEndianStream)
         {
-            T temp = SwapEndian(value);
-            m_stream.write(reinterpret_cast<char*>(&temp), sizeof(T));
+            temp = SwapEndian(value);
         }
-        else
-        {
-            m_stream.write(reinterpret_cast<char*>(&value), sizeof(T));
-        }
+        m_stream.write(reinterpret_cast<const char*>(&temp), sizeof(T));
     }
 
     template<typename T>
     void Archive::Read(T& value)
     {
         m_stream.read(reinterpret_cast<char*>(&value), sizeof(T));
-        // This has a bug, we can't know what endianess the stream is in, but this function assumes its same as current system.
-        // this means sharing data between systems that have different endianess is not supported.
-        // @todo fix this by encoding the endianess of the stream with some sort of header.
-        if (IsBigEndian())
+        if (m_stream.gcount() != sizeof(T))
+        {
+            throw std::runtime_error("Failed to read data from stream.");
+        }
+
+        if (IsBigEndian() != m_isBigEndianStream)
         {
             value = SwapEndian(value);
         }
     }
 
     template<typename T>
-    T Archive::SwapEndian(T value)
+    T Archive::SwapEndian(T value) const
     {
         union
         {
@@ -131,14 +147,33 @@ namespace TL
         return dest.value;
     }
 
+    /// @brief Writes the endianess information to the stream.
+    inline void Archive::WriteHeader()
+    {
+        bool isBigEndian = IsBigEndian();
+        m_stream.write(reinterpret_cast<char*>(&isBigEndian), sizeof(isBigEndian));
+    }
+
+    /// @brief Reads the endianess information from the stream.
+    inline void Archive::ReadHeader()
+    {
+        bool streamEndianess;
+        m_stream.read(reinterpret_cast<char*>(&streamEndianess), sizeof(streamEndianess));
+        if (m_stream.gcount() != sizeof(streamEndianess))
+        {
+            throw std::runtime_error("Failed to read stream header.");
+        }
+        m_isBigEndianStream = streamEndianess;
+    }
+
     template<typename T>
-    inline static void Process(ArchiveEncoder& archive, T& t)
+    inline static void Process(ArchiveEncoder& archive, const T& t)
     {
         t.Serialize(archive);
     }
 
     template<typename T>
-    inline static void Process(ArchiveEncoder& archive, T* values, size_t count)
+    inline static void Process(ArchiveEncoder& archive, const T* values, size_t count)
     {
         for (size_t i = 0; i < count; i++)
         {
@@ -162,35 +197,59 @@ namespace TL
     }
 
     // clang-format off
-    template<> inline void Process<bool>     (ArchiveEncoder& archive, bool& value)      { archive.Write(value); }
-    template<> inline void Process<char>     (ArchiveEncoder& archive, char& value)      { archive.Write(value); }
-    template<> inline void Process<uint8_t>  (ArchiveEncoder& archive, uint8_t& value)   { archive.Write(value); }
-    template<> inline void Process<uint16_t> (ArchiveEncoder& archive, uint16_t& value)  { archive.Write(value); }
-    template<> inline void Process<uint32_t> (ArchiveEncoder& archive, uint32_t& value)  { archive.Write(value); }
-    template<> inline void Process<uint64_t> (ArchiveEncoder& archive, uint64_t& value)  { archive.Write(value); }
-    template<> inline void Process<int8_t>   (ArchiveEncoder& archive, int8_t& value)    { archive.Write(value); }
-    template<> inline void Process<int16_t>  (ArchiveEncoder& archive, int16_t& value)   { archive.Write(value); }
-    template<> inline void Process<int32_t>  (ArchiveEncoder& archive, int32_t& value)   { archive.Write(value); }
-    template<> inline void Process<int64_t>  (ArchiveEncoder& archive, int64_t& value)   { archive.Write(value); }
-    template<> inline void Process<float>    (ArchiveEncoder& archive, float& value)     { archive.Write(value); }
-    template<> inline void Process<double>   (ArchiveEncoder& archive, double& value)    { archive.Write(value); }
+    template<> inline void Process<bool>     (ArchiveEncoder& archive, const bool& value)      { archive.Write(value); }
+    template<> inline void Process<bool>     (ArchiveDecoder& archive, bool& value)            { archive.Read(value); }
 
-    template<> inline void Process<bool>     (ArchiveDecoder& archive, bool& value)      { archive.Read(value); }
-    template<> inline void Process<char>     (ArchiveDecoder& archive, char& value)      { archive.Read(value); }
-    template<> inline void Process<uint8_t>  (ArchiveDecoder& archive, uint8_t& value)   { archive.Read(value); }
-    template<> inline void Process<uint16_t> (ArchiveDecoder& archive, uint16_t& value)  { archive.Read(value); }
-    template<> inline void Process<uint32_t> (ArchiveDecoder& archive, uint32_t& value)  { archive.Read(value); }
-    template<> inline void Process<uint64_t> (ArchiveDecoder& archive, uint64_t& value)  { archive.Read(value); }
-    template<> inline void Process<int8_t>   (ArchiveDecoder& archive, int8_t& value)    { archive.Read(value); }
-    template<> inline void Process<int16_t>  (ArchiveDecoder& archive, int16_t& value)   { archive.Read(value); }
-    template<> inline void Process<int32_t>  (ArchiveDecoder& archive, int32_t& value)   { archive.Read(value); }
-    template<> inline void Process<int64_t>  (ArchiveDecoder& archive, int64_t& value)   { archive.Read(value); }
-    template<> inline void Process<float>    (ArchiveDecoder& archive, float& value)     { archive.Read(value); }
-    template<> inline void Process<double>   (ArchiveDecoder& archive, double& value)    { archive.Read(value); }
+    template<> inline void Process<char>     (ArchiveEncoder& archive, const char& value)      { archive.Write(value); }
+    template<> inline void Process<char>     (ArchiveDecoder& archive, char& value)            { archive.Read(value); }
+
+    template<> inline void Process<uint8_t>  (ArchiveEncoder& archive, const uint8_t& value)   { archive.Write(value); }
+    template<> inline void Process<uint8_t>  (ArchiveDecoder& archive, uint8_t& value)         { archive.Read(value); }
+
+    template<> inline void Process<uint16_t> (ArchiveEncoder& archive, const uint16_t& value)  { archive.Write(value); }
+    template<> inline void Process<uint16_t> (ArchiveDecoder& archive, uint16_t& value)        { archive.Read(value); }
+
+    template<> inline void Process<uint32_t> (ArchiveEncoder& archive, const uint32_t& value)  { archive.Write(value); }
+    template<> inline void Process<uint32_t> (ArchiveDecoder& archive, uint32_t& value)        { archive.Read(value); }
+
+    template<> inline void Process<uint64_t> (ArchiveEncoder& archive, const uint64_t& value)  { archive.Write(value); }
+    template<> inline void Process<uint64_t> (ArchiveDecoder& archive, uint64_t& value)        { archive.Read(value); }
+
+    template<> inline void Process<int8_t>   (ArchiveEncoder& archive, const int8_t& value)    { archive.Write(value); }
+    template<> inline void Process<int8_t>   (ArchiveDecoder& archive, int8_t& value)          { archive.Read(value); }
+
+    template<> inline void Process<int16_t>  (ArchiveEncoder& archive, const int16_t& value)   { archive.Write(value); }
+    template<> inline void Process<int16_t>  (ArchiveDecoder& archive, int16_t& value)         { archive.Read(value); }
+
+    template<> inline void Process<int32_t>  (ArchiveEncoder& archive, const int32_t& value)   { archive.Write(value); }
+    template<> inline void Process<int32_t>  (ArchiveDecoder& archive, int32_t& value)         { archive.Read(value); }
+
+    template<> inline void Process<int64_t>  (ArchiveEncoder& archive, const int64_t& value)   { archive.Write(value); }
+    template<> inline void Process<int64_t>  (ArchiveDecoder& archive, int64_t& value)         { archive.Read(value); }
+
+    template<> inline void Process<float>    (ArchiveEncoder& archive, const float& value)     { archive.Write(value); }
+    template<> inline void Process<float>    (ArchiveDecoder& archive, float& value)           { archive.Read(value); }
+
+    template<> inline void Process<double>   (ArchiveEncoder& archive, const double& value)    { archive.Write(value); }
+    template<> inline void Process<double>   (ArchiveDecoder& archive, double& value)          { archive.Read(value); }
+
     // clang-format off
 
+    inline void Process(ArchiveEncoder& archive, Block& block)
+    {
+        Process(archive, block.size);
+        Process(archive, static_cast<const uint8_t*>(block.ptr), block.size);
+    }
+
+    inline void Process(ArchiveDecoder& archive, Block& block)
+    {
+        Process(archive, block.size);
+        block = Allocator::Allocate(block.size);
+        Process(archive, static_cast<uint8_t*>(block.ptr), block.size);
+    }
+
     template<typename T, typename AllocatorType>
-    inline void Process(ArchiveEncoder& archive, std::vector<T, AllocatorType>& value)
+    inline void Process(ArchiveEncoder& archive, const std::vector<T, AllocatorType>& value)
     {
         auto size = value.size();
         Process(archive, size);
@@ -207,50 +266,48 @@ namespace TL
     }
 
     template<typename Key, typename Value, typename Hasher = std::hash<Key>, typename KeyEq = std::equal_to<Key>>
-    inline void Process(ArchiveEncoder& archive, std::unordered_map<Key, Value, Hasher, KeyEq, StlAllocator<std::pair<const Key, Value>>>& value)
+    inline void Process(ArchiveEncoder& archive, const std::unordered_map<Key, Value, Hasher, KeyEq, StlAllocator<std::pair<const Key, Value>>>& value)
     {
         auto size = value.size();
         Process(archive, size);
-        for (auto [key, entry] : value)
+        for (const auto& entry : value)
         {
-            Process(archive, key);
-            Process(archive, value);
+            Process(archive, entry.first);
+            Process(archive, entry.second);
         }
     }
 
     template<typename Key, typename Value, typename Hasher = std::hash<Key>, typename KeyEq = std::equal_to<Key>>
     inline void Process(ArchiveDecoder& archive, std::unordered_map<Key, Value, Hasher, KeyEq, StlAllocator<std::pair<const Key, Value>>>& value)
     {
-        size_t mapEntriesCount = 0;
-        Process(archive, mapEntriesCount);
-        for (size_t i = 0; i < mapEntriesCount; i++)
+        size_t size = 0;
+        Process(archive, size);
+        value.clear();
+
+        for (size_t i = 0; i < size; ++i)
         {
-            Key keyValue;
-            Process(archive, keyValue);
-
-            Value valueValue;
-            Process(archive, valueValue);
-
-            value.emplace({ std::move(keyValue), std::move(valueValue) });
+            Key key;
+            Value entry_value;
+            Process(archive, key);
+            Process(archive, entry_value);
+            value.emplace(std::move(key), std::move(entry_value));
         }
     }
 
-    template<typename Allocator>
-    inline void Process(ArchiveEncoder& archive, std::basic_string<char, std::char_traits<char>, Allocator>& value)
+    template<typename CharT, typename Traits, typename Allocator>
+    inline void Process(ArchiveEncoder& archive, const std::basic_string<CharT, Traits, Allocator>& value)
     {
-        Process(archive, value.size());
-        Process(archive, value.c_str(), value.size());
+        auto size = value.size();
+        Process(archive, size);
+        Process(archive, value.data(), value.size());
     }
 
-    template<typename Allocator>
-    inline void Process(ArchiveDecoder& archive, std::basic_string<char, std::char_traits<char>, Allocator>& value)
+    template<typename CharT, typename Traits, typename Allocator>
+    inline void Process(ArchiveDecoder& archive, std::basic_string<CharT, Traits, Allocator>& value)
     {
-        size_t stringSize = 0;
-        Process(archive, stringSize);
-        value.resize(stringSize);
-        Process(archive, &value[0], stringSize);
+        size_t str_size = 0;
+        Process(archive, str_size);
+        value.resize(str_size);
+        Process(archive, value.data(), value.size());
     }
-
-    // @todo: add more specialization for more container types
-} // namespace TL
-
+}
