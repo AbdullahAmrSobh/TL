@@ -29,6 +29,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(TL_DEVELOPER_MODE ${PROJECT_IS_TOP_LEVEL})
 
 option(TL_ENABLE_TRACY "Enable Tracy profiler" ${PROJECT_IS_TOP_LEVEL})
+option(TL_BUILD_TESTS "Enable Tests" ${PROJECT_IS_TOP_LEVEL})
+
 
 if(TL_ENABLE_TRACY)
     add_compile_definitions(TL_ENABLE_TRACY)
@@ -46,9 +48,9 @@ include(package-lock.cmake)
 add_subdirectory(TL)
 
 # ---- Tests ----
-# if(TL_BUILD_TESTS)
-#     add_subdirectory(Tests)
-# endif()
+if(TL_BUILD_TESTS)
+    add_subdirectory(TL-Playground)
+endif()
 
 # ---- Developer mode ----
 if(NOT TL_DEVELOPER_MODE)

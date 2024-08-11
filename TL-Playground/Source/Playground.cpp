@@ -31,6 +31,11 @@ struct Bar
 
 int main()
 {
+    for (auto i : TL::Span<const int> { 1, 2, 3, 4, 5, 6})
+    {
+        TL_LOG_INFO("{}", i);
+    }
+
     Bar b;
     b.f = 3.14;
     b.b = 2.16;

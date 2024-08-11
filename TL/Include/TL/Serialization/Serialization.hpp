@@ -14,6 +14,8 @@ namespace TL
     // TODO: rename decoding serialize to deserialize
     // TODO: wrap process in macro, and abstract interface to add json support
     // TODO: rename ArchiveEncoder/ArchiveDecoder to BinaryEncoder/BinaryDecoder
+    // TODO: change the stringstream to improve performance
+    // TODO: See if error reporting could be improved through concepts
 
     /// @brief Checks if the system is big endian
     inline static bool IsBigEndian()

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "TL/Assert.hpp"
-#include "TL/Containers.hpp"
 
 #include <cstddef>
 #include <initializer_list>
@@ -58,19 +57,20 @@ namespace TL
         }
 
         constexpr Span(const std::initializer_list<ElementType>& elements) noexcept
-            requires std::is_const_v<ElementType>
             : m_data(elements.begin())
             , m_count(elements.size())
         {
         }
 
-        constexpr Span(std::vector<std::remove_cv_t<ElementType>>& elements) noexcept
+        template<typename AllocatorType>
+        constexpr Span(std::vector<std::remove_cv_t<ElementType>, AllocatorType>& elements) noexcept
             : m_data(elements.data())
             , m_count(elements.size())
         {
         }
 
-        constexpr Span(TL::Vector<std::remove_cv_t<ElementType>>& elements) noexcept
+        template<typename AllocatorType>
+        constexpr Span(const std::vector<std::remove_cv_t<ElementType>, AllocatorType>& elements) noexcept
             : m_data(elements.data())
             , m_count(elements.size())
         {
@@ -132,16 +132,4 @@ namespace TL
         Pointer m_data;
         SizeType m_count;
     };
-
-    template<typename T>
-    inline static Span<const uint8_t> ToBytes(const T& t)
-    {
-        return Span<const uint8_t>((uint8_t*)&t, sizeof(T));
-    }
-
-    template<typename T>
-    inline static Span<const uint8_t> ToBytes(const Span<T>& t)
-    {
-        return Span<const uint8_t>((uint8_t*)t.data(), t.size_bytes());
-    }
 } // namespace TL

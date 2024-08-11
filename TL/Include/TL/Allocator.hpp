@@ -1,18 +1,12 @@
 #pragma once
 
-#include <TL/Export.hpp>
-#include <TL/Assert.hpp> // used for TL_NODISCARD
+#include "TL/Export.hpp"
+#include "TL/Block.hpp"
 
 #include <cstddef>
 
 namespace TL
 {
-    struct TL_NODISCARD Block
-    {
-        void* ptr;
-        size_t size;
-    };
-
     class TL_EXPORT IAllocator
     {
     public:
