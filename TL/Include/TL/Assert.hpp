@@ -46,7 +46,8 @@
 
     #define TL_ASSERT_3(expression, message, ...) TL_INTERNAL_ASSERT_WITH_MSG(expression, message, __VA_ARGS__)
 
-    #define TL_UNREACHABLE(...) TL_ASSERT(0, __VA_ARGS__)
+    // TODO: support varags
+    #define TL_UNREACHABLE() TL_ASSERT(false)
 
 #else
     #define TL_ASSERT(...)

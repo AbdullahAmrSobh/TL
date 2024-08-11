@@ -10,6 +10,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Span.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/UniquePtr.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Serialization/Serialization.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Stacktrace.hpp
 )
 
 set(SOURCE_FILES
@@ -18,6 +19,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/mimalloc-override.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/Serialization/Serialization.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/Allocator.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Stacktrace.cpp
     ${tracy_SOURCE_DIR}/public/TracyClient.cpp
 )
 
@@ -39,5 +41,6 @@ target_link_libraries(TL PRIVATE mimalloc-static)
 target_link_libraries(TL PRIVATE spdlog)
 target_link_libraries(TL PUBLIC lz4)
 target_link_libraries(TL PUBLIC nlohmann_json::nlohmann_json)
+target_link_libraries(TL PRIVATE Dbghelp.lib)
 # target_link_libraries(TL PRIVATE fmt)
 # target_link_libraries(TL PRIVATE backward)
