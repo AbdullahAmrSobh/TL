@@ -4,6 +4,7 @@
 #include <TL/FileSystem/FileSystem.hpp>
 #include <TL/Allocator.hpp>
 #include <TL/Log.hpp>
+#include <TL/Assert.hpp>
 
 struct Bar
 {
@@ -31,6 +32,12 @@ struct Bar
 
 int main()
 {
+    // bool condition = false;
+
+    // TL_ASSERT(condition);
+    // TL_ASSERT(condition, "hello");
+    // TL_ASSERT(condition, "hello {}", condition);
+
     for (auto i : TL::Span<const int> { 1, 2, 3, 4, 5, 6})
     {
         TL_LOG_INFO("{}", i);
