@@ -1,4 +1,6 @@
-#include <TL/Serialization/Serialization.hpp>
+#include <TL/Serialization/Binary.hpp>
+#include <TL/Serialization/Binary.inl>
+
 #include <TL/Compression/Compression.hpp>
 #include <TL/Containers.hpp>
 #include <TL/FileSystem/FileSystem.hpp>
@@ -7,27 +9,52 @@
 #include <TL/Assert.hpp>
 #include <TL/Stacktrace.hpp>
 
+struct Foo
+{
+    int i = 13;
+    int b = 14;
+    template<typename Archive>
+    void Serialize(Archive& archive) const
+    {
+        TL::Encode(archive, i);
+        TL::Encode(archive, b);
+    }
+
+    template<typename Archive>
+    void Deserialize(Archive& archive)
+    {
+        TL::Decode(archive, i);
+        TL::Decode(archive, b);
+    }
+};
+
 struct Bar
 {
     float f;
     float b;
     TL::String n;
-    TL::UnorderedMap<TL::String, TL::String> name;
+    TL::UnorderedMap<TL::String, TL::String> names;
+    std::vector<Foo> foos;
 
-    void Serialize(TL::ArchiveEncoder& archive) const
+
+    template<typename Archive>
+    void Serialize(Archive& archive) const
     {
-        ::TL::Process(archive, f);
-        ::TL::Process(archive, b);
-        ::TL::Process(archive, n);
-        ::TL::Process(archive, name);
+        TL::Encode(archive, f);
+        TL::Encode(archive, b);
+        TL::Encode(archive, n);
+        TL::Encode(archive, names);
+        TL::Encode(archive, foos);
     }
 
-    void Serialize(TL::ArchiveDecoder& archive)
+    template<typename Archive>
+    void Deserialize(Archive& archive)
     {
-        ::TL::Process(archive, f);
-        ::TL::Process(archive, b);
-        ::TL::Process(archive, n);
-        ::TL::Process(archive, name);
+        TL::Decode(archive, f);
+        TL::Decode(archive, b);
+        TL::Decode(archive, n);
+        TL::Decode(archive, names);
+        TL::Decode(archive, foos);
     }
 };
 
@@ -54,25 +81,39 @@ int main()
     b.f = 3.14f;
     b.b = 2.16f;
     b.n = "Hello-There";
-    b.name = {
+    b.names = {
         { "Hello", "World" },
         { "one", "1" },
         { "two", "2" },
         { "three", "3" },
         { "four", "4" },
     };
+    b.foos = { {1,2}, {2, 3}, {4, 5} };
 
-    auto encoded = TL::Archive::Encode(b);
-    auto compressed = TL::CompressBlock(encoded);
-    // save to disk
+    {
+        std::fstream fileStream{ "Bar.bin", std::ios::binary | std::ios::out };
+        auto encoder = TL::BinaryArchive(fileStream);
+        encoder.Encode(b);
+    }
 
-    // read from disk
-    auto decompressed = TL::DecompressBlock(compressed);
-    auto decoded = TL::Archive::Decode<Bar>(decompressed);
+    Bar decoded{};
+    {
+        std::fstream fileStream{ "Bar.bin", std::ios::binary | std::ios::in };
+        auto decoder = TL::BinaryArchive(fileStream);
+        decoder.Decode(decoded);
+    }
+
+    {
+        // auto decoded = TL::BinaryArchive::Decode<Bar>(encoded);
+    }
 
     TL_LOG_INFO(" f: {}, b: {}, n: {}", decoded.f, decoded.b, decoded.n);
-    for (auto [key, value] : decoded.name)
+    for (auto [key, value] : decoded.names)
     {
         TL_LOG_INFO("{} {}", key, value);
+    }
+    for (auto f : decoded.foos)
+    {
+        TL_LOG_INFO("{} {}", f.i, f.b);
     }
 }

@@ -32,4 +32,5 @@ namespace TL
         static Block Reallocate(Block block, size_t size, size_t alignment = 1);
         static void Release(Block block);
     };
+
 } // namespace TL

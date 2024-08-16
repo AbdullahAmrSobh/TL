@@ -43,6 +43,9 @@ namespace TL
     template<typename T>
     using Vector = std::vector<T, StlAllocator<T>>;
 
+    template<typename T, uint32_t Capacity = 16, bool AllowExceed = false>
+    using SmallVector = std::vector<T, StlAllocator<T>>;
+
     template<typename Key, typename Value, typename Hasher = std::hash<Key>, typename KeyEq = std::equal_to<Key>>
     using UnorderedMap = std::unordered_map<Key, Value, Hasher, KeyEq, StlAllocator<std::pair<const Key, Value>>>;
 

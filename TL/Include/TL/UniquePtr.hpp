@@ -13,6 +13,12 @@ namespace TL
     template<typename T>
     using Ptr = std::unique_ptr<T>;
 
+    template<typename T>
+    using SharedRef = std::shared_ptr<T>;
+
+    template<typename T>
+    using WeakRef = std::weak_ptr<T>;
+
     template<class T, class... Args>
     inline constexpr Ptr<T> CreatePtr(Args... args)
     {

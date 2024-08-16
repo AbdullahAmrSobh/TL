@@ -32,7 +32,40 @@ namespace TL
             return { (void*)t.data(), t.size() * sizeof(T) };
         }
 
+        template<typename T>
+        static Block Create(T* value, size_t count)
+        {
+            return { (void*)value, count * sizeof(T) };
+        }
+
         void* ptr;
         size_t size;
+    };
+
+    class TL_EXPORT Buffer
+    {
+        Block m_block;
+        class Allocator* m_allocator;
+
+    public:
+        Buffer();
+        Buffer(TL::Block block);
+        Buffer(const Buffer& other) = delete;
+        Buffer(Buffer&& other) = default;
+        ~Buffer();
+
+        Buffer& operator=(const Buffer& other) = delete;
+        Buffer& operator=(Buffer&& other) = default;
+
+        TL::Block Release();
+
+        size_t GetSize() const;
+
+        const void* GetData() const;
+
+        void* GetData();
+
+        operator const Block() const;
+        operator Block();
     };
 } // namespace TL
