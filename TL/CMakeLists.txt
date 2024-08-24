@@ -2,8 +2,11 @@ cmake_minimum_required(VERSION 3.16)
 
 set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Assert.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Allocator.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Allocator/BaseAllocator.hpp
+
+    ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Allocator/Allocator.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Allocator/Arena.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Memory.hpp
+
     ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Flags.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Log.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Containers.hpp
@@ -14,12 +17,13 @@ set(HEADER_FILES
 )
 
 set(SOURCE_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Allocator/BaseAllocator.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Allocator/Allocator.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Allocator/Arena.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Allocator/mimalloc-override.cpp
+
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/Log.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/Source/mimalloc-override.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/Serialization/Serialization.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/Serialization/Binary.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Allocator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/Stacktrace.cpp
     ${tracy_SOURCE_DIR}/public/TracyClient.cpp
 )

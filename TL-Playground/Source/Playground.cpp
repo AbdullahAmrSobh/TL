@@ -1,10 +1,10 @@
+#include <TL/Allocator/Arena.hpp>
 #include <TL/Serialization/Binary.hpp>
-#include <TL/Serialization/Binary.inl>
 
-#include <TL/Compression/Compression.hpp>
+#include <TL/Serialization/Binary.hpp>
 #include <TL/Containers.hpp>
 #include <TL/FileSystem/FileSystem.hpp>
-#include <TL/Allocator.hpp>
+#include <TL/Memory.hpp>
 #include <TL/Log.hpp>
 #include <TL/Assert.hpp>
 #include <TL/Stacktrace.hpp>
@@ -13,6 +13,7 @@ struct Foo
 {
     int i = 13;
     int b = 14;
+
     template<typename Archive>
     void Serialize(Archive& archive) const
     {
@@ -35,7 +36,6 @@ struct Bar
     TL::String n;
     TL::UnorderedMap<TL::String, TL::String> names;
     std::vector<Foo> foos;
-
 
     template<typename Archive>
     void Serialize(Archive& archive) const
@@ -67,6 +67,7 @@ int main()
     // TL_ASSERT(condition, "hello {}", condition);
 
     [[maybe_unused]] auto _unusedBlock = TL::Allocator::Allocate(12, 1);
+    [[maybe_unused]] auto _unusedBlock2 = TL::Allocator::Allocate(12, 1);
 
     for (auto i : TL::Span<const int>{ 1, 2, 3, 4, 5, 6 })
     {
@@ -88,7 +89,7 @@ int main()
         { "three", "3" },
         { "four", "4" },
     };
-    b.foos = { {1,2}, {2, 3}, {4, 5} };
+    b.foos = { { 1, 2 }, { 2, 3 }, { 4, 5 } };
 
     {
         std::fstream fileStream{ "Bar.bin", std::ios::binary | std::ios::out };
@@ -103,10 +104,6 @@ int main()
         decoder.Decode(decoded);
     }
 
-    {
-        // auto decoded = TL::BinaryArchive::Decode<Bar>(encoded);
-    }
-
     TL_LOG_INFO(" f: {}, b: {}, n: {}", decoded.f, decoded.b, decoded.n);
     for (auto [key, value] : decoded.names)
     {
@@ -116,4 +113,20 @@ int main()
     {
         TL_LOG_INFO("{} {}", f.i, f.b);
     }
+
+    struct Foo
+    {
+        float f[14];
+    };
+
+    Foo* f = TL::Allocator::Allocate<Foo>(3);
+    f[0].f[13] = 1.0f;
+    f[1].f[13] = 2.0f;
+    f[2].f[13] = 3.0f;
+    TL::Allocator::Release(f, 3);
+
+    TL::Arena arena = TL::Arena();
+    Foo* f2 = arena.Allocate<Foo>(3);
+
+    arena.Collect();
 }

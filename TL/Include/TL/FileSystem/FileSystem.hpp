@@ -1,7 +1,7 @@
 #pragma once
 
 #include "TL/Block.hpp"
-#include "TL/Allocator.hpp"
+#include "TL/Memory.hpp"
 
 #include <fstream>
 
@@ -38,7 +38,7 @@ namespace TL
         ifs.seekg(0, std::ios::beg);
 
         // Allocate memory for the data and read it
-        auto data = TL::Allocator::Allocate(size);
+        auto data = TL::Allocator::Allocate(size, alignof(char));
         if (ifs.read(reinterpret_cast<char*>(data.ptr), size))
         {
             return data;

@@ -8,7 +8,7 @@
 #include <unordered_set>
 #include <deque>
 
-#include "TL/Allocator.hpp"
+#include "TL/Memory.hpp"
 
 namespace TL
 {
@@ -55,8 +55,8 @@ namespace TL
     template<typename Key, typename Hasher = std::hash<Key>, typename KeyEq = std::equal_to<Key>>
     using UnorderedSet = std::unordered_set<Key, Hasher, KeyEq, StlAllocator<Key>>;
 
-    template<typename T>
-    using Set = std::set<T, StlAllocator<T>>;
+    template <class T, class _Pr = std::less<T>, class _Alloc = StlAllocator<T>>
+    using Set = std::set<T, _Pr, _Alloc>;
 
     template<typename T>
     using Deque = std::deque<T, StlAllocator<T>>;
@@ -84,7 +84,7 @@ namespace TL
     constexpr void StlAllocator<T>::deallocate(T* const ptr, const size_t count)
     {
         TL_ASSERT(ptr != nullptr || count == 0);
-        return Allocator::Release({ ptr, sizeof(T) * count });
+        return Allocator::Release({ ptr, sizeof(T) * count }, alignof(T));
     }
 
 } // namespace TL

@@ -28,15 +28,15 @@ namespace TL
     }
 } // namespace TL
 
-// @todo: revist this
-// #if defined(_MSC_VER) && defined(_Ret_notnull_) && defined(_Post_writable_byte_size_)
-//   // stay consistent with VCRT definitions
-//     #define mi_decl_new(n) mi_decl_nodiscard mi_decl_restrict _Ret_notnull_ _Post_writable_byte_size_(n)
-//     #define mi_decl_new_nothrow(n) mi_decl_nodiscard mi_decl_restrict _Ret_maybenull_ _Success_(return != NULL) _Post_writable_byte_size_(n)
-// #else
-//     #define mi_decl_new(n) mi_decl_nodiscard mi_decl_restrict
-//     #define mi_decl_new_nothrow(n) mi_decl_nodiscard mi_decl_restrict
-// #endif
+/// @todo: revist this
+//  #if defined(_MSC_VER) && defined(_Ret_notnull_) && defined(_Post_writable_byte_size_)
+//    // stay consistent with VCRT definitions
+//      #define mi_decl_new(n) mi_decl_nodiscard mi_decl_restrict _Ret_notnull_ _Post_writable_byte_size_(n)
+//      #define mi_decl_new_nothrow(n) mi_decl_nodiscard mi_decl_restrict _Ret_maybenull_ _Success_(return != NULL) _Post_writable_byte_size_(n)
+//  #else
+//      #define mi_decl_new(n) mi_decl_nodiscard mi_decl_restrict
+//      #define mi_decl_new_nothrow(n) mi_decl_nodiscard mi_decl_restrict
+//  #endif
 
 #define mi_decl_new(n)
 #define mi_decl_new_nothrow(n)
