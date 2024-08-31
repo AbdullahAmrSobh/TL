@@ -1,30 +1,41 @@
+#include "TL/Allocator/Mimalloc.hpp"
+
 #include <mimalloc.h>
-// #include <mimalloc-new-delete.h>
 
-#include <cstdint>
+namespace TL
+{
+    Block Mimalloc::AllocateImpl(size_t size, size_t alignment)
+    {
+        return { mi_malloc_aligned(size, alignment), size };
+    }
 
-#if TL_ENABLE_TRACY
-    #include <tracy/Tracy.hpp>
-#endif
+    void Mimalloc::ReleaseImpl(Block block, [[maybe_unused]] size_t alignment)
+    {
+        // mi_free_size_aligned(block.ptr, block.size, alignment);
+        mi_free(block.ptr);
+    }
+} // namespace TL
+
+// Override malloc/free and new/delete
 
 namespace TL
 {
     inline static void OnNew([[maybe_unused]] void* ptr, [[maybe_unused]] size_t count)
     {
-#if TL_ENABLE_TRACY && TL_ENABLE_TRACY_MEMORY_TRACKING
-        TracyAllocS(ptr, count, 20);
-#endif
+        // #if TL_ENABLE_TRACY && TL_ENABLE_TRACY_MEMORY_TRACKING
+        //         TracyAllocS(ptr, count, 20);
+        // #endif
 
-#if TL_ENABLE_LEAK_REPORTER
-        // TODO: track allocation
-#endif
+        // #if TL_ENABLE_LEAK_REPORTER
+        //         // TODO: track allocation
+        // #endif
     }
 
     inline static void OnDelete([[maybe_unused]] void* ptr)
     {
-#if TL_ENABLE_TRACY && TL_ENABLE_TRACY_MEMORY_TRACKING
-        TracyFreeS(ptr, 20);
-#endif
+        // #if TL_ENABLE_TRACY && TL_ENABLE_TRACY_MEMORY_TRACKING
+        //         TracyFreeS(ptr, 20);
+        // #endif
     }
 } // namespace TL
 

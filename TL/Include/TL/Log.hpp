@@ -44,7 +44,7 @@ namespace TL
         inline static void Debug(const char* formatString, Args&&... args)
         {
             std::string message = std::vformat(formatString, std::make_format_args(args...));
-            Info(message.c_str());
+            Info(GetStdCoutStream(), message.c_str());
         }
 
         template<typename... Args>

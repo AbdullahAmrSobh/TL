@@ -6,6 +6,8 @@
 #include <vector>
 #include <unordered_map>
 #include <iostream>
+#include <optional>
+#include <filesystem>
 
 namespace TL
 {
@@ -172,8 +174,9 @@ namespace TL
         size_t stringSize = 0;
         Decode(archive, stringSize);
         value.resize(stringSize);
-        if (stringSize > 0) {
-            Decode(archive, Block{(void*)value.data(), stringSize * sizeof(CharType)});
+        if (stringSize > 0)
+        {
+            Decode(archive, Block{ (void*)value.data(), stringSize * sizeof(CharType) });
         }
     }
 
@@ -252,5 +255,66 @@ namespace TL
     inline void Decode(class BinaryArchive& archive, T& value)
     {
         value.Deserialize(archive);
+    }
+
+    // Encode function for enums
+    template<typename T>
+        requires std::is_enum_v<T>
+    inline void Encode(BinaryArchive& archive, const T& value)
+    {
+        using UnderlyingType = std::underlying_type_t<T>;
+        Encode(archive, static_cast<UnderlyingType>(value));
+    }
+
+    // Decode function for enums
+    template<typename T>
+        requires std::is_enum_v<T>
+    inline void Decode(BinaryArchive& archive, T& value)
+    {
+        using UnderlyingType = std::underlying_type_t<T>;
+        UnderlyingType underlyingValue;
+        Decode(archive, underlyingValue);
+        value = static_cast<T>(underlyingValue);
+    }
+
+    template<typename T>
+    inline static void Encode(BinaryArchive& archive, const std::optional<T>& opt)
+    {
+        bool has_value = opt.has_value();
+        Encode(archive, has_value); // Encode whether the optional has a value
+        if (has_value)
+        {
+            Encode(archive, *opt); // Encode the actual value
+        }
+    }
+
+    template<typename T>
+    inline static void Decode(BinaryArchive& archive, std::optional<T>& opt)
+    {
+        bool has_value;
+        Decode(archive, has_value); // Decode whether the optional has a value
+        if (has_value)
+        {
+            T value;
+            Decode(archive, value); // Decode the actual value
+            opt = std::move(value); // Assign the value to the optional
+        }
+        else
+        {
+            opt.reset(); // Ensure the optional is empty
+        }
+    }
+
+    inline static void Encode(BinaryArchive& archive, const std::filesystem::path& path)
+    {
+        std::string pathStr = path.string();
+        Encode(archive, pathStr);
+    }
+
+    inline static void Decode(BinaryArchive& archive, std::filesystem::path& path)
+    {
+        std::string pathStr;
+        Decode(archive, pathStr);
+        path = std::filesystem::path(pathStr);
     }
 } // namespace TL

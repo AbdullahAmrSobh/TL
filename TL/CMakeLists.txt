@@ -5,6 +5,8 @@ set(HEADER_FILES
 
     ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Allocator/Allocator.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Allocator/Arena.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Allocator/Mimalloc.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Allocator/MemPlumber.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Memory.hpp
 
     ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Flags.hpp
@@ -19,12 +21,14 @@ set(HEADER_FILES
 set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/Allocator/Allocator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/Allocator/Arena.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Allocator/mimalloc-override.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Allocator/Mimalloc.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Allocator/MemPlumber.cpp
 
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/Log.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/Serialization/Serialization.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/Serialization/Binary.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/Stacktrace.cpp
+
     ${tracy_SOURCE_DIR}/public/TracyClient.cpp
 )
 

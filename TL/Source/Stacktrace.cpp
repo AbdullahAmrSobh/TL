@@ -89,7 +89,7 @@ namespace TL
 
         if (::SymGetLineFromAddr64(::GetCurrentProcess(), reinterpret_cast<DWORD64>(address), &displacement, &lineInfo))
         {
-            return std::format("{}({})", lineInfo.FileName, lineInfo.LineNumber);
+            return std::format("{}:{}", lineInfo.FileName, lineInfo.LineNumber);
         }
         return "Unknown Line Info";
 #else
