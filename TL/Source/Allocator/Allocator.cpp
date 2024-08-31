@@ -10,8 +10,8 @@
 namespace TL
 {
 
-    static MemPlumber g_allocator;
-    // static Mimalloc g_allocator;
+    // static MemPlumber g_allocator;
+    static Mimalloc g_allocator;
 
     Block Allocator::Allocate(size_t size, size_t alignment)
     {

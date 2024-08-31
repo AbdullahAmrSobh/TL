@@ -210,6 +210,15 @@ namespace TL
     }
 
     template<typename Key, typename Value>
+        requires std::is_move_constructible_v<Key> && std::is_move_constructible_v<Value>
+    inline void Decode(BinaryArchive& archive, std::pair<Key, Value>& value)
+    {
+        Key first = Decode<Key>(archive);                            // Decode into temporary Key
+        Value second = Decode<Value>(archive);                       // Decode into temporary Value
+        value = std::make_pair(std::move(first), std::move(second)); // Move into the pair
+    }
+
+    template<typename Key, typename Value>
     inline void Decode(BinaryArchive& archive, std::pair<Key, Value>& value)
     {
         Key k;
@@ -221,7 +230,7 @@ namespace TL
         value = std::make_pair(k, v);
     }
 
-    template<class Key, class Type, class Hasher = std::hash<Key>, class KeyEq, class Allocator>
+    template<class Key, class Type, class Hasher, class KeyEq, class Allocator>
     inline void Encode(BinaryArchive& archive, const std::unordered_map<Key, Type, Hasher, KeyEq, Allocator>& values)
     {
         ::TL::Encode(archive, values.size());
@@ -231,17 +240,20 @@ namespace TL
         }
     }
 
-    template<class Key, class Type, class Hasher = std::hash<Key>, class KeyEq, class Allocator>
+    template<class Key, class Type, class Hasher, class KeyEq, class Allocator>
     inline void Decode(BinaryArchive& archive, std::unordered_map<Key, Type, Hasher, KeyEq, Allocator>& values)
     {
         size_t size;
         Decode(archive, size);
-        values.reserve(size);
+        values.reserve(size); // Reserve space in the unordered_map
+
         for (size_t i = 0; i < size; i++)
         {
-            std::pair<Key, Type> pair;
-            Decode(archive, pair);
-            values.emplace(std::move(pair));
+            Key key = {};
+            Decode(archive, key);
+
+            values[key] = {};
+            Decode(archive, values[key]);
         }
     }
 

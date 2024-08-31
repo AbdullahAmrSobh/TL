@@ -30,12 +30,34 @@ struct Foo
     }
 };
 
+struct Foo2
+{
+    Foo2() = default;
+    Foo2(const Foo2&) = delete;
+
+
+    template<typename Archive>
+    void Serialize(Archive& archive) const
+    {
+        TL::Encode(archive, val);
+
+    }
+
+    template<typename Archive>
+    void Deserialize(Archive& archive)
+    {
+        TL::Decode(archive, val);
+    }
+    int val;
+};
+
 struct Bar
 {
     float f;
     float b;
     TL::String n;
     TL::UnorderedMap<TL::String, TL::String> names;
+    TL::UnorderedMap<TL::String, Foo2> names2;
     std::vector<Foo> foos;
 
     template<typename Archive>
@@ -45,6 +67,7 @@ struct Bar
         TL::Encode(archive, b);
         TL::Encode(archive, n);
         TL::Encode(archive, names);
+        TL::Encode(archive, names2);
         TL::Encode(archive, foos);
     }
 
@@ -55,6 +78,7 @@ struct Bar
         TL::Decode(archive, b);
         TL::Decode(archive, n);
         TL::Decode(archive, names);
+        TL::Decode(archive, names2);
         TL::Decode(archive, foos);
     }
 };
@@ -132,7 +156,7 @@ int main()
         TL::Allocator::Release(f, 3);
 
         TL::Arena arena = TL::Arena();
-        Foo* f2 = arena.Allocate<Foo>(3);
+        Foo* f2 = arena.Allocate<Foo>();
 
         arena.Collect();
     }
