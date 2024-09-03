@@ -2,6 +2,7 @@
 
 namespace TL
 {
+    /// @note: modified version of (https://github.com/seladb/MemPlumber)
     class MemPlumber final : public IAllocator
     {
     private:

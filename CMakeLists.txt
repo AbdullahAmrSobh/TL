@@ -30,6 +30,7 @@ set(TL_DEVELOPER_MODE ${PROJECT_IS_TOP_LEVEL})
 
 option(TL_ENABLE_TRACY "Enable Tracy profiler" ${PROJECT_IS_TOP_LEVEL})
 option(TL_BUILD_TESTS "Enable Tests" ${PROJECT_IS_TOP_LEVEL})
+option(TL_TRACK_LEAKS "Enable MemPlumber" ${PROJECT_IS_TOP_LEVEL})
 
 
 if(TL_ENABLE_TRACY)
@@ -39,6 +40,10 @@ if(TL_ENABLE_TRACY)
     if(TL_ENABLE_TRACY_MEMORY_TRACKING)
         add_compile_definitions(TL_ENABLE_TRACY_MEMORY_TRACKING)
     endif()
+endif()
+
+if (TL_TRACK_LEAKS)
+    add_compile_definitions(TL_TRACK_LEAKS)
 endif()
 
 # ---- Add dependencies ----
