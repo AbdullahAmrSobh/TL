@@ -28,13 +28,13 @@ namespace TL
         struct new_ptr_list_t
         {
             new_ptr_list_t* next;
-            Stacktrace stacktrace;
-            size_t size;
+            Stacktrace      stacktrace;
+            size_t          size;
         };
 
         new_ptr_list_t* m_PointerListHashtable[MEMPLUMBER_HASHTABLE_SIZE];
 
-        bool m_Started;
+        bool            m_Started;
 
         // private c'tor
         MemPlumberImpl()
@@ -60,7 +60,7 @@ namespace TL
             // if not started, allocate memory and exit
             if (!m_Started)
             {
-                return { mi_malloc_aligned(size, alignment), size };
+                return {mi_malloc_aligned(size, alignment), size};
             }
 
             // total memory to allocated is the requested size + metadata size
@@ -75,7 +75,7 @@ namespace TL
                 return {};
 
             // calculate the actual pointer to provide to the user
-            void* actualPointer = (char*)pointerMetaDataRecord + sizeof(new_ptr_list_t);
+            void*  actualPointer = (char*)pointerMetaDataRecord + sizeof(new_ptr_list_t);
 
             // find the hash index for this pointer
             size_t hashIndex = MEMPLUMBER_HASH(actualPointer);
@@ -85,12 +85,12 @@ namespace TL
 
             // fill in the metadata
             pointerMetaDataRecord->stacktrace = CaptureStacktrace(5);
-            pointerMetaDataRecord->size = size;
+            pointerMetaDataRecord->size       = size;
 
             // put this metadata in the head of the list
             m_PointerListHashtable[hashIndex] = pointerMetaDataRecord;
 
-            return { actualPointer, size };
+            return {actualPointer, size};
         }
 
         void ReleaseImpl(Block block, [[maybe_unused]] size_t alignment) override
@@ -101,8 +101,8 @@ namespace TL
             }
 
             // find the metadata record bucket in the hash table
-            size_t hashIndex = MEMPLUMBER_HASH(block.ptr);
-            new_ptr_list_t* metaDataBucketLinkedListElement = m_PointerListHashtable[hashIndex];
+            size_t          hashIndex                           = MEMPLUMBER_HASH(block.ptr);
+            new_ptr_list_t* metaDataBucketLinkedListElement     = m_PointerListHashtable[hashIndex];
             new_ptr_list_t* metaDataBucketLinkedListPrevElement = NULL;
 
             // inside the bucket, go over the linked list until you find the specific pointer
@@ -115,7 +115,7 @@ namespace TL
                 if (actualPointerInRecord != block.ptr)
                 {
                     metaDataBucketLinkedListPrevElement = metaDataBucketLinkedListElement;
-                    metaDataBucketLinkedListElement = metaDataBucketLinkedListElement->next;
+                    metaDataBucketLinkedListElement     = metaDataBucketLinkedListElement->next;
                     continue;
                 }
                 else
@@ -156,7 +156,7 @@ namespace TL
         void checkLeaks(size_t& memLeakCount, uint64_t& memLeakSize)
         {
             memLeakCount = 0;
-            memLeakSize = 0;
+            memLeakSize  = 0;
 
             // go over all buckets in the hashmap
             for (int index = 0; index < MEMPLUMBER_HASHTABLE_SIZE; ++index)
@@ -178,7 +178,7 @@ namespace TL
                     {
                         auto ptr = size_t((char*)metaDataBucketLinkedListElement + sizeof(new_ptr_list_t));
                         TL_LOG_INFO(
-                            "Leaked object at {} (size {}[bytes]) allocated in:\n {}\n",
+                            "Leaked object at 0x{:0x} (size {}[bytes]):\n {}\n",
                             ptr,
                             metaDataBucketLinkedListElement->size,
                             ReportStacktrace(metaDataBucketLinkedListElement->stacktrace));

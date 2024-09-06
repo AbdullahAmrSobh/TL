@@ -6,7 +6,7 @@ namespace TL
 {
     Block Mimalloc::AllocateImpl(size_t size, size_t alignment)
     {
-        return { mi_malloc_aligned(size, alignment), size };
+        return {mi_malloc_aligned(size, alignment), size};
     }
 
     void Mimalloc::ReleaseImpl(Block block, [[maybe_unused]] size_t alignment)

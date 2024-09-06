@@ -60,11 +60,25 @@ namespace TL
 
     void BinaryArchive::StreamWrite(Block block)
     {
-        m_stream->write((const char*)(block.ptr), block.size);
+        try
+        {
+            m_stream->write((const char*)(block.ptr), block.size);
+        }
+        catch (const std::exception& e)
+        {
+            TL_ASSERT(m_stream->good(), "Serialization error: {}", e.what());
+        }
     }
 
     void BinaryArchive::StreamRead(Block block)
     {
-        m_stream->read((char*)block.ptr, block.size);
+        try
+        {
+            m_stream->read((char*)block.ptr, block.size);
+        }
+        catch (const std::exception& e)
+        {
+            TL_ASSERT(m_stream->good(), "Deserialization error: {}", e.what());
+        }
     }
 } // namespace TL

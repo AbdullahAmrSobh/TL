@@ -3,26 +3,29 @@ Language: Cpp
 AccessModifierOffset: -4
 AlignAfterOpenBracket: Align
 AlignConsecutiveAssignments:
-  Enabled: false
+  Enabled: true
   AcrossEmptyLines: false
-  AcrossComments: false
+  AcrossComments: true
 AlignConsecutiveDeclarations:
-  Enabled: false
-  AcrossEmptyLines: false
-  AcrossComments: false
+  Enabled: true
+  AcrossEmptyLines: true
+  AcrossComments: true
+AlignConsecutiveMacros:
+  Enabled: true
+  AcrossEmptyLines: true
+  AcrossComments: true
 AlignEscapedNewlines: Right
 AlignOperands: true
 AlignTrailingComments: true
 AllowAllArgumentsOnNextLine: true
 AllowAllParametersOfDeclarationOnNextLine: true
-AllowShortFunctionsOnASingleLine: Inline
+AllowShortFunctionsOnASingleLine: All
 AllowShortLambdasOnASingleLine: None
 AlwaysBreakAfterReturnType: None
 AlwaysBreakTemplateDeclarations: true
 BinPackArguments: false
 BinPackParameters: false
-BreakBeforeBraces: Custom
-LambdaBodyIndentation: OuterScope
+BreakBeforeBraces: Allman
 BraceWrapping:
     AfterStruct: true
     AfterClass: true
@@ -43,7 +46,7 @@ BreakInheritanceList: BeforeComma
 ColumnLimit: 0
 ConstructorInitializerIndentWidth: 4
 ContinuationIndentWidth: 4
-Cpp11BracedListStyle: false
+Cpp11BracedListStyle: true
 FixNamespaceComments: true
 IncludeBlocks: Preserve
 IndentCaseBlocks: true
@@ -72,3 +75,5 @@ Standard: c++20
 UseTab: Never
 
 SeparateDefinitionBlocks: Always
+
+StatementAttributeLikeMacros: [TL_NODISCARD, TL_EXPORT]

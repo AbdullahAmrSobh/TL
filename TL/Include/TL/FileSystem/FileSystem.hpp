@@ -8,7 +8,6 @@
 namespace TL
 {
     // Temp file operations
-
     inline static void WriteBinaryFile(const char* filename, TL::Block data)
     {
         std::ofstream ofs(filename, std::ios::binary);
@@ -32,7 +31,6 @@ namespace TL
             return {};
         }
 
-        // Get the file size
         ifs.seekg(0, std::ios::end);
         std::streamsize size = ifs.tellg();
         ifs.seekg(0, std::ios::beg);
@@ -43,10 +41,8 @@ namespace TL
         {
             return data;
         }
-        else
-        {
-            TL_LOG_ERROR("Failed to read from file: {}", filename);
-            return {};
-        }
+
+        TL_LOG_ERROR("Failed to read from file: {}", filename);
+        return {};
     }
 } // namespace TL

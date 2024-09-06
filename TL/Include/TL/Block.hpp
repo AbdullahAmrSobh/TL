@@ -9,7 +9,7 @@ namespace TL
     struct TL_NODISCARD Block
     {
         template<typename T>
-        static Block Create(T& obj)
+        static Block Create(const T& obj)
         {
             return { (void*)&obj, sizeof(obj) };
         }
@@ -36,6 +36,12 @@ namespace TL
         static Block Create(T* value, size_t count)
         {
             return { (void*)value, count * sizeof(T) };
+        }
+
+        friend void swap(Block& a, Block& b)
+        {
+            std::swap(a.ptr, b.ptr);
+            std::swap(a.size, b.size);
         }
 
         void* ptr;
