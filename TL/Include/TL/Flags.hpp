@@ -6,8 +6,8 @@
     inline static ::TL::Flags<name> operator|(name lhs, name rhs)           \
     {                                                                       \
         using underlaying_type = typename std::underlying_type<name>::type; \
-        auto lhs_num = static_cast<underlaying_type>(lhs);                  \
-        auto rhs_num = static_cast<underlaying_type>(rhs);                  \
+        auto lhs_num           = static_cast<underlaying_type>(lhs);        \
+        auto rhs_num           = static_cast<underlaying_type>(rhs);        \
                                                                             \
         return ::TL::Flags<name>(lhs_num | rhs_num);                        \
     }                                                                       \
@@ -15,8 +15,8 @@
     inline static ::TL::Flags<name> operator&(name lhs, name rhs)           \
     {                                                                       \
         using underlaying_type = typename std::underlying_type<name>::type; \
-        auto lhs_num = static_cast<underlaying_type>(lhs);                  \
-        auto rhs_num = static_cast<underlaying_type>(rhs);                  \
+        auto lhs_num           = static_cast<underlaying_type>(lhs);        \
+        auto rhs_num           = static_cast<underlaying_type>(rhs);        \
                                                                             \
         return ::TL::Flags<name>(lhs_num & rhs_num);                        \
     }                                                                       \
@@ -24,14 +24,16 @@
     inline static ::TL::Flags<name> operator^(name lhs, name rhs)           \
     {                                                                       \
         using underlaying_type = typename std::underlying_type<name>::type; \
-        auto lhs_num = static_cast<underlaying_type>(lhs);                  \
-        auto rhs_num = static_cast<underlaying_type>(rhs);                  \
+        auto lhs_num           = static_cast<underlaying_type>(lhs);        \
+        auto rhs_num           = static_cast<underlaying_type>(rhs);        \
                                                                             \
         return ::TL::Flags<name>(lhs_num ^ rhs_num);                        \
     }
 
 namespace TL
 {
+    /// @todo: just use the spaceship operator
+
     template<typename FlagBitsType>
     struct FlagTraits
     {

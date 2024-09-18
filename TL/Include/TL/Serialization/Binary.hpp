@@ -8,6 +8,7 @@
 #include <iostream>
 #include <optional>
 #include <filesystem>
+#include <fstream>
 
 namespace TL
 {
@@ -31,8 +32,7 @@ namespace TL
     {
     public:
         BinaryArchive(std::iostream& stream)
-            : m_endieanness(std::endian::native)
-            , m_stream(&stream)
+            : m_stream(&stream)
         {
         }
 
@@ -47,13 +47,24 @@ namespace TL
         void StreamRead(Block block);
 
         template<typename T>
-        inline T ConvertByteOrder(T value)
+        static void Save(const T& object, const char* path)
         {
-            return (m_endieanness == std::endian::native) ? value : ByteSwap(value);
+            std::fstream      file{path, std::ios::binary | std::ios::out};
+            TL::BinaryArchive archive{file};
+            archive.Encode(object);
+        }
+
+        template<typename T>
+        static T Load(const char* path)
+        {
+            T                 object{};
+            std::fstream      file{path, std::ios::binary | std::ios::in};
+            TL::BinaryArchive archive{file};
+            archive.Decode(object);
+            return object;
         }
 
     private:
-        std::endian    m_endieanness;
         std::iostream* m_stream;
     };
 } // namespace TL
@@ -176,10 +187,10 @@ namespace TL
     {
         size_t size = 0;
         Decode(archive, size);
-        for (auto& value : values)
+        values.resize(size);
+        for (size_t i = 0; i < size; i++)
         {
-            values.resize(size);
-            Decode(archive, value);
+            Decode(archive, values[i]);
         }
     }
 
