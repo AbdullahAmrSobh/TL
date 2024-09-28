@@ -10,6 +10,22 @@
 
 #include "TL/Memory.hpp"
 
+
+#include <optional>
+#include <variant>
+
+namespace TL
+{
+    template<typename T>
+    using Optional = std::optional<T>;
+
+    using Nullopt_t = std::nullopt_t;
+    inline static constexpr Nullopt_t Nullopt { std::nullopt };
+
+    template<typename T>
+    using Variant = std::variant<T>;
+}
+
 namespace TL
 {
     template<typename T>
