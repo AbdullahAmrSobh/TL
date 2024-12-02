@@ -1,3 +1,5 @@
+#pragma once
+
 #include "TL/Allocator/Allocator.hpp"
 
 namespace TL
@@ -7,6 +9,6 @@ namespace TL
     private:
         Block AllocateImpl(size_t size, size_t alignment) override;
 
-        void ReleaseImpl(Block block, size_t alignment) override;
+        void  ReleaseImpl(Block block, size_t alignment) override;
     };
 } // namespace TL
