@@ -7,100 +7,144 @@
 #include <set>
 #include <unordered_set>
 #include <deque>
+#include <optional>
+#include <variant>
+#include <functional>
 
 #include "TL/Memory.hpp"
 
-
-#include <optional>
-#include <variant>
-
 namespace TL
 {
+    // Optional and Nullopt
     template<typename T>
     using Optional = std::optional<T>;
 
     using Nullopt_t = std::nullopt_t;
-    inline static constexpr Nullopt_t Nullopt { std::nullopt };
+    inline static constexpr Nullopt_t Nullopt{std::nullopt};
 
-    template<typename T>
-    using Variant = std::variant<T>;
-}
+    // Variant
+    template<typename... Types>
+    using Variant = std::variant<Types...>;
 
-namespace TL
-{
+    template<typename T, typename AllocatorType = Allocator>
+    class StlAllocatorAdapter;
+
+    // STL Allocator Adapter
     template<typename T>
-    class StlAllocator
+    class StlAllocatorAdapter<T, IAllocator>
     {
     public:
         static_assert(!std::is_const_v<T>, "The C++ Standard forbids containers of const elements because allocator<const T> is ill-formed.");
         static_assert(!std::is_function_v<T>, "The C++ Standard forbids allocators for function elements because of [allocator.requirements].");
         static_assert(!std::is_reference_v<T>, "The C++ Standard forbids allocators for reference elements because of [allocator.requirements].");
 
-        using value_type = T;
-        using size_type = size_t;
-        using difference_type = ptrdiff_t;
+        using value_type      = T;
+        using size_type       = std::size_t;
+        using difference_type = std::ptrdiff_t;
+        using pointer         = T*;
+        using const_pointer   = const T*;
 
-        constexpr StlAllocator() noexcept {}
+        constexpr StlAllocatorAdapter(IAllocator& allocator) noexcept
+            : m_allocator(&allocator)
+        {
+        }
 
-        constexpr StlAllocator(const StlAllocator&) noexcept = default;
+        template<typename U>
+        constexpr StlAllocatorAdapter(const StlAllocatorAdapter<U, IAllocator>& other) noexcept
+            : m_allocator(other.m_allocator)
+        {
+        }
 
-        template<class Other>
-        constexpr StlAllocator(const StlAllocator<Other>&) noexcept;
+        TL_NODISCARD T* allocate(std::size_t n)
+        {
+            return m_allocator->template Allocate<T>(n);
+        }
 
-        constexpr ~StlAllocator() = default;
+        void deallocate(T* ptr, std::size_t n)
+        {
+            m_allocator->Release(ptr, n);
+        }
 
-        constexpr StlAllocator& operator=(const StlAllocator&) = default;
+        template<typename U>
+        struct rebind
+        {
+            using other = StlAllocatorAdapter<U, IAllocator>;
+        };
 
-        TL_NODISCARD TL_EXPORT constexpr T* allocate(const size_t count);
-
-        constexpr void deallocate(T* const ptr, const size_t count);
+        IAllocator* m_allocator;
     };
 
     template<typename T>
-    using Vector = std::vector<T, StlAllocator<T>>;
-
-    template<typename T, uint32_t Capacity = 16, bool AllowExceed = false>
-    using SmallVector = std::vector<T, StlAllocator<T>>;
-
-    template<typename Key, typename Value, typename Hasher = std::hash<Key>, typename KeyEq = std::equal_to<Key>>
-    using UnorderedMap = std::unordered_map<Key, Value, Hasher, KeyEq, StlAllocator<std::pair<const Key, Value>>>;
-
-    template<typename Key, typename Value>
-    using Map = std::map<Key, Value, StlAllocator<std::pair<Key, Value>>>;
-
-    template<typename Key, typename Hasher = std::hash<Key>, typename KeyEq = std::equal_to<Key>>
-    using UnorderedSet = std::unordered_set<Key, Hasher, KeyEq, StlAllocator<Key>>;
-
-    template <class T, class _Pr = std::less<T>, class _Alloc = StlAllocator<T>>
-    using Set = std::set<T, _Pr, _Alloc>;
-
-    template<typename T>
-    using Deque = std::deque<T, StlAllocator<T>>;
-
-    using String = std::basic_string<char, std::char_traits<char>, StlAllocator<char>>;
-    using WString = std::basic_string<wchar_t, std::char_traits<wchar_t>, StlAllocator<wchar_t>>;
-    using U8string = std::basic_string<char8_t, std::char_traits<char8_t>, StlAllocator<char8_t>>;
-    using U16string = std::basic_string<char16_t, std::char_traits<char16_t>, StlAllocator<char16_t>>;
-    using U32string = std::basic_string<char32_t, std::char_traits<char32_t>, StlAllocator<char32_t>>;
-
-    template<typename T>
-    template<class Other>
-    constexpr StlAllocator<T>::StlAllocator(const StlAllocator<Other>&) noexcept
+    class StlAllocatorAdapter<T, Allocator>
     {
-    }
+    public:
+        static_assert(!std::is_const_v<T>, "The C++ Standard forbids containers of const elements because allocator<const T> is ill-formed.");
+        static_assert(!std::is_function_v<T>, "The C++ Standard forbids allocators for function elements because of [allocator.requirements].");
+        static_assert(!std::is_reference_v<T>, "The C++ Standard forbids allocators for reference elements because of [allocator.requirements].");
 
+        using value_type      = T;
+        using size_type       = std::size_t;
+        using difference_type = std::ptrdiff_t;
+        using pointer         = T*;
+        using const_pointer   = const T*;
+
+        constexpr StlAllocatorAdapter() noexcept = default;
+
+        template<typename U>
+        constexpr StlAllocatorAdapter(const StlAllocatorAdapter<U, Allocator>&) noexcept
+        {
+        }
+
+        TL_NODISCARD T* allocate(std::size_t n)
+        {
+            static_assert(sizeof(value_type) > 0, "value_type must be complete before calling allocate.");
+            return Allocator::Allocate<T>(n);
+        }
+
+        void deallocate(T* ptr, std::size_t n)
+        {
+            Allocator::Release(ptr, n);
+        }
+
+        template<typename U>
+        struct rebind
+        {
+            using other = StlAllocatorAdapter<U, Allocator>;
+        };
+    };
+
+    // STL Container Adapters
+    template<typename T, typename AllocatorType = Allocator>
+    using Vector = std::vector<T, StlAllocatorAdapter<T, AllocatorType>>;
+
+    template<typename T, std::size_t Capacity = 16, bool AllowExceed = false>
+    using SmallVector = std::vector<T, StlAllocatorAdapter<T>>; // Custom implementation may be needed for small storage.
+
+    template<typename Key, typename Hasher = std::hash<Key>, typename KeyEq = std::equal_to<Key>, typename AllocatorType = Allocator>
+    using Set = std::unordered_set<Key, Hasher, KeyEq, StlAllocatorAdapter<Key, AllocatorType>>;
+
+    template<typename Key, typename Value, typename Hasher = std::hash<Key>, typename KeyEq = std::equal_to<Key>, typename AllocatorType = Allocator>
+    using Map = std::unordered_map<Key, Value, Hasher, KeyEq, StlAllocatorAdapter<std::pair<const Key, Value>, AllocatorType>>;
+
+    template<typename T, typename AllocatorType = Allocator>
+    using Deque = std::deque<T, StlAllocatorAdapter<T, AllocatorType>>;
+
+    // template<typename AllocatorType = Allocator>
+    using String = std::basic_string<char, std::char_traits<char>, StlAllocatorAdapter<char, Allocator>>;
+
+    // template<typename AllocatorType = Allocator>
+    using WString = std::basic_string<wchar_t, std::char_traits<wchar_t>, StlAllocatorAdapter<wchar_t, Allocator>>;
+
+    // template<typename AllocatorType = Allocator>
+    using U8string = std::basic_string<char8_t, std::char_traits<char8_t>, StlAllocatorAdapter<char8_t, Allocator>>;
+
+    // template<typename AllocatorType = Allocator>
+    using U16string = std::basic_string<char16_t, std::char_traits<char16_t>, StlAllocatorAdapter<char16_t, Allocator>>;
+
+    // template<typename AllocatorType = Allocator>
+    using U32string = std::basic_string<char32_t, std::char_traits<char32_t>, StlAllocatorAdapter<char32_t, Allocator>>;
+
+    // Function wrapper
     template<typename T>
-    constexpr T* StlAllocator<T>::allocate(const size_t count)
-    {
-        static_assert(sizeof(value_type) > 0, "value_type must be complete before calling allocate.");
-        return (T*)Allocator::Allocate(count * sizeof(T), alignof(T)).ptr;
-    }
-
-    template<typename T>
-    constexpr void StlAllocator<T>::deallocate(T* const ptr, const size_t count)
-    {
-        TL_ASSERT(ptr != nullptr || count == 0);
-        return Allocator::Release({ ptr, sizeof(T) * count }, alignof(T));
-    }
-
+    using Function = std::function<T>;
 } // namespace TL

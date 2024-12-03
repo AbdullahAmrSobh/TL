@@ -65,6 +65,15 @@ CPMAddPackage(
 	OPTIONS
 )
 
+CPMAddPackage(
+    NAME           taskflow
+	GIT_REPOSITORY git@github.com:taskflow/taskflow.git
+	GIT_TAG        v3.8.0
+	OPTIONS
+	TF_BUILD_TESTS OFF
+	TF_BUILD_EXAMPLES OFF
+)
+
 # CPMAddPackage(
 #     NAME           cpptrace
 # 	GIT_REPOSITORY git@github.com:jeremy-rifkin/cpptrace.git

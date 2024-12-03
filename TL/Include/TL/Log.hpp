@@ -3,11 +3,12 @@
 #include "TL/Export.hpp"
 
 #include <format>
+#include <string>
 
-#define TL_LOG_DEBUG(...) ::TL::Logger::Debug(__VA_ARGS__)
-#define TL_LOG_INFO(...) ::TL::Logger::Info(__VA_ARGS__)
+#define TL_LOG_DEBUG(...)    ::TL::Logger::Debug(__VA_ARGS__)
+#define TL_LOG_INFO(...)     ::TL::Logger::Info(__VA_ARGS__)
 #define TL_LOG_WARNNING(...) ::TL::Logger::Warnning(__VA_ARGS__)
-#define TL_LOG_ERROR(...) ::TL::Logger::Error(__VA_ARGS__)
+#define TL_LOG_ERROR(...)    ::TL::Logger::Error(__VA_ARGS__)
 
 namespace TL
 {
@@ -26,9 +27,9 @@ namespace TL
 
         class Stream;
 
-        TL_EXPORT Stream& GetStdCoutStream();
+        TL_EXPORT Stream&  GetStdCoutStream();
 
-        TL_EXPORT void Log(Stream& stream, Level level, const char* message);
+        TL_EXPORT void     Log(Stream& stream, Level level, const char* message);
 
         inline static void Debug(Stream& stream, const char* message)
         {

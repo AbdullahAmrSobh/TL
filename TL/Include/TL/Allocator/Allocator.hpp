@@ -5,28 +5,34 @@
 
 #include <cstddef>
 
-/// this is based on the awasome blog post (https://www.foonathan.net/2022/08/malloc-interface/)
+/// This is based on the awesome blog post (https://www.foonathan.net/2022/08/malloc-interface/)
 
 namespace TL
 {
     class TL_EXPORT Allocator
     {
     public:
+        /// Allocates a block of memory with the given size and alignment.
         static Block Allocate(size_t size, size_t alignment);
 
-        static void Release(Block block, size_t alignment);
+        /// Releases a previously allocated block of memory.
+        static void  Release(Block block, size_t alignment);
 
+        /// Allocates memory for an array of objects of type T.
         template<typename T>
-        inline static T* Allocate(size_t count = 1)
-        {
-            return (T*)Allocate(sizeof(T), alignof(T)).ptr;
-        }
+        static T* Allocate(size_t count = 1);
 
+        /// Constructs an object of type T in allocated memory.
+        template<typename T, typename... Args>
+        static T* Construct(Args&&... args);
+
+        /// Releases memory for an array of objects of type T.
         template<typename T>
-        inline static void Release(T* object, size_t count)
-        {
-            Release(Block{ object, sizeof(T) * count }, alignof(T));
-        }
+        static void Release(T* object, size_t count = 1);
+
+        /// Destructs an object of type T and releases its memory.
+        template<typename T>
+        static void Destruct(T* object);
     };
 
     class TL_EXPORT IAllocator
@@ -34,30 +40,38 @@ namespace TL
     public:
         virtual ~IAllocator() = default;
 
-        inline Block Allocate(size_t size, size_t alignment)
-        {
-            return AllocateImpl(size, alignment);
-        }
+        /// Allocates a block of memory with the given size and alignment.
+        Block Allocate(size_t size, size_t alignment);
 
-        inline void Release(Block block, size_t alignment)
-        {
-            ReleaseImpl(block, alignment);
-        }
+        /// Releases a previously allocated block of memory.
+        void  Release(Block block, size_t alignment);
 
+        /// Allocates memory for an array of objects of type T.
         template<typename T>
-        inline T* Allocate(size_t count = 1)
-        {
-            return (T*)this->AllocateImpl(sizeof(T) * count, alignof(T)).ptr;
-        }
+        T* Allocate(size_t count = 1);
 
+        /// Constructs an object of type T in allocated memory.
+        template<typename T, typename... Args>
+        T* Construct(Args&&... args);
+
+        /// Releases memory for an array of objects of type T.
         template<typename T>
-        inline void Release(T* object, size_t count)
-        {
-            this->ReleaseImpl({ object, sizeof(T) * count });
-        }
+        void Release(T* object, size_t count = 1);
+
+        /// Destructs an object of type T and releases its memory.
+        template<typename T>
+        void Destruct(T* object);
 
     protected:
+        /// Internal implementation of allocation.
         virtual Block AllocateImpl(size_t size, size_t alignment) = 0;
-        virtual void ReleaseImpl(Block block, size_t alignment) = 0;
+
+        /// Internal implementation of release.
+        virtual void  ReleaseImpl(Block block, size_t alignment) = 0;
+
+        // Will try to expand the memory inplace, before it attempts to reallocate. Usefully for e.g. containers which can omit calling the move constructor
+        // virtual Result<bool, Block> GrowImpl(size_t newSize, size_t alignment) = 0;
     };
 } // namespace TL
+
+#include "Allocator.inl"

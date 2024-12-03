@@ -16,10 +16,10 @@ namespace TL
         static_assert(!std::is_abstract_v<ElementType>, "ElementType cannot be an abstract class type");
 
     public:
-        using SizeType = std::size_t;
-        using Pointer = ElementType*;
+        using SizeType  = std::size_t;
+        using Pointer   = ElementType*;
         using Reference = ElementType&;
-        using Iterator = Pointer;
+        using Iterator  = Pointer;
 
         constexpr Span() noexcept
             : m_data(nullptr)
@@ -129,7 +129,7 @@ namespace TL
         }
 
     private:
-        Pointer m_data;
+        Pointer  m_data;
         SizeType m_count;
     };
 } // namespace TL

@@ -11,11 +11,11 @@
 
 namespace TL
 {
-
     static MemPlumber g_allocator;
+
     // static Mimalloc g_allocator;
 
-    Block Allocator::Allocate(size_t size, size_t alignment)
+    Block             Allocator::Allocate(size_t size, size_t alignment)
     {
         auto block = g_allocator.Allocate(size, alignment);
 

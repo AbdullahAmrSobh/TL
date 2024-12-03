@@ -6,7 +6,8 @@
     #if defined(_WIN32)
         #define TL_DEBUG_BREAK() __debugbreak()
     #else
-        #error "TL_DEBUG_BREAK not implemented for the current platform"
+        // #error "TL_DEBUG_BREAK not implemented for the current platform"
+        #define TL_DEBUG_BREAK() __debugbreak()
     #endif
 
     #define TL_INTERNAL_ASSERT_WITH_MSG(expression, ...)                                         \

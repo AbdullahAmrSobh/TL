@@ -10,3 +10,4 @@ tl_add_target(
 )
 
 target_link_libraries(TL_Playground PUBLIC TL)
+target_include_directories(TL_Playground PUBLIC ${taskflow_SOURCE_DIR})
