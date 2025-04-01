@@ -56,8 +56,8 @@ struct Bar
     float f;
     float b;
     TL::String n;
-    TL::UnorderedMap<TL::String, TL::String> names;
-    TL::UnorderedMap<TL::String, Foo2> names2;
+    TL::Map<TL::String, TL::String> names;
+    TL::Map<TL::String, Foo2> names2;
     std::vector<Foo> foos;
 
     template<typename Archive>

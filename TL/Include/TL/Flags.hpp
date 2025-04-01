@@ -104,7 +104,7 @@ namespace TL
 
         constexpr Flags<BitType> operator&(const Flags<BitType>& rhs) const noexcept
         {
-            return Flags<BitType>(m_mask & rhs.m_mask);
+            return Flags<BitType>(MaskType(m_mask & rhs.m_mask));
         }
 
         constexpr Flags<BitType> operator|(const Flags<BitType>& rhs) const noexcept

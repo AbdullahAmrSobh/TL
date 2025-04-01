@@ -1,3 +1,5 @@
+#pragma once
+
 #include "Tl/Allocator/Allocator.hpp"
 
 namespace TL

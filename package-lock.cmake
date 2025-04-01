@@ -44,7 +44,7 @@ CPMAddPackage(
 CPMAddPackage(
 	NAME tracy
 	GIT_REPOSITORY git@github.com:wolfpld/tracy.git
-	GIT_TAG v0.11.0
+	GIT_TAG v0.11.1
 	DOWNLOAD_ONLY YES
 )
 
@@ -70,8 +70,9 @@ CPMAddPackage(
 	GIT_REPOSITORY git@github.com:taskflow/taskflow.git
 	GIT_TAG        v3.8.0
 	OPTIONS
-	TF_BUILD_TESTS OFF
-	TF_BUILD_EXAMPLES OFF
+	"TF_BUILD_SYCL OFF"
+	"TF_BUILD_TESTS OFF"
+	"TF_BUILD_EXAMPLES OFF"
 )
 
 # CPMAddPackage(

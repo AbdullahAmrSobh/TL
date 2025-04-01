@@ -40,7 +40,6 @@ tl_add_target(
     HEADERS ${HEADER_FILES}
     SOURCES ${SOURCE_FILES}
 )
-
 target_compile_definitions(TL PUBLIC $<$<CONFIG:Debug>:TL_DEBUG>)
 
 target_include_directories(TL PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Include)
