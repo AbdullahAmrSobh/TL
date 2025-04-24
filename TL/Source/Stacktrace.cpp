@@ -1,7 +1,8 @@
 #include "TL/Stacktrace.hpp"
-
-#include <Windows.h>
-#include <DbgHelp.h>
+#if _WIN32
+    #include <Windows.h>
+    #include <DbgHelp.h>
+#endif
 
 #include <format>
 #include <string>
@@ -33,7 +34,7 @@ namespace TL
         ::CaptureStackBackTrace(skipFramesCount, TL_STACKTRACE_DEPTH, stacktrace.data(), nullptr);
         return stacktrace;
 #else
-    #error "This function is not implemented for the target platform"
+    #warning "This function is not implemented for the target platform"
 #endif
     }
 
@@ -51,7 +52,7 @@ namespace TL
                 break;
             }
 
-            std::string symbolName = GetSymbolName(address);
+            std::string symbolName        = GetSymbolName(address);
             std::string symbolFileAndLine = GetSymbolFileAndLine(address);
 
             message.append(std::format("\t{} {} \"{}\"\n", address, symbolName, symbolFileAndLine));
@@ -63,11 +64,11 @@ namespace TL
     std::string GetSymbolName(void* address)
     {
 #if _WIN32
-        constexpr size_t MAX_NAME_LENGTH = 256;
+        constexpr size_t  MAX_NAME_LENGTH = 256;
         std::vector<char> symbolBuffer(sizeof(SYMBOL_INFO) + MAX_NAME_LENGTH - 1);
-        SYMBOL_INFO* symbol = reinterpret_cast<SYMBOL_INFO*>(symbolBuffer.data());
-        symbol->SizeOfStruct = sizeof(SYMBOL_INFO);
-        symbol->MaxNameLen = MAX_NAME_LENGTH;
+        SYMBOL_INFO*      symbol = reinterpret_cast<SYMBOL_INFO*>(symbolBuffer.data());
+        symbol->SizeOfStruct     = sizeof(SYMBOL_INFO);
+        symbol->MaxNameLen       = MAX_NAME_LENGTH;
 
         DWORD64 displacement = 0;
         if (::SymFromAddr(::GetCurrentProcess(), reinterpret_cast<DWORD64>(address), &displacement, symbol))
@@ -76,7 +77,7 @@ namespace TL
         }
         return "Unknown Symbol";
 #else
-    #error "This function is not implemented for the target platform"
+    #warning "This function is not implemented for the target platform"
 #endif
     }
 
@@ -85,7 +86,7 @@ namespace TL
 #if _WIN32
         IMAGEHLP_LINE64 lineInfo;
         lineInfo.SizeOfStruct = sizeof(IMAGEHLP_LINE64);
-        DWORD displacement = 0;
+        DWORD displacement    = 0;
 
         if (::SymGetLineFromAddr64(::GetCurrentProcess(), reinterpret_cast<DWORD64>(address), &displacement, &lineInfo))
         {
@@ -93,7 +94,7 @@ namespace TL
         }
         return "Unknown Line Info";
 #else
-    #error "This function is not implemented for the target platform"
+    #warning "This function is not implemented for the target platform"
 #endif
     }
 

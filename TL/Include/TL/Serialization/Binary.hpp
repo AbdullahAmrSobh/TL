@@ -137,6 +137,12 @@ namespace TL
 
     inline static void Decode(BinaryArchive& archive, double& value) { archive.StreamRead(Block::Create(value)); }
 
+    // for 32 builds (wasm)
+    inline static void Encode(BinaryArchive& archive, unsigned long value) { archive.StreamWrite(Block::Create(value)); }
+
+    inline static void Decode(BinaryArchive& archive, unsigned long& value) { archive.StreamRead(Block::Create(value)); }
+
+
     template<typename T>
         requires std::is_enum_v<T>
     inline static void Encode(BinaryArchive& archive, T value)

@@ -38,7 +38,7 @@ CPMAddPackage(
 	GIT_REPOSITORY git@github.com:gabime/spdlog.git
 	GIT_TAG        v1.14.1
 	OPTIONS
-		# Default options are good
+		"SPDLOG_USE_STD_FORMAT ON"
 )
 
 CPMAddPackage(

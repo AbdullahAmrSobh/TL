@@ -1,3 +1,17 @@
+#include "mimalloc.h"
+
+extern "C" {
+
+void emmalloc_free(void* p) {
+    mi_free(p);
+}
+
+void* emmalloc_memalign(size_t alignment, size_t size) {
+    return mi_memalign(alignment, size);
+}
+
+} // extern "C"
+
 #include <TL/Allocator/Arena.hpp>
 #include <TL/Allocator/MemPlumber.hpp>
 #include <TL/Serialization/Binary.hpp>
@@ -161,6 +175,7 @@ int main()
         arena.Collect();
     }
 
-    size_t leaksCount, leaksSize;
+    size_t leaksCount;
+    uint64_t leaksSize;
     TL::MemPlumber::memLeakCheck(leaksCount, leaksSize);
 }

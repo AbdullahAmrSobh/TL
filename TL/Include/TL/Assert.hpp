@@ -5,6 +5,9 @@
 
     #if defined(_WIN32)
         #define TL_DEBUG_BREAK() __debugbreak()
+    #elif defined(__EMSCRIPTEN__)
+        #include <emscripten.h>
+        #define TL_DEBUG_BREAK() emscripten_debugger()
     #else
         // #error "TL_DEBUG_BREAK not implemented for the current platform"
         #define TL_DEBUG_BREAK() __debugbreak()

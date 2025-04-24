@@ -45,11 +45,14 @@ target_compile_definitions(TL PUBLIC $<$<CONFIG:Debug>:TL_DEBUG>)
 target_include_directories(TL PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Include)
 target_include_directories(TL SYSTEM PUBLIC ${tracy_SOURCE_DIR}/public)
 
-target_link_libraries(TL PRIVATE mimalloc-static)
 target_link_libraries(TL PRIVATE spdlog)
+
 target_link_libraries(TL PUBLIC lz4)
+
 target_link_libraries(TL PUBLIC nlohmann_json::nlohmann_json)
-target_link_libraries(TL PRIVATE Dbghelp.lib)
-# target_link_libraries(TL PUBLIC )
-# target_link_libraries(TL PRIVATE fmt)
-# target_link_libraries(TL PRIVATE backward)
+
+target_link_libraries(TL PRIVATE mimalloc-static)
+
+if(NOT EMSCRIPTEN)
+    target_link_libraries(TL PRIVATE Dbghelp.lib)
+endif()

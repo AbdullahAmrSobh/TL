@@ -31,6 +31,16 @@ namespace TL
 
         TL_EXPORT void     Log(Stream& stream, Level level, const char* message);
 
+        inline static void Info(Stream& stream, const char* message)
+        {
+            Log(stream, Level::Debug, message);
+        }
+
+        inline static void Info(const char* message)
+        {
+            Log(GetStdCoutStream(), Level::Info, message);
+        }
+
         inline static void Debug(Stream& stream, const char* message)
         {
             Log(stream, Level::Debug, message);
@@ -53,16 +63,6 @@ namespace TL
         {
             std::string message = std::vformat(formatString, std::make_format_args(args...));
             Info(stream, message.c_str());
-        }
-
-        inline static void Info(Stream& stream, const char* message)
-        {
-            Log(stream, Level::Info, message);
-        }
-
-        inline static void Info(const char* message)
-        {
-            Info(GetStdCoutStream(), message);
         }
 
         template<typename... Args>

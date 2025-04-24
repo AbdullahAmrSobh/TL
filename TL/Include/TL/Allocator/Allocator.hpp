@@ -62,6 +62,10 @@ namespace TL
         template<typename T>
         void Destruct(T* object);
 
+        /// @fixme: make this pure function
+        virtual bool operator==( [[maybe_unused]] const IAllocator& other) const noexcept { return false; }
+        virtual bool operator!=( [[maybe_unused]] const IAllocator& other) const noexcept { return false; }
+
     protected:
         /// Internal implementation of allocation.
         virtual Block AllocateImpl(size_t size, size_t alignment) = 0;
