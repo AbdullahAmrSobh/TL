@@ -57,12 +57,12 @@ namespace TL
     /// @brief A templated structure that holds a result value and a corresponding result code.
     /// @tparam Value The type of the value.
     /// @tparam ResultCode The type of the result code (either an enum class or an Error object).
-    template<typename Value, typename ResultCode>
+    template<typename Value, typename ErrorType = Error>
     struct TL_NODISCARD Result
     {
         /// @brief Constructs a result with a result code and a default value.
         /// @param code The result code.
-        Result(ResultCode code)
+        Result(ErrorType code)
             : value()
             , result(code)
         {
@@ -72,27 +72,27 @@ namespace TL
         /// @param t The value to store.
         Result(Value t)
             : value(t)
-            , result(ResultCode(ResultCode::Success))
+            , result(ErrorType())
         {
         }
 
         /// @brief Constructs a result with both a value and a result code.
         /// @param t The value to store.
         /// @param code The result code.
-        Result(Value t, ResultCode code)
+        Result(Value t, ErrorType code)
             : value(t)
             , result(code)
         {
         }
 
         Value       value;  ///< The result value.
-        ResultCode  result; ///< The result code.
+        ErrorType   result; ///< The result code.
 
         /// @brief Checks if the result indicates success.
         /// @return true if the result is `ResultCode::Success`, false otherwise.
         inline bool IsSuccess() const
         {
-            if constexpr (std::is_enum_v<ResultCode>)
+            if constexpr (std::is_enum_v<ErrorType>)
             {
                 return IsSuccess(result);
             }
@@ -118,3 +118,35 @@ namespace TL
         }
     };
 } // namespace TL
+
+template<typename Expr, typename Err>
+inline static Err TL_ERR_FROM_EXPR(Expr);
+
+template<typename Expr, typename Err>
+inline static Err TL_ERR_FROM_EXPR(Expr);
+
+#define TL_TRY(expr)                                                                                                      \
+    {                                                                                                                     \
+        if (auto err = TL_ERR_FROM_EXPR(expr))                                                                            \
+        {                                                                                                                 \
+            /* need to add a cleanup mechanisim; e.g. call .Shutdown or iterate over all objects and call shutdown ... */ \
+            return err;                                                                                                   \
+        }                                                                                                                 \
+        else                                                                                                              \
+        {                                                                                                                 \
+            (void)expr;                                                                                                   \
+        }                                                                                                                 \
+    }
+
+#define TL_TRY_MSG(expr, ...)                  \
+    {                                          \
+        if (auto err = TL_ERR_FROM_EXPR(expr)) \
+        {                                      \
+            TL_LOG_ERROR(__VA_ARGS__)          \
+            return err;                        \
+        }                                      \
+        else                                   \
+        {                                      \
+            (void)expr;                        \
+        }                                      \
+    }

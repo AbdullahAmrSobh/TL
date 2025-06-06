@@ -1,17 +1,3 @@
-#include "mimalloc.h"
-
-extern "C" {
-
-void emmalloc_free(void* p) {
-    mi_free(p);
-}
-
-void* emmalloc_memalign(size_t alignment, size_t size) {
-    return mi_memalign(alignment, size);
-}
-
-} // extern "C"
-
 #include <TL/Allocator/Arena.hpp>
 #include <TL/Allocator/MemPlumber.hpp>
 #include <TL/Serialization/Binary.hpp>
@@ -46,15 +32,13 @@ struct Foo
 
 struct Foo2
 {
-    Foo2() = default;
+    Foo2()            = default;
     Foo2(const Foo2&) = delete;
-
 
     template<typename Archive>
     void Serialize(Archive& archive) const
     {
         TL::Encode(archive, val);
-
     }
 
     template<typename Archive>
@@ -62,17 +46,18 @@ struct Foo2
     {
         TL::Decode(archive, val);
     }
+
     int val;
 };
 
 struct Bar
 {
-    float f;
-    float b;
-    TL::String n;
+    float                           f;
+    float                           b;
+    TL::String                      n;
     TL::Map<TL::String, TL::String> names;
-    TL::Map<TL::String, Foo2> names2;
-    std::vector<Foo> foos;
+    TL::Map<TL::String, Foo2>       names2;
+    std::vector<Foo>                foos;
 
     template<typename Archive>
     void Serialize(Archive& archive) const
@@ -107,13 +92,13 @@ int main()
         TL_ASSERT(condition, "hello");
         TL_ASSERT(condition, "hello {}", condition);
 
-        [[maybe_unused]] auto _unusedBlock = TL::Allocator::Allocate(12, 1);
-        [[maybe_unused]] auto _unusedBlock2 = TL::Allocator::Allocate(12, 1);
+        TL_MAYBE_UNUSED auto _unusedBlock  = TL::Allocate(12, 1);
+        TL_MAYBE_UNUSED auto _unusedBlock2 = TL::Allocate(12, 1);
 
-        // TL::Allocator::Release(_unusedBlock, 1);
-        // TL::Allocator::Release(_unusedBlock2, 1);
+        TL::Release(_unusedBlock, 1);
+        TL::Release(_unusedBlock2, 1);
 
-        for (auto i : TL::Span<const int>{ 1, 2, 3, 4, 5, 6 })
+        for (auto i : TL::Span<const int>{1, 2, 3, 4, 5, 6})
         {
             TL_LOG_INFO("{}", i);
         }
@@ -123,28 +108,28 @@ int main()
         TL_LOG_WARNNING("Stack report: {}", TL::ReportStacktrace(stacktrace));
 
         Bar b;
-        b.f = 3.14f;
-        b.b = 2.16f;
-        b.n = "Hello-There";
+        b.f     = 3.14f;
+        b.b     = 2.16f;
+        b.n     = "Hello-There";
         b.names = {
-            { "Hello", "World" },
-            { "one", "1" },
-            { "two", "2" },
-            { "three", "3" },
-            { "four", "4" },
+            {"Hello", "World"},
+            {"one", "1"},
+            {"two", "2"},
+            {"three", "3"},
+            {"four", "4"},
         };
-        b.foos = { { 1, 2 }, { 2, 3 }, { 4, 5 } };
+        b.foos = {{1, 2}, {2, 3}, {4, 5}};
 
         {
-            std::fstream fileStream{ "Bar.bin", std::ios::binary | std::ios::out };
-            auto encoder = TL::BinaryArchive(fileStream);
+            std::fstream fileStream{"Bar.bin", std::ios::binary | std::ios::out};
+            auto         encoder = TL::BinaryArchive(fileStream);
             encoder.Encode(b);
         }
 
         Bar decoded{};
         {
-            std::fstream fileStream{ "Bar.bin", std::ios::binary | std::ios::in };
-            auto decoder = TL::BinaryArchive(fileStream);
+            std::fstream fileStream{"Bar.bin", std::ios::binary | std::ios::in};
+            auto         decoder = TL::BinaryArchive(fileStream);
             decoder.Decode(decoded);
         }
 
@@ -163,19 +148,15 @@ int main()
             float f[14];
         };
 
-        Foo* f = TL::Allocator::Allocate<Foo>(3);
+        Foo* f     = TL::Allocate<Foo>(3);
         f[0].f[13] = 1.0f;
         f[1].f[13] = 2.0f;
         f[2].f[13] = 3.0f;
-        TL::Allocator::Release(f, 3);
+        TL::Release(f, 3);
 
         TL::Arena arena = TL::Arena();
-        Foo* f2 = arena.Allocate<Foo>();
+        Foo*      f2    = arena.Allocate<Foo>();
 
         arena.Collect();
     }
-
-    size_t leaksCount;
-    uint64_t leaksSize;
-    TL::MemPlumber::memLeakCheck(leaksCount, leaksSize);
 }

@@ -60,7 +60,7 @@ namespace TL
             // if not started, allocate memory and exit
             if (!m_Started)
             {
-                return {mi_malloc_aligned(size, alignment), size};
+                return {mi_malloc(size), size};
             }
 
             // total memory to allocated is the requested size + metadata size
@@ -155,6 +155,8 @@ namespace TL
 
         void checkLeaks(size_t& memLeakCount, uint64_t& memLeakSize)
         {
+            mi_stats_print(nullptr);
+
             memLeakCount = 0;
             memLeakSize  = 0;
 
@@ -178,7 +180,7 @@ namespace TL
                     {
                         auto ptr = size_t((char*)metaDataBucketLinkedListElement + sizeof(new_ptr_list_t));
                         TL_LOG_INFO(
-                            "Leaked object at 0x{:0x} (size {}[bytes]):\n {}\n",
+                            "Leaked allocation at 0x{:0x} (size {}[bytes]):\n {}\n",
                             ptr,
                             metaDataBucketLinkedListElement->size,
                             ReportStacktrace(metaDataBucketLinkedListElement->stacktrace));

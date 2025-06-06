@@ -15,7 +15,7 @@ namespace TL
             if (ptr)
             {
                 ptr->~T();                  // Explicitly call the destructor
-                Allocator::Release(ptr, 1); // Use the allocator to release memory
+                Release(ptr, 1); // Use the allocator to release memory
             }
         }
     };
@@ -53,7 +53,7 @@ namespace TL
     inline constexpr Ptr<T> CreatePtr(Args&&... args)
     {
         // Allocate memory through Allocator
-        T* memory = Allocator::Allocate<T>(1);
+        T* memory = Allocate<T>(1);
         // Use placement new to construct the object in allocated memory
         new (memory) T(std::forward<Args>(args)...);
         // Return Ptr with custom deleter

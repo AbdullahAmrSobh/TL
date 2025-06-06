@@ -7,6 +7,8 @@ namespace TL
     class Mimalloc final : public IAllocator
     {
     private:
+        ~Mimalloc();
+
         Block AllocateImpl(size_t size, size_t alignment) override;
 
         void  ReleaseImpl(Block block, size_t alignment) override;

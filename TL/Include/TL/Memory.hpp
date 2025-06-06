@@ -12,7 +12,7 @@ namespace TL
     IAllocator* PopAllocator();
 
     // Get the current allocator at the top of the thread local allocators stack
-    IAllocator& GetCurrentAllocator();
+    IAllocator* GetCurrentAllocator();
 
     // Utility class to manage allocators within a scope (i.e. function)
     // It is invalid to use this as a member variable for a class or struct or etc

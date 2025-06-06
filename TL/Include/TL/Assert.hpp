@@ -59,4 +59,6 @@
 #endif
 
 // @todo: This macro definition is out of place, move from here
-#define TL_NODISCARD [[nodiscard]]
+#define TL_NODISCARD    [[nodiscard]]
+
+#define TL_MAYBE_UNUSED [[maybe_unused]]

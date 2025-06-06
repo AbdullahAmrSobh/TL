@@ -16,10 +16,13 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/UniquePtr.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Serialization/Binary.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Stacktrace.hpp
+
+    ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Context.hpp
+
+    ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Library.hpp
 )
 
 set(SOURCE_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Allocator/Allocator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/Allocator/Arena.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/Allocator/Mimalloc.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/Allocator/MemPlumber.cpp
@@ -28,6 +31,10 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/Serialization/Serialization.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/Serialization/Binary.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/Stacktrace.cpp
+
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Context.cpp
+
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Windows/Library.cpp
 
     ${tracy_SOURCE_DIR}/public/TracyClient.cpp
 )

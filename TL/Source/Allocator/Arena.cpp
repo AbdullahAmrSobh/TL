@@ -22,6 +22,7 @@ namespace TL
 
     void Arena::ReleaseImpl(Block block, size_t alignment)
     {
+        // no op
     }
 
     void Arena::Collect()
