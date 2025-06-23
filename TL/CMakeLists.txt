@@ -20,6 +20,8 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Context.hpp
 
     ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Library.hpp
+
+    ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/DynamicLibrary.hpp
 )
 
 set(SOURCE_FILES
@@ -35,6 +37,10 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/Context.cpp
 
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/Windows/Library.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Windows/File.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Windows/FileWatcher.cpp
+
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/DynamicLibrary.cpp
 
     ${tracy_SOURCE_DIR}/public/TracyClient.cpp
 )
