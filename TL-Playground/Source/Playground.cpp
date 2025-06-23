@@ -1,14 +1,48 @@
 #include <TL/Allocator/Arena.hpp>
 #include <TL/Allocator/MemPlumber.hpp>
+#include <TL/DynamicLibrary.hpp>
 #include <TL/Serialization/Binary.hpp>
 
 #include <TL/Serialization/Binary.hpp>
 #include <TL/Containers.hpp>
-#include <TL/FileSystem/FileSystem.hpp>
-#include <TL/Memory.hpp>
+#include <TL/FileSystem/File.hpp>
 #include <TL/Log.hpp>
 #include <TL/Assert.hpp>
 #include <TL/Stacktrace.hpp>
+#include <TL/FileSystem/FileWatcher.hpp>
+#include <thread>
+
+class FooLibrary final : public TL::LibraryWatcher
+{
+public:
+    FooLibrary()
+        : TL::LibraryWatcher("TL_Dll_Playground.dll")
+    {
+    }
+
+    ~FooLibrary()
+    {
+        TL_LOG_INFO("FooLibrary destroyed");
+    }
+
+    void onUpdate(TL::LibraryLoaderAction action, void* state) override
+    {
+        switch (action)
+        {
+        case TL::LibraryLoaderAction::Load:
+            TL_LOG_INFO("Library loaded");
+            break;
+        case TL::LibraryLoaderAction::Unload:
+            TL_LOG_INFO("Library unloaded");
+            break;
+        case TL::LibraryLoaderAction::Reload:
+            TL_LOG_INFO("Library reloaded");
+            break;
+        default:
+            break;
+        }
+    }
+};
 
 struct Foo
 {
@@ -158,5 +192,37 @@ int main()
         Foo*      f2    = arena.Allocate<Foo>();
 
         arena.Collect();
+
+        FooLibrary fooLib;
+        while (true)
+        {
+            fooLib.poll();
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        }
+
+
+        // TL::FileWatcher watcher;
+        // watcher.watch("I:/repos/TL/build/TL-Playground", TL::FileEventType::Modified, true);
+
+        // watcher.subscribe([](const TL::FileEvent& event)
+        // {
+        //     auto path = event.path;
+        //     auto type = event.type;
+        //     auto target = event.target;
+        //     auto oldPath = event.oldPath;
+        //     TL_LOG_INFO("File event, path {}, type {}, target {}, oldPath {}", path, (int)type, (int)target, oldPath);
+        // });
+
+        // TL::CodeGen::Builder builder{};
+        // auto typeI32 = builder.DeclareType(nullptr, builder.CreateId("I32"), TL::CodeGen::Type::Kind::I32);
+        // auto typeSceneView = builder.DeclareType(nullptr, builder.CreateId("SceneView"), TL::CodeGen::Type::Kind::Struct);
+        // builder.StructAddField(typeI32, builder.CreateId("foo"));
+        // TL_LOG_INFO("{}", builder.DumpCppCode());
+
+        // do
+        // {
+        //     watcher.poll();
+        // }
+        // while(true);
     }
 }

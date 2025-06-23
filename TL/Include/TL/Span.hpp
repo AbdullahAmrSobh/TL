@@ -128,7 +128,7 @@ namespace TL
             return m_data + m_count;
         }
 
-    private:
+    protected:
         Pointer  m_data;
         SizeType m_count;
     };

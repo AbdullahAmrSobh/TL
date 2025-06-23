@@ -30,9 +30,9 @@ namespace TL
 
         ContextStack()
         {
-            // #if TL_TRACK_LEAK_CALLSTACKS
+#if TL_TRACK_LEAK_CALLSTACKS
             s_DefaultAllocator.start();
-            // #endif
+#endif
         }
 
         ~ContextStack()
@@ -114,14 +114,14 @@ namespace TL
         Context::Get()->GetAllocator()->Release(block, alignment);
     }
 
-     void _OnAllocate(TL::Block block)
+    void _OnAllocate(TL::Block block)
     {
 #if TL_ENABLE_TRACY
         TracyAllocS(block.ptr, block.size, 20);
 #endif
     }
 
-     void _OnRelease(TL::Block block)
+    void _OnRelease(TL::Block block)
     {
 #if TL_ENABLE_TRACY
         TracyFreeS(block.ptr, 20);

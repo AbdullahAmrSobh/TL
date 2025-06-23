@@ -11,3 +11,10 @@ tl_add_target(
 
 target_link_libraries(TL_Playground PUBLIC TL)
 target_include_directories(TL_Playground PUBLIC ${taskflow_SOURCE_DIR})
+
+tl_add_target(
+    NAME TL_DLL_Playground
+    SHARED
+    SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/Source/Dll-Playground.cpp
+)
+target_link_libraries(TL_DLL_Playground PUBLIC TL)

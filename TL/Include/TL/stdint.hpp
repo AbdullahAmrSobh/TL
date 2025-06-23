@@ -12,9 +12,6 @@ using I8     = int8_t;
 using I16    = int16_t;
 using I32    = int32_t;
 using I64    = int64_t;
-using F32    = float;
-using F64    = double;
-// using size_t = size_t;
 
 static constexpr U8 U8Max = std::numeric_limits<U8>::max();
 static constexpr U8 U8Min = std::numeric_limits<U8>::min();
@@ -40,13 +37,3 @@ static constexpr I32 I32Min = std::numeric_limits<I32>::min();
 
 static constexpr I64 I64Max = std::numeric_limits<I64>::max();
 static constexpr I64 I64Min = std::numeric_limits<I64>::min();
-
-static constexpr F32 F32Max = std::numeric_limits<F32>::max();
-static constexpr F32 F32Min = std::numeric_limits<F32>::min();
-static constexpr F32 F32Infinite = std::numeric_limits<F32>::infinity();
-static constexpr F32 F32NaN = std::numeric_limits<F32>::quiet_NaN();
-
-static constexpr F64 F64Max = std::numeric_limits<F64>::max();
-static constexpr F64 F64Min = std::numeric_limits<F64>::min();
-static constexpr F64 F64Infinite = std::numeric_limits<F64>::infinity();
-static constexpr F64 F64NaN = std::numeric_limits<F32>::quiet_NaN();
