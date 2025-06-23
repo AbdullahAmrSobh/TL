@@ -118,8 +118,6 @@ struct Bar
 
 int main()
 {
-    TL::MemPlumber::start();
-
     {
         bool condition = true;
         TL_ASSERT(condition);
@@ -186,19 +184,19 @@ int main()
         f[0].f[13] = 1.0f;
         f[1].f[13] = 2.0f;
         f[2].f[13] = 3.0f;
-        TL::Release(f, 3);
+        // TL::Release(f, 3);
 
         TL::Arena arena = TL::Arena();
-        Foo*      f2    = arena.Allocate<Foo>();
+        Foo*      f2    = TL::Allocate<Foo>(&arena);
 
         arena.Collect();
 
-        FooLibrary fooLib;
-        while (true)
-        {
-            fooLib.poll();
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-        }
+        // FooLibrary fooLib;
+        // while (true)
+        // {
+        //     fooLib.poll();
+        //     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        // }
 
 
         // TL::FileWatcher watcher;

@@ -1,16 +1,10 @@
 #include <cstdlib>
 #include <stdint.h>
 #include <stdio.h>
-#include <string.h>
-
-#include "TL/Log.hpp"
-#include "TL/Log.hpp"
 
 #include <TL/Stacktrace.hpp>
-#include "Tl/Allocator/Allocator.hpp"
 #include "Tl/Allocator/MemPlumber.hpp"
-
-#include <mimalloc.h>
+#include "Tl/Allocator/Mimalloc.hpp"
 
 #ifndef MEMPLUMBER_HASHTABLE_SIZE
     #define MEMPLUMBER_HASHTABLE_SIZE 16384
@@ -22,8 +16,10 @@
 
 namespace TL
 {
-    class MemPlumberImpl final : public IAllocator
+    class MemPlumberImpl
     {
+        Mimalloc m_allocator;
+
     private:
         struct new_ptr_list_t
         {
@@ -39,13 +35,18 @@ namespace TL
         // private c'tor
         MemPlumberImpl()
         {
-            m_Started = false;
+            m_Started = true;
 
             // zero the hashtables
             for (int i = 0; i < MEMPLUMBER_HASHTABLE_SIZE; i++)
             {
                 m_PointerListHashtable[i] = NULL;
             }
+        }
+
+        ~MemPlumberImpl()
+        {
+            m_Started = false;
         }
 
     public:
@@ -55,19 +56,21 @@ namespace TL
             return instance;
         }
 
-        Block AllocateImpl(size_t size, [[maybe_unused]] size_t alignment) override
+        Block allocate(size_t size, [[maybe_unused]] size_t alignment)
         {
+            alignment = std::max(alignment, alignof(new_ptr_list_t));
             // if not started, allocate memory and exit
             if (!m_Started)
             {
-                return {mi_malloc(size), size};
+                return m_allocator.Allocate(size, alignment);
             }
 
             // total memory to allocated is the requested size + metadata size
-            size_t totalSizeToAllocate = size + sizeof(new_ptr_list_t);
+            size_t          totalSizeToAllocate = size + sizeof(new_ptr_list_t);
 
             // allocated memory
-            new_ptr_list_t* pointerMetaDataRecord = (new_ptr_list_t*)mi_malloc(totalSizeToAllocate);
+            void*           rawMem                = m_allocator.Allocate(totalSizeToAllocate, alignof(new_ptr_list_t)).ptr;
+            new_ptr_list_t* pointerMetaDataRecord = static_cast<new_ptr_list_t*>(rawMem);
             memset(pointerMetaDataRecord, 0, sizeof(new_ptr_list_t));
 
             // if cannot allocate, return NULL
@@ -75,7 +78,7 @@ namespace TL
                 return {};
 
             // calculate the actual pointer to provide to the user
-            void*  actualPointer = (char*)pointerMetaDataRecord + sizeof(new_ptr_list_t);
+            void*  actualPointer = static_cast<char*>(rawMem) + sizeof(new_ptr_list_t);
 
             // find the hash index for this pointer
             size_t hashIndex = MEMPLUMBER_HASH(actualPointer);
@@ -93,8 +96,10 @@ namespace TL
             return {actualPointer, size};
         }
 
-        void ReleaseImpl(Block block, [[maybe_unused]] size_t alignment) override
+        void release(Block block, [[maybe_unused]] size_t alignment)
         {
+            alignment = std::max(alignment, alignof(new_ptr_list_t));
+
             if (block.ptr == NULL)
             {
                 return;
@@ -132,33 +137,22 @@ namespace TL
                     }
 
                     // free the memory of the current item
-                    mi_free(metaDataBucketLinkedListElement);
+                    m_allocator.Release({metaDataBucketLinkedListElement, metaDataBucketLinkedListElement->size + sizeof(new_ptr_list_t)}, alignment);
 
                     return;
                 }
             }
 
             // if got to here it means memory was allocated before monitoring started. Simply free the memory and return
+            TL_DEBUG_BREAK();
 
-            mi_free(block.ptr);
+            m_allocator.Release(block, alignment);
         }
 
-        void start()
+        void checkLeaks()
         {
-            m_Started = true;
-        }
-
-        void stop()
-        {
-            m_Started = false;
-        }
-
-        void checkLeaks(size_t& memLeakCount, uint64_t& memLeakSize)
-        {
-            mi_stats_print(nullptr);
-
-            memLeakCount = 0;
-            memLeakSize  = 0;
+            uint64_t memLeakCount = 0;
+            uint64_t memLeakSize  = 0;
 
             // go over all buckets in the hashmap
             for (int index = 0; index < MEMPLUMBER_HASHTABLE_SIZE; ++index)
@@ -179,11 +173,11 @@ namespace TL
 
                     {
                         auto ptr = size_t((char*)metaDataBucketLinkedListElement + sizeof(new_ptr_list_t));
-                        TL_LOG_INFO(
-                            "Leaked allocation at 0x{:0x} (size {}[bytes]):\n {}\n",
+                        printf(
+                            "Leaked allocation at 0x%zx (size %zu [bytes]):\n%s\n",
                             ptr,
                             metaDataBucketLinkedListElement->size,
-                            ReportStacktrace(metaDataBucketLinkedListElement->stacktrace));
+                            ReportStacktrace(metaDataBucketLinkedListElement->stacktrace).c_str());
                     }
 
                     // go to the next item on the list
@@ -193,28 +187,39 @@ namespace TL
         }
     };
 
-    void MemPlumber::start()
+    MemPlumber::MemPlumber()
     {
-        MemPlumberImpl::getInstance().start();
     }
 
-    void MemPlumber::stop()
+    MemPlumber::~MemPlumber()
     {
-        MemPlumberImpl::getInstance().stop();
-    }
-
-    void MemPlumber::memLeakCheck(size_t& memLeakCount, uint64_t& memLeakSize)
-    {
-        MemPlumberImpl::getInstance().checkLeaks(memLeakCount, memLeakSize);
+        MemPlumberImpl::getInstance().checkLeaks();
     }
 
     Block MemPlumber::AllocateImpl(size_t size, size_t alignment)
     {
-        return MemPlumberImpl::getInstance().AllocateImpl(size, alignment);
+        return MemPlumberImpl::getInstance().allocate(size, alignment);
+    }
+
+    Block MemPlumber::ReallocateImpl(Block block, size_t newSize, size_t alignment)
+    {
+        // Simple implementation: allocate new, copy, release old
+        // TODO: Implement real real realloc
+        if (block.ptr == nullptr)
+            return AllocateImpl(newSize, alignment);
+
+        Block newBlock = AllocateImpl(newSize, alignment);
+        if (newBlock.ptr && block.ptr)
+        {
+            size_t copySize = (block.size < newSize) ? block.size : newSize;
+            memcpy(newBlock.ptr, block.ptr, copySize);
+            ReleaseImpl(block, alignment);
+        }
+        return newBlock;
     }
 
     void MemPlumber::ReleaseImpl(Block block, size_t alignment)
     {
-        return MemPlumberImpl::getInstance().ReleaseImpl(block, alignment);
+        MemPlumberImpl::getInstance().release(block, alignment);
     }
 } // namespace TL

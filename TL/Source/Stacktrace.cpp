@@ -1,101 +1,43 @@
-#include "TL/Stacktrace.hpp"
-#if _WIN32
-    #include <Windows.h>
-    #include <DbgHelp.h>
-#endif
-
 #include <format>
+#include <stacktrace>
 #include <string>
 #include <vector>
 
+#include "TL/Stacktrace.hpp"
+
 namespace TL
 {
-#if _WIN32
-    static bool InitializeSymbolHandler()
-    {
-        if (!::SymInitialize(::GetCurrentProcess(), nullptr, TRUE))
-        {
-            // Consider logging or handling error
-            return false;
-        }
-        return true;
-    }
-#endif
-
     Stacktrace CaptureStacktrace(uint32_t skipFramesCount)
     {
-#if _WIN32
-        Stacktrace stacktrace;
-        if (!InitializeSymbolHandler())
+        // Capture the current stacktrace, skipping the requested number of frames + this function
+        std::stacktrace st = std::stacktrace::current(skipFramesCount + 1);
+        Stacktrace      result{};
+        for (size_t i = 0; i < st.size(); ++i)
         {
-            // Handle initialization failure
-            return stacktrace; // Return an empty stacktrace or handle it as needed
+            if (st[i])
+                result[i] = st[i];
+            else
+                result[i] = {};
         }
-        ::CaptureStackBackTrace(skipFramesCount, TL_STACKTRACE_DEPTH, stacktrace.data(), nullptr);
-        return stacktrace;
-#else
-    #warning "This function is not implemented for the target platform"
-#endif
+        return result;
     }
 
     std::string ReportStacktrace(const Stacktrace& stacktrace)
     {
-        std::string message;
-        message.reserve(1024); // Reserve space to avoid multiple allocations
-
-        message.append("Stacktrace Report\n");
-
-        for (void* address : stacktrace)
+        std::string report;
+        uint32_t    i = 0;
+        for (const auto& e : stacktrace)
         {
-            if (address == nullptr)
-            {
+            if (!e)
                 break;
-            }
 
-            std::string symbolName        = GetSymbolName(address);
-            std::string symbolFileAndLine = GetSymbolFileAndLine(address);
-
-            message.append(std::format("\t{} {} \"{}\"\n", address, symbolName, symbolFileAndLine));
+            report += std::format("#{} {} [{}:{}]\n",
+                                  i++,
+                                  e.description(),
+                                  e.source_file(),
+                                  e.source_line());
         }
-
-        return message;
-    }
-
-    std::string GetSymbolName(void* address)
-    {
-#if _WIN32
-        constexpr size_t  MAX_NAME_LENGTH = 256;
-        std::vector<char> symbolBuffer(sizeof(SYMBOL_INFO) + MAX_NAME_LENGTH - 1);
-        SYMBOL_INFO*      symbol = reinterpret_cast<SYMBOL_INFO*>(symbolBuffer.data());
-        symbol->SizeOfStruct     = sizeof(SYMBOL_INFO);
-        symbol->MaxNameLen       = MAX_NAME_LENGTH;
-
-        DWORD64 displacement = 0;
-        if (::SymFromAddr(::GetCurrentProcess(), reinterpret_cast<DWORD64>(address), &displacement, symbol))
-        {
-            return symbol->Name;
-        }
-        return "Unknown Symbol";
-#else
-    #warning "This function is not implemented for the target platform"
-#endif
-    }
-
-    std::string GetSymbolFileAndLine(void* address)
-    {
-#if _WIN32
-        IMAGEHLP_LINE64 lineInfo;
-        lineInfo.SizeOfStruct = sizeof(IMAGEHLP_LINE64);
-        DWORD displacement    = 0;
-
-        if (::SymGetLineFromAddr64(::GetCurrentProcess(), reinterpret_cast<DWORD64>(address), &displacement, &lineInfo))
-        {
-            return std::format("{}:{}", lineInfo.FileName, lineInfo.LineNumber);
-        }
-        return "Unknown Line Info";
-#else
-    #warning "This function is not implemented for the target platform"
-#endif
+        return report;
     }
 
 } // namespace TL

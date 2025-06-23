@@ -57,7 +57,7 @@ namespace TL
         {
             if constexpr (std::is_same_v<AllocatorType, IAllocator>)
             {
-                return m_allocator->template Allocate<T>(n);
+                return Allocate<T>(m_allocator, n);
             }
             else
             {
@@ -70,7 +70,7 @@ namespace TL
         {
             if constexpr (std::is_same_v<AllocatorType, IAllocator>)
             {
-                m_allocator->Release(ptr, n);
+                Release<T>(m_allocator, ptr, n);
             }
             else
             {
@@ -85,10 +85,16 @@ namespace TL
         };
 
         template<typename OtherAllocType>
-        bool operator==(const OtherAllocType&) const noexcept { return false; }
+        bool operator==(const OtherAllocType&) const noexcept
+        {
+            return false;
+        }
 
         template<typename OtherAllocType>
-        bool operator!=(const OtherAllocType&) const noexcept { return true; }
+        bool operator!=(const OtherAllocType&) const noexcept
+        {
+            return true;
+        }
 
         AllocatorType* m_allocator = TL::Context::Get()->GetAllocator();
     };

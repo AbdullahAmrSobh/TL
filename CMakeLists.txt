@@ -22,33 +22,48 @@ project(
 )
 
 # Set C++ standard and extensions
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
 
 if(EMSCRIPTEN)
     set(CMAKE_EXECUTABLE_SUFFIX ".html")
 endif()
 
-
 # Enable developer mode
 set(TL_DEVELOPER_MODE ${PROJECT_IS_TOP_LEVEL})
 
-option(TL_ENABLE_TRACY "Enable Tracy profiler" ${PROJECT_IS_TOP_LEVEL})
 option(TL_BUILD_TESTS "Enable Tests" ${PROJECT_IS_TOP_LEVEL})
-option(TL_TRACK_LEAKS "Enable MemPlumber" ${PROJECT_IS_TOP_LEVEL})
-option(TL_ENABLE_TRACY_MEMORY_TRACKING "Enable Tracy memory tracking (slows down application)" ${PROJECT_IS_TOP_LEVEL})
-if(TL_ENABLE_TRACY_MEMORY_TRACKING)
-    add_compile_definitions(TL_ENABLE_TRACY_MEMORY_TRACKING)
-endif()
 
+# ==== Options ====
+option(TL_ENABLE_TRACY "Enable Tracy profiler" ON)
+option(TL_TRACY_MEMORY_PROFILING "Enable Tracy memory profiling" ON)
+option(TL_TRACK_ALLOCATION_SIZES "Enable collecting global allocation sizes, and report on exit" ON)
+option(TL_TRACK_ALLOCATION_CALLSTACKS "Enable collecting global allocation callstacks and report on exit (SLOW!)" OFF)
+
+# ==== Tracy Profiling ====
 if(TL_ENABLE_TRACY)
+    add_compile_definitions(TRACY_ENABLE)
     add_compile_definitions(TL_ENABLE_TRACY)
 endif()
 
-if (TL_TRACK_LEAKS)
-    add_compile_definitions(TL_TRACK_LEAKS)
+if(TL_TRACY_MEMORY_PROFILING)
+    if(NOT TL_ENABLE_TRACY)
+        message(WARNING "TL_TRACY_MEMORY_PROFILING requires TL_ENABLE_TRACY to be ON.")
+    else()
+        add_compile_definitions(TL_TRACY_MEMORY_PROFILING)
+    endif()
+endif()
+
+# ==== Allocation Tracking ====
+if(TL_TRACK_ALLOCATION_SIZES AND TL_TRACK_ALLOCATION_CALLSTACKS)
+    message(WARNING "TL_TRACK_ALLOCATION_CALLSTACKS overrides TL_TRACK_ALLOCATION_SIZES. Only callstack tracking will be enabled.")
+endif()
+
+if(TL_TRACK_ALLOCATION_CALLSTACKS)
+    add_compile_definitions(TL_TRACK_ALLOCATION_CALLSTACKS)
+elseif(TL_TRACK_ALLOCATION_SIZES)
+    add_compile_definitions(TL_TRACK_ALLOCATION_SIZES)
 endif()
 
 # ---- Add dependencies ----

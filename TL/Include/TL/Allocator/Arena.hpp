@@ -12,13 +12,12 @@ namespace TL
         ~Arena();
 
         void Collect();
-
         bool CheckOwned(const void* ptr);
 
     private:
         Block AllocateImpl(size_t size, size_t alignment) override;
-
-        void ReleaseImpl(Block block, size_t alignment) override;
+        Block ReallocateImpl(Block block, size_t newSize, size_t alignment) override;
+        void  ReleaseImpl(Block block, size_t alignment) override;
 
     private:
         void* m_arena;

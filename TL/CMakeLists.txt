@@ -7,7 +7,6 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Allocator/Arena.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Allocator/Mimalloc.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Allocator/MemPlumber.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Memory.hpp
 
     ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Flags.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Log.hpp
