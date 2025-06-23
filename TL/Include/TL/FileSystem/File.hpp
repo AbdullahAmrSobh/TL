@@ -1,0 +1,42 @@
+#pragma once
+
+#include "TL/String.hpp"
+#include "TL/Stream.hpp"
+
+namespace TL
+{
+    enum class IOMode
+    {
+        Read,
+        Write,
+        Append,
+        Overwrite,
+    };
+
+    class File final : public IStream
+    {
+    public:
+        File();
+        File(StringView path, IOMode mode);
+        ~File();
+
+        IOResultCode open(StringView path, IOMode mode);
+
+        void         close();
+
+        size_t       size() const override;
+
+        size_t       position() const override;
+
+        IOResult     read(Block block, uint64_t offset = 0) override;
+
+        IOResult     read(String string, uint64_t offset = 0) override;
+
+        IOResult     write(Block block, uint64_t offset = 0) override;
+
+        IOResult     write(String string, uint64_t offset = 0) override;
+
+    private:
+        void* m_handle = nullptr;
+    };
+} // namespace TL
