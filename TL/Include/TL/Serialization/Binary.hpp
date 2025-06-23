@@ -89,65 +89,65 @@ namespace TL
 
     inline static void Decode(BinaryArchive& archive, Block block) { archive.StreamRead(block); }
 
-    inline static void Encode(BinaryArchive& archive, bool value) { archive.StreamWrite(Block::Create(value)); }
+    inline static void Encode(BinaryArchive& archive, bool value) { archive.StreamWrite(Block::create(value)); }
 
-    inline static void Decode(BinaryArchive& archive, bool& value) { archive.StreamRead(Block::Create(value)); }
+    inline static void Decode(BinaryArchive& archive, bool& value) { archive.StreamRead(Block::create(value)); }
 
-    inline static void Encode(BinaryArchive& archive, char value) { archive.StreamWrite(Block::Create(value)); }
+    inline static void Encode(BinaryArchive& archive, char value) { archive.StreamWrite(Block::create(value)); }
 
-    inline static void Decode(BinaryArchive& archive, char& value) { archive.StreamRead(Block::Create(value)); }
+    inline static void Decode(BinaryArchive& archive, char& value) { archive.StreamRead(Block::create(value)); }
 
-    inline static void Encode(BinaryArchive& archive, uint8_t value) { archive.StreamWrite(Block::Create(value)); }
+    inline static void Encode(BinaryArchive& archive, uint8_t value) { archive.StreamWrite(Block::create(value)); }
 
-    inline static void Decode(BinaryArchive& archive, uint8_t& value) { archive.StreamRead(Block::Create(value)); }
+    inline static void Decode(BinaryArchive& archive, uint8_t& value) { archive.StreamRead(Block::create(value)); }
 
-    inline static void Encode(BinaryArchive& archive, uint16_t value) { archive.StreamWrite(Block::Create(value)); }
+    inline static void Encode(BinaryArchive& archive, uint16_t value) { archive.StreamWrite(Block::create(value)); }
 
-    inline static void Decode(BinaryArchive& archive, uint16_t& value) { archive.StreamRead(Block::Create(value)); }
+    inline static void Decode(BinaryArchive& archive, uint16_t& value) { archive.StreamRead(Block::create(value)); }
 
-    inline static void Encode(BinaryArchive& archive, uint32_t value) { archive.StreamWrite(Block::Create(value)); }
+    inline static void Encode(BinaryArchive& archive, uint32_t value) { archive.StreamWrite(Block::create(value)); }
 
-    inline static void Decode(BinaryArchive& archive, uint32_t& value) { archive.StreamRead(Block::Create(value)); }
+    inline static void Decode(BinaryArchive& archive, uint32_t& value) { archive.StreamRead(Block::create(value)); }
 
-    inline static void Encode(BinaryArchive& archive, uint64_t value) { archive.StreamWrite(Block::Create(value)); }
+    inline static void Encode(BinaryArchive& archive, uint64_t value) { archive.StreamWrite(Block::create(value)); }
 
-    inline static void Decode(BinaryArchive& archive, uint64_t& value) { archive.StreamRead(Block::Create(value)); }
+    inline static void Decode(BinaryArchive& archive, uint64_t& value) { archive.StreamRead(Block::create(value)); }
 
-    inline static void Encode(BinaryArchive& archive, int8_t value) { archive.StreamWrite(Block::Create(value)); }
+    inline static void Encode(BinaryArchive& archive, int8_t value) { archive.StreamWrite(Block::create(value)); }
 
-    inline static void Decode(BinaryArchive& archive, int8_t& value) { archive.StreamRead(Block::Create(value)); }
+    inline static void Decode(BinaryArchive& archive, int8_t& value) { archive.StreamRead(Block::create(value)); }
 
-    inline static void Encode(BinaryArchive& archive, int16_t value) { archive.StreamWrite(Block::Create(value)); }
+    inline static void Encode(BinaryArchive& archive, int16_t value) { archive.StreamWrite(Block::create(value)); }
 
-    inline static void Decode(BinaryArchive& archive, int16_t& value) { archive.StreamRead(Block::Create(value)); }
+    inline static void Decode(BinaryArchive& archive, int16_t& value) { archive.StreamRead(Block::create(value)); }
 
-    inline static void Encode(BinaryArchive& archive, int32_t value) { archive.StreamWrite(Block::Create(value)); }
+    inline static void Encode(BinaryArchive& archive, int32_t value) { archive.StreamWrite(Block::create(value)); }
 
-    inline static void Decode(BinaryArchive& archive, int32_t& value) { archive.StreamRead(Block::Create(value)); }
+    inline static void Decode(BinaryArchive& archive, int32_t& value) { archive.StreamRead(Block::create(value)); }
 
-    inline static void Encode(BinaryArchive& archive, int64_t value) { archive.StreamWrite(Block::Create(value)); }
+    inline static void Encode(BinaryArchive& archive, int64_t value) { archive.StreamWrite(Block::create(value)); }
 
-    inline static void Decode(BinaryArchive& archive, int64_t& value) { archive.StreamRead(Block::Create(value)); }
+    inline static void Decode(BinaryArchive& archive, int64_t& value) { archive.StreamRead(Block::create(value)); }
 
-    inline static void Encode(BinaryArchive& archive, float value) { archive.StreamWrite(Block::Create(value)); }
+    inline static void Encode(BinaryArchive& archive, float value) { archive.StreamWrite(Block::create(value)); }
 
-    inline static void Decode(BinaryArchive& archive, float& value) { archive.StreamRead(Block::Create(value)); }
+    inline static void Decode(BinaryArchive& archive, float& value) { archive.StreamRead(Block::create(value)); }
 
-    inline static void Encode(BinaryArchive& archive, double value) { archive.StreamWrite(Block::Create(value)); }
+    inline static void Encode(BinaryArchive& archive, double value) { archive.StreamWrite(Block::create(value)); }
 
-    inline static void Decode(BinaryArchive& archive, double& value) { archive.StreamRead(Block::Create(value)); }
+    inline static void Decode(BinaryArchive& archive, double& value) { archive.StreamRead(Block::create(value)); }
 
     // for 32 builds (wasm)
-    inline static void Encode(BinaryArchive& archive, unsigned long value) { archive.StreamWrite(Block::Create(value)); }
+    inline static void Encode(BinaryArchive& archive, unsigned long value) { archive.StreamWrite(Block::create(value)); }
 
-    inline static void Decode(BinaryArchive& archive, unsigned long& value) { archive.StreamRead(Block::Create(value)); }
+    inline static void Decode(BinaryArchive& archive, unsigned long& value) { archive.StreamRead(Block::create(value)); }
 
 
     template<typename T>
         requires std::is_enum_v<T>
     inline static void Encode(BinaryArchive& archive, T value)
     {
-        archive.StreamWrite(Block::Create(static_cast<std::underlying_type_t<T>>(value)));
+        archive.StreamWrite(Block::create(static_cast<std::underlying_type_t<T>>(value)));
     }
 
     template<typename T>
@@ -155,7 +155,7 @@ namespace TL
     inline static void Decode(BinaryArchive& archive, T& value)
     {
         std::underlying_type_t<T> temp;
-        archive.StreamRead(Block::Create(temp));
+        archive.StreamRead(Block::create(temp));
         value = static_cast<T>(temp);
     }
 
