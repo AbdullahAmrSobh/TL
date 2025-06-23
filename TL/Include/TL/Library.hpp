@@ -14,6 +14,7 @@ namespace TL
     {
     public:
         static Result<Library> Open(const char* path, LibraryOpenFlags flags = LibraryOpenFlags::None);
+
         static void            Close(Library library);
 
         void*                  GetProc(const char* procName);

@@ -1,6 +1,6 @@
 #include "TL/Library.hpp"
 
-#include <Windows.h>
+#include "WindowsCommon.inl"
 
 namespace TL
 {
@@ -10,6 +10,9 @@ namespace TL
         library.m_impl = LoadLibraryEx(path, nullptr, 0);
         if (library.m_impl == nullptr)
         {
+            LoglastError();
+            return Error(std::format("Failed to open library at '{}': {}", path, ::GetLastError()));
+
         }
         return library;
     }
@@ -22,6 +25,14 @@ namespace TL
     void* Library::GetProc(const char* procName)
     {
         auto ptr = (void*)GetProcAddress((HMODULE)m_impl, procName);
+
+        if (ptr == nullptr)
+        {
+            LoglastError();
+
+            return nullptr;
+        }
+
         return ptr;
     }
 } // namespace TL
