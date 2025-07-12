@@ -2,6 +2,7 @@
 
 #include "TL/Block.hpp"
 #include "TL/Serialization/SerializeTraits.hpp"
+#include "TL/Flags.hpp"
 
 #include <vector>
 #include <unordered_map>
@@ -142,7 +143,6 @@ namespace TL
 
     inline static void Decode(BinaryArchive& archive, unsigned long& value) { archive.StreamRead(Block::create(value)); }
 
-
     template<typename T>
         requires std::is_enum_v<T>
     inline static void Encode(BinaryArchive& archive, T value)
@@ -279,5 +279,20 @@ namespace TL
         std::string pathStr;
         Decode(archive, pathStr);
         path = std::filesystem::path(pathStr);
+    }
+
+    template<typename T>
+    inline static void Encode(BinaryArchive& archive, TL::Flags<T> flags)
+    {
+        Encode(archive, (TL::Flags<T>::MaskType)(flags));
+    }
+
+    template<typename T>
+    inline static void Decode(BinaryArchive& archive, TL::Flags<T>& flags)
+    {
+        using UnderlyingType = typename TL::Flags<T>::MaskType;
+        UnderlyingType value = flags;
+        Decode(archive, value);
+        flags = value;
     }
 } // namespace TL
