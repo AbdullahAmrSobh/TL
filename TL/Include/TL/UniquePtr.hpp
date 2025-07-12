@@ -16,6 +16,10 @@ namespace TL
     template<typename T>
     using SharedRef = std::shared_ptr<T>;
 
+
+    template<typename T>
+    using Ref = std::shared_ptr<T>;
+
     template<typename T>
     using WeakRef = std::weak_ptr<T>;
 
@@ -24,6 +28,14 @@ namespace TL
     {
         return std::make_unique<T, Args...>(std::forward<Args>(args)...);
     }
+
+
+    template<class T, class... Args>
+    inline constexpr Ref<T> CreateRef(Args... args)
+    {
+        return std::make_shared<T, Args...>(std::forward<Args>(args)...);
+    }
+
 
     template<typename T, typename U, typename... Args>
     inline constexpr T* EmplacePtr(TL::Vector<Ptr<U>>& container, Args... args)

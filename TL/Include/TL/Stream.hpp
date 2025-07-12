@@ -24,7 +24,7 @@ namespace TL
 
         virtual IOResult read(Block block, uint64_t offset = 0) = 0;
 
-        virtual IOResult read(String string, uint64_t offset = 0) = 0;
+        virtual IOResult read(String& string, uint64_t offset = 0) = 0;
 
         virtual IOResult write(Block block, uint64_t offset = 0) = 0;
 

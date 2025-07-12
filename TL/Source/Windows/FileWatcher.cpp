@@ -25,7 +25,8 @@ namespace TL
         {
             HANDLE                   dirHandle  = INVALID_HANDLE_VALUE;
             OVERLAPPED               overlapped = {};
-            std::vector<char>        buffer;
+            size_t                   size;
+            uint8_t                  buffer[256];
             TL::String               path;
             TL::Flags<FileEventType> flags;
             bool                     watchSubtree = false;
@@ -91,10 +92,9 @@ namespace TL
         handle->path         = path.data();
         handle->flags        = eventTypes;
         handle->watchSubtree = watchSubtree;
-        handle->buffer.resize(64 * 1024);
 
         auto absolutePath = std::filesystem::absolute(path.data());
-        handle->dirHandle = CreateFileW(
+        handle->dirHandle = ::CreateFileW(
             absolutePath.c_str(),
             FILE_LIST_DIRECTORY,
             FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
@@ -119,19 +119,16 @@ namespace TL
             {
                 DWORD bytesReturned = 0;
                 memset(&h->overlapped, 0, sizeof(OVERLAPPED));
-                BOOL ok = ReadDirectoryChangesW(
+                BOOL success = ::ReadDirectoryChangesW(
                     h->dirHandle,
-                    h->buffer.data(),
-                    (DWORD)h->buffer.size(),
-                    h->watchSubtree,
-                    FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_DIR_NAME |
-                        FILE_NOTIFY_CHANGE_ATTRIBUTES | FILE_NOTIFY_CHANGE_SIZE |
-                        FILE_NOTIFY_CHANGE_LAST_WRITE | FILE_NOTIFY_CHANGE_CREATION,
-                    &bytesReturned,
+                    h->buffer,
+                    sizeof(h->buffer),
+                    TRUE,
+                    FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_DIR_NAME | FILE_NOTIFY_CHANGE_LAST_WRITE,
+                    nullptr,
                     &h->overlapped,
                     nullptr);
-
-                if (!ok && GetLastError() != ERROR_IO_PENDING)
+                if (!success && GetLastError() != ERROR_IO_PENDING)
                 {
                     // LoglastError();
                     continue;
@@ -145,31 +142,37 @@ namespace TL
                 if (!GetOverlappedResult(h->dirHandle, &h->overlapped, &bytes, TRUE))
                     continue;
 
-                char* ptr = h->buffer.data();
                 while (bytes > 0)
                 {
-                    auto*         info = reinterpret_cast<FILE_NOTIFY_INFORMATION*>(ptr);
+                    auto* info = reinterpret_cast<FILE_NOTIFY_INFORMATION*>(h->buffer);
                     FileEventType type = mapActionToEvent(info->Action);
+                    // switch ()
+                    // {
+
+                    // }
                     if (h->flags & type)
                     {
                         FileEvent event;
-                        event.type = type;
+                        event.type                     = type;
                         std::filesystem::path basePath = h->path;
-                        std::wstring fileName(info->FileName, info->FileNameLength / sizeof(WCHAR));
+                        std::wstring          fileName(info->FileName, info->FileNameLength / sizeof(WCHAR));
                         std::filesystem::path fullPath = basePath / fileName;
-                        event.path = TL::String(fullPath.string().c_str());
+                        event.path                     = TL::String(fullPath.string().c_str());
                         broadcast(event);
                     }
                     if (info->NextEntryOffset == 0)
                         break;
-                    ptr += info->NextEntryOffset;
+                    // ptr += info->NextEntryOffset;
+                    h->size = bytes;
                     bytes -= info->NextEntryOffset;
                 }
             }
         };
 
+        static std::thread t(watchThread);
+
         m_impl->watchList[TL::String(path.data(), path.size())] = std::move(handle);
-        m_impl->watchList[path.data()] = std::move(handle);
+        m_impl->watchList[path.data()]                          = std::move(handle);
     }
 
     void FileWatcher::unwatch(StringView path)

@@ -96,7 +96,7 @@ namespace TL
         return static_cast<size_t>(bytesRead);
     }
 
-    IOResult File::read(String string, uint64_t offset)
+    IOResult File::read(String& string, uint64_t offset)
     {
         if (string.empty())
             return 0;
@@ -108,7 +108,7 @@ namespace TL
         DWORD bytesRead = 0;
         BOOL  ok        = ::ReadFile(m_handle, &string[0], static_cast<DWORD>(string.size()), &bytesRead, &ov);
         if (!ok)
-            getlastError();
+            LoglastError();
         return static_cast<size_t>(bytesRead);
     }
 

@@ -199,17 +199,18 @@ int main()
         // }
 
 
-        // TL::FileWatcher watcher;
-        // watcher.watch("I:/repos/TL/build/TL-Playground", TL::FileEventType::Modified, true);
+        TL::FileWatcher watcher;
+        watcher.watch("I:/repos/TL/build/TL-Playground", TL::FileEventType::Modified, true);
 
-        // watcher.subscribe([](const TL::FileEvent& event)
-        // {
-        //     auto path = event.path;
-        //     auto type = event.type;
-        //     auto target = event.target;
-        //     auto oldPath = event.oldPath;
-        //     TL_LOG_INFO("File event, path {}, type {}, target {}, oldPath {}", path, (int)type, (int)target, oldPath);
-        // });
+        watcher.subscribe([](const TL::FileEvent& event)
+        {
+            auto path = event.path;
+            auto type = event.type;
+            auto target = event.target;
+            auto oldPath = event.oldPath;
+            TL_LOG_INFO("File event, path {}, type {}, target {}, oldPath {}", path, (int)type, (int)target, oldPath);
+            return false;
+        });
 
         // TL::CodeGen::Builder builder{};
         // auto typeI32 = builder.DeclareType(nullptr, builder.CreateId("I32"), TL::CodeGen::Type::Kind::I32);
@@ -217,10 +218,10 @@ int main()
         // builder.StructAddField(typeI32, builder.CreateId("foo"));
         // TL_LOG_INFO("{}", builder.DumpCppCode());
 
-        // do
-        // {
-        //     watcher.poll();
-        // }
-        // while(true);
+        do
+        {
+            watcher.poll();
+        }
+        while(true);
     }
 }

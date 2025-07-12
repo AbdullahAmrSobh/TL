@@ -30,7 +30,7 @@ namespace TL
 
         IOResult     read(Block block, uint64_t offset = 0) override;
 
-        IOResult     read(String string, uint64_t offset = 0) override;
+        IOResult     read(String& string, uint64_t offset = 0) override;
 
         IOResult     write(Block block, uint64_t offset = 0) override;
 

@@ -24,6 +24,20 @@ namespace TL
         {
         }
 
+        explicit Error(const char* fmt)
+            : m_success(false)
+            , m_message(fmt)
+        {
+        }
+
+
+        template<typename... FMT_ARGS>
+        explicit Error(const char* fmt, FMT_ARGS... args)
+            : m_success(false)
+            , m_message(std::format(fmt, std::forward(args)...))
+        {
+        }
+
         /// @brief Checks if the result indicates success.
         /// @return true if successful, false otherwise.
         inline bool        IsSuccess() const { return m_success; }
