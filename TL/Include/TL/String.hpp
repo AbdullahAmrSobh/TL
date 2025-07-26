@@ -35,6 +35,10 @@ namespace TL
         {
         }
 
+        StringView(const TL::String& str)
+            : Span(str.c_str(), str.size())
+        {
+        }
         // TODO: Move to cpp file
 // #if TL_PLATFORM_WINDOWS
 //         // Constructor from LPCWSTR (wide string, converts to UTF-8)

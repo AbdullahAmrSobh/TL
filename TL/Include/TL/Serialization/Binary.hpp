@@ -296,3 +296,16 @@ namespace TL
         flags = value;
     }
 } // namespace TL
+
+#define TL_ENCODE(archive, variable)                                \
+    if constexpr (std::is_same_v(delctpye(archive), BinaryArchive)) \
+        ::TL::Encode(archive, variable);                            \
+    else                                                            \
+        ::TL::Encode(archive, #variable, variable);
+
+#define TL_DECODE(archive, variable)                                \
+    if constexpr (std::is_same_v(delctpye(archive), BinaryArchive)) \
+        ::TL::Decode(archive, variable);                            \
+    else                                                            \
+        ::TL::Decode(archive, #variable, variable);
+
