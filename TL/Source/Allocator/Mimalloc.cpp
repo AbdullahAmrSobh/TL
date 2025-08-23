@@ -17,10 +17,9 @@ namespace TL
     Mimalloc::~Mimalloc()
     {
 #if TL_TRACK_ALLOCATION_SIZES
-        printf("Total allocation size: %zu\n", m_totalAllocationSize);
-        printf("Allocations count: %zu\n", m_allocationsCount);
+        printf("[TL::Mimalloc exit allocations count: %zu, Total allocation size: %zu]\n", m_allocationsCount, m_totalAllocationSize);
 #endif
-    // mi_stats_print(nullptr);
+        // mi_stats_print(nullptr);
     }
 
     Block Mimalloc::AllocateImpl(size_t size, size_t alignment)
