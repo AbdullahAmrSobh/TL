@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+
+  <!-- TL::StlAllocatorAdapter -->
+  <Type Name="TL::StlAllocatorAdapter&lt;*&gt;">
+    <DisplayString>TL::StlAllocatorAdapter</DisplayString>
+    <Expand>
+      <Item Name="Allocator">m_allocator</Item>
+    </Expand>
+  </Type>
+
+  <!-- TL::Vector -->
+  <Type Name="TL::Vector&lt;*&gt;">
+    <DisplayString>TL::Vector&lt;{_Mypair._Myval2._Myfirst[0]}&gt; [{_Mypair._Myval2._Mylast - _Mypair._Myval2._Myfirst}]</DisplayString>
+    <Expand>
+      <Item Name="[size]">_Mypair._Myval2._Mylast - _Mypair._Myval2._Myfirst</Item>
+      <Item Name="[capacity]">_Mypair._Myval2._Myend - _Mypair._Myval2._Myfirst</Item>
+      <Item Name="[allocator]">_Mypair._Myval2._Getal()</Item>
+      <ArrayItems>
+        <Size>_Mypair._Myval2._Mylast - _Mypair._Myval2._Myfirst</Size>
+        <ValuePointer>_Mypair._Myval2._Myfirst</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+
+  <!-- TL::SmallVector -->
+  <Type Name="TL::SmallVector&lt;*,*,*&gt;">
+    <DisplayString>TL::SmallVector&lt;{_Mypair._Myval2._Myfirst[0]}&gt; [{_Mypair._Myval2._Mylast - _Mypair._Myval2._Myfirst}]</DisplayString>
+    <Expand>
+      <Item Name="[size]">_Mypair._Myval2._Mylast - _Mypair._Myval2._Myfirst</Item>
+      <Item Name="[capacity]">_Mypair._Myval2._Myend - _Mypair._Myval2._Myfirst</Item>
+      <Item Name="[allocator]">_Mypair._Myval2._Getal()</Item>
+      <ArrayItems>
+        <Size>_Mypair._Myval2._Mylast - _Mypair._Myval2._Myfirst</Size>
+        <ValuePointer>_Mypair._Myval2._Myfirst</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+
+  <!-- TL::Set -->
+  <Type Name="TL::Set&lt;*&gt;">
+    <DisplayString>TL::Set&lt;{_Mypair._Myval2._List._Mypair._Myval2._Myhead->_Next->_Myval}&gt; [{_Mypair._Myval2._List._Mypair._Myval2._Mysize}]</DisplayString>
+    <Expand>
+      <Item Name="[size]">_Mypair._Myval2._List._Mypair._Myval2._Mysize</Item>
+      <Item Name="[bucket_count]">_Mypair._Myval2._Vec._Mypair._Myval2._Myend - _Mypair._Myval2._Vec._Mypair._Myval2._Myfirst</Item>
+      <Item Name="[allocator]">_Mypair._Myval2._List._Mypair._Myval2._Getal()</Item>
+      <IndexListItems>
+        <Size>_Mypair._Myval2._List._Mypair._Myval2._Mysize</Size>
+        <ValueNode>_Mypair._Myval2._List._Mypair._Myval2._Myhead->_Next</ValueNode>
+        <ValueNodeName>_Myval</ValueNodeName>
+        <NextNode>_Next</NextNode>
+      </IndexListItems>
+    </Expand>
+  </Type>
+
+  <!-- TL::Map -->
+  <Type Name="TL::Map&lt;*,*&gt;">
+    <DisplayString>TL::Map&lt;{_Mypair._Myval2._List._Mypair._Myval2._Myhead->_Next->_Myval.first}&gt; [{_Mypair._Myval2._List._Mypair._Myval2._Mysize}]</DisplayString>
+    <Expand>
+      <Item Name="[size]">_Mypair._Myval2._List._Mypair._Myval2._Mysize</Item>
+      <Item Name="[bucket_count]">_Mypair._Myval2._Vec._Mypair._Myval2._Myend - _Mypair._Myval2._Vec._Mypair._Myval2._Myfirst</Item>
+      <Item Name="[allocator]">_Mypair._Myval2._List._Mypair._Myval2._Getal()</Item>
+      <IndexListItems>
+        <Size>_Mypair._Myval2._List._Mypair._Myval2._Mysize</Size>
+        <ValueNode>_Mypair._Myval2._List._Mypair._Myval2._Myhead->_Next</ValueNode>
+        <ValueNodeName>_Myval</ValueNodeName>
+        <NextNode>_Next</NextNode>
+      </IndexListItems>
+    </Expand>
+  </Type>
+
+  <!-- TL::Deque -->
+  <Type Name="TL::Deque&lt;*&gt;">
+    <DisplayString>TL::Deque&lt;{_Mypair._Myval2._Myfirst[0]}&gt; [{_Mypair._Myval2._Mysize}]</DisplayString>
+    <Expand>
+      <Item Name="[size]">_Mypair._Myval2._Mysize</Item>
+      <Item Name="[allocator]">_Mypair._Myval2._Getal()</Item>
+      <Item Name="[map_size]">_Mypair._Myval2._Myend - _Mypair._Myval2._Myfirst</Item>
+      <ArrayItems>
+        <Size>_Mypair._Myval2._Mysize</Size>
+        <ValuePointer>_Mypair._Myval2._Myfirst</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+
+  <!-- TL::String -->
+  <Type Name="TL::String">
+    <DisplayString>TL::String "{_Mypair._Myval2._Bx._Buf,su}"</DisplayString>
+    <StringView>_Mypair._Myval2._Bx._Buf</StringView>
+    <Expand>
+      <Item Name="[size]">_Mypair._Myval2._Mysize</Item>
+      <Item Name="[capacity]">_Mypair._Myval2._Myres</Item>
+      <Item Name="[allocator]">_Mypair._Myval2._Getal()</Item>
+      <Item Name="[string]">_Mypair._Myval2._Bx._Buf,su</Item>
+    </Expand>
+  </Type>
+
+  <!-- TL::WString -->
+  <Type Name="TL::WString">
+    <DisplayString>TL::WString L"{_Mypair._Myval2._Bx._Buf,su}"</DisplayString>
+    <StringView>_Mypair._Myval2._Bx._Buf</StringView>
+    <Expand>
+      <Item Name="[size]">_Mypair._Myval2._Mysize</Item>
+      <Item Name="[capacity]">_Mypair._Myval2._Myres</Item>
+      <Item Name="[allocator]">_Mypair._Myval2._Getal()</Item>
+      <Item Name="[string]">_Mypair._Myval2._Bx._Buf,su</Item>
+    </Expand>
+  </Type>
+
+  <!-- TL::U8string -->
+  <Type Name="TL::U8string">
+    <DisplayString>TL::U8string u8"{_Mypair._Myval2._Bx._Buf,su}"</DisplayString>
+    <StringView>_Mypair._Myval2._Bx._Buf</StringView>
+    <Expand>
+      <Item Name="[size]">_Mypair._Myval2._Mysize</Item>
+      <Item Name="[capacity]">_Mypair._Myval2._Myres</Item>
+      <Item Name="[allocator]">_Mypair._Myval2._Getal()</Item>
+      <Item Name="[string]">_Mypair._Myval2._Bx._Buf,su</Item>
+    </Expand>
+  </Type>
+
+  <!-- TL::U16string -->
+  <Type Name="TL::U16string">
+    <DisplayString>TL::U16string u"{_Mypair._Myval2._Bx._Buf,su}"</DisplayString>
+    <StringView>_Mypair._Myval2._Bx._Buf</StringView>
+    <Expand>
+      <Item Name="[size]">_Mypair._Myval2._Mysize</Item>
+      <Item Name="[capacity]">_Mypair._Myval2._Myres</Item>
+      <Item Name="[allocator]">_Mypair._Myval2._Getal()</Item>
+      <Item Name="[string]">_Mypair._Myval2._Bx._Buf,su</Item>
+    </Expand>
+  </Type>
+
+  <!-- TL::U32string -->
+  <Type Name="TL::U32string">
+    <DisplayString>TL::U32string U"{_Mypair._Myval2._Bx._Buf,su}"</DisplayString>
+    <StringView>_Mypair._Myval2._Bx._Buf</StringView>
+    <Expand>
+      <Item Name="[size]">_Mypair._Myval2._Mysize</Item>
+      <Item Name="[capacity]">_Mypair._Myval2._Myres</Item>
+      <Item Name="[allocator]">_Mypair._Myval2._Getal()</Item>
+      <Item Name="[string]">_Mypair._Myval2._Bx._Buf,su</Item>
+    </Expand>
+  </Type>
+
+  <!-- TL::Optional -->
+  <Type Name="TL::Optional&lt;*&gt;">
+    <DisplayString Condition="_Has_value == true">TL::Optional&lt;{_Storage._Value}&gt;</DisplayString>
+    <DisplayString Condition="_Has_value == false">TL::Optional&lt;*&gt; [empty]</DisplayString>
+    <Expand>
+      <Item Name="[has_value]">_Has_value</Item>
+      <Item Name="[value]" Condition="_Has_value == true">_Storage._Value</Item>
+      <Item Name="[value]" Condition="_Has_value == false">[empty]</Item>
+    </Expand>
+  </Type>
+
+  <!-- TL::Variant -->
+  <Type Name="TL::Variant&lt;*&gt;">
+    <DisplayString>TL::Variant [index: {_Index}]</DisplayString>
+    <Expand>
+      <Item Name="[index]">_Index</Item>
+      <Item Name="[value]">_Storage</Item>
+    </Expand>
+  </Type>
+
+  <!-- TL::Function -->
+  <Type Name="TL::Function&lt;*&gt;">
+    <DisplayString>TL::Function</DisplayString>
+    <Expand>
+      <Item Name="[target]">_Get()</Item>
+      <Item Name="[callable]">_Get() != nullptr</Item>
+    </Expand>
+  </Type>
+
+  <!-- Helper for std::pair in Map -->
+  <Type Name="std::pair&lt;const *,*&gt;">
+    <DisplayString>{first} = {second}</DisplayString>
+    <Expand>
+      <Item Name="key">first</Item>
+      <Item Name="value">second</Item>
+    </Expand>
+  </Type>
+
+</AutoVisualizer>

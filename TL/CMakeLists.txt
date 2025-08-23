@@ -21,6 +21,8 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Library.hpp
 
     ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/DynamicLibrary.hpp
+
+    $<$<CXX_COMPILER_ID:MSVC>:${CMAKE_CURRENT_SOURCE_DIR}/TL.natvis>
 )
 
 set(SOURCE_FILES

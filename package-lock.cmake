@@ -1,6 +1,14 @@
 include(${CMAKE_SOURCE_DIR}/CMake/CPM.cmake)
 
 CPMAddPackage(
+	NAME           googletest
+	GIT_REPOSITORY git@github.com:google/googletest.git
+	GIT_TAG        v1.17.0
+	OPTIONS
+		"gtest_force_shared_crt ON"
+)
+
+CPMAddPackage(
     NAME           mimalloc
 	GIT_REPOSITORY git@github.com:microsoft/mimalloc.git
 	GIT_TAG        v2.1.7

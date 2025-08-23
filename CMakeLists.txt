@@ -75,6 +75,9 @@ add_subdirectory(TL)
 # ---- Tests ----
 if(TL_BUILD_TESTS)
     add_subdirectory(TL-Playground)
+
+    enable_testing()
+    add_subdirectory(TL-Tests)
 endif()
 
 # ---- Developer mode ----
