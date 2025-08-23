@@ -58,7 +58,4 @@
     #define TL_UNREACHABLE_MSG() ((void)0)
 #endif
 
-// @todo: This macro definition is out of place, move from here
-#define TL_NODISCARD    [[nodiscard]]
-
-#define TL_MAYBE_UNUSED [[maybe_unused]]
+#include "TL/Compiler.hpp"
