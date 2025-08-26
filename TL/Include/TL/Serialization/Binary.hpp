@@ -1,8 +1,9 @@
 #pragma once
 
 #include "TL/Block.hpp"
-#include "TL/Serialization/SerializeTraits.hpp"
 #include "TL/Flags.hpp"
+#include "TL/Bits.hpp"
+#include "TL/Serialization/SerializeTraits.hpp"
 
 #include <vector>
 #include <unordered_map>
@@ -13,22 +14,6 @@
 
 namespace TL
 {
-    TL_EXPORT uint16_t    ByteSwap(uint16_t value);
-
-    TL_EXPORT uint32_t    ByteSwap(uint32_t value);
-
-    TL_EXPORT uint64_t    ByteSwap(uint64_t value);
-
-    inline static int16_t ByteSwap(int16_t value) { return std::bit_cast<int16_t>(ByteSwap(std::bit_cast<uint16_t>(value))); }
-
-    inline static int32_t ByteSwap(int32_t value) { return std::bit_cast<int32_t>(ByteSwap(std::bit_cast<uint32_t>(value))); }
-
-    inline static int64_t ByteSwap(int64_t value) { return std::bit_cast<int64_t>(ByteSwap(std::bit_cast<uint64_t>(value))); }
-
-    inline static float   ByteSwap(float value) { return std::bit_cast<float>(ByteSwap(std::bit_cast<uint32_t>(value))); }
-
-    inline static double  ByteSwap(double value) { return std::bit_cast<double>(ByteSwap(std::bit_cast<uint64_t>(value))); }
-
     class BinaryArchive
     {
     public:
