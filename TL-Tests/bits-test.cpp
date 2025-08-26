@@ -61,19 +61,16 @@ TEST_F(BitsTest, ByteSwap)
         EXPECT_EQ(swapped_bits, expected);                                      \
     } while (0)
 
-    // Check using macro for unsigned
     CHECK_BITSWAP(uint8_t, u8);
     CHECK_BITSWAP(uint16_t, u16);
     CHECK_BITSWAP(uint32_t, u32);
     CHECK_BITSWAP(uint64_t, u64);
 
-    // Check using macro for signed
     CHECK_BITSWAP(int8_t, i8);
     CHECK_BITSWAP(int16_t, i16);
     CHECK_BITSWAP(int32_t, i32);
     CHECK_BITSWAP(int64_t, i64);
 
-    // Check using macro for float/double
     CHECK_BITSWAP_FLOAT(float, f);
     CHECK_BITSWAP_FLOAT(double, d);
 

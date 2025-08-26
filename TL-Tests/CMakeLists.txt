@@ -2,6 +2,8 @@
 
 set(TEST_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/Vector.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/bits-test.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/fmt-test.cpp
 )
 
 add_executable(TL_Tests ${TEST_FILES})

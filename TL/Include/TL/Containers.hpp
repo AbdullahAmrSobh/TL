@@ -12,6 +12,8 @@
 #include <functional>
 
 #include "TL/Context.hpp"
+#include "TL/Containers/String.hpp"
+
 
 namespace TL
 {
@@ -116,21 +118,6 @@ namespace TL
     using Deque = std::deque<T, StlAllocatorAdapter<T>>;
 
     /// @fixme: revert this change back (needed because StlAllocatorAdapter does not support comparesion which emscripten needs)
-
-    // template<typename AllocatorType = Allocator>
-    using String = std::basic_string<char>; //, std::char_traits<char>, StlAllocatorAdapter<char, Allocator>>;
-
-    // template<typename AllocatorType = Allocator>
-    using WString = std::basic_string<wchar_t>; //, std::char_traits<wchar_t>, StlAllocatorAdapter<wchar_t, Allocator>>;
-
-    // template<typename AllocatorType = Allocator>
-    using U8string = std::basic_string<char8_t>; //, std::char_traits<char8_t>, StlAllocatorAdapter<char8_t, Allocator>>;
-
-    // template<typename AllocatorType = Allocator>
-    using U16string = std::basic_string<char16_t>; //, std::char_traits<char16_t>, StlAllocatorAdapter<char16_t, Allocator>>;
-
-    // template<typename AllocatorType = Allocator>
-    using U32string = std::basic_string<char32_t>; //, std::char_traits<char32_t>, StlAllocatorAdapter<char32_t, Allocator>>;
 
     // Function wrapper
     template<typename T>
