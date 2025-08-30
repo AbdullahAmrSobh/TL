@@ -56,32 +56,32 @@ CPMAddPackage(
 	DOWNLOAD_ONLY YES
 )
 
-CPMAddPackage(
-	NAME lz4
-	GIT_REPOSITORY git@github.com:lz4/lz4.git
-	GIT_TAG v1.10.0
-	DOWNLOAD_ONLY YES
-)
+# CPMAddPackage(
+# 	NAME lz4
+# 	GIT_REPOSITORY git@github.com:lz4/lz4.git
+# 	GIT_TAG v1.10.0
+# 	DOWNLOAD_ONLY YES
+# )
 
-add_subdirectory(${lz4_SOURCE_DIR}/build/cmake ${CMAKE_BINARY_DIR}/lz4)
-option(LZ4_BUILD_CLI OFF)
+# add_subdirectory(${lz4_SOURCE_DIR}/build/cmake ${CMAKE_BINARY_DIR}/lz4)
+# option(LZ4_BUILD_CLI OFF)
 
-CPMAddPackage(
-	NAME json
-	GIT_REPOSITORY git@github.com:nlohmann/json.git
-	GIT_TAG v3.11.3
-	OPTIONS
-)
+# CPMAddPackage(
+# 	NAME json
+# 	GIT_REPOSITORY git@github.com:nlohmann/json.git
+# 	GIT_TAG v3.11.3
+# 	OPTIONS
+# )
 
-CPMAddPackage(
-    NAME           taskflow
-	GIT_REPOSITORY git@github.com:taskflow/taskflow.git
-	GIT_TAG        v3.8.0
-	OPTIONS
-	"TF_BUILD_SYCL OFF"
-	"TF_BUILD_TESTS OFF"
-	"TF_BUILD_EXAMPLES OFF"
-)
+# CPMAddPackage(
+#     NAME           taskflow
+# 	GIT_REPOSITORY git@github.com:taskflow/taskflow.git
+# 	GIT_TAG        v3.8.0
+# 	OPTIONS
+# 	"TF_BUILD_SYCL OFF"
+# 	"TF_BUILD_TESTS OFF"
+# 	"TF_BUILD_EXAMPLES OFF"
+# )
 
 # CPMAddPackage(
 #     NAME           cpptrace
