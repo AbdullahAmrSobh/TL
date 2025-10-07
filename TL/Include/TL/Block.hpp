@@ -32,6 +32,24 @@ namespace TL
         }
 
         template<typename T>
+        static Block fromSpan(TL::Span<T> t)
+        {
+            return {(void*)t.data(), t.size_bytes()};
+        }
+
+        template<typename T>
+        static Block fromSpan(TL::Span<const T> t)
+        {
+            return {(void*)t.data(), t.size_bytes()};
+        }
+
+        template<typename T, typename Allocator>
+        static Block fromVector(std::vector<T, Allocator>& t)
+        {
+            return {(void*)t.data(), t.size() * sizeof(T)};
+        }
+
+        template<typename T>
         static Block create(T* value, size_t count)
         {
             return {(void*)value, count * sizeof(T)};

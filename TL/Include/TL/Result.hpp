@@ -7,12 +7,21 @@
 
 namespace TL
 {
+    struct NoError_T
+    {
+    };
+
     /// @brief A class representing an error state, optionally storing an error message.
     class Error
     {
     public:
         /// @brief Constructs a success state (no error).
         Error()
+            : m_success(true)
+        {
+        }
+
+        Error(NoError_T)
             : m_success(true)
         {
         }
@@ -29,7 +38,6 @@ namespace TL
             , m_message(fmt)
         {
         }
-
 
         template<typename... FMT_ARGS>
         explicit Error(const char* fmt, FMT_ARGS... args)
@@ -54,6 +62,8 @@ namespace TL
         bool       m_success; ///< Indicates whether the operation was successful.
         TL::String m_message; ///< Stores the error message if an error occurred.
     };
+
+    static constexpr NoError_T NoError = {};
 
     /// @brief Helper functions for handling enum-based result codes.
     template<typename Enum>

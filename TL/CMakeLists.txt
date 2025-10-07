@@ -8,6 +8,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Allocator/Mimalloc.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Allocator/MemPlumber.hpp
 
+    ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/OffsetAllocator/OffsetAllocator.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Flags.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Log.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Containers.hpp
@@ -29,6 +30,8 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/Allocator/Arena.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/Allocator/Mimalloc.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/Allocator/MemPlumber.cpp
+
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/OffsetAllocator/OffsetAllocator.cpp
 
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/Log.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/Serialization/Serialization.cpp

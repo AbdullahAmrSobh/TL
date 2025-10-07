@@ -2,12 +2,7 @@
 #include "TL/FileSystem/FileWatcher.hpp"
 
 #include <filesystem>
-#include <mutex>
-#include <thread>
 #include <vector>
-#include <atomic>
-#include <condition_variable>
-
 #include "WindowsCommon.inl"
 
 namespace TL
@@ -23,34 +18,22 @@ namespace TL
     {
         struct WatchHandle
         {
-            HANDLE                   dirHandle  = INVALID_HANDLE_VALUE;
-            OVERLAPPED               overlapped = {};
-            size_t                   size;
-            uint8_t                  buffer[256];
+            HANDLE                   dirHandle   = INVALID_HANDLE_VALUE;
+            OVERLAPPED               overlapped  = {};
+            HANDLE                   eventHandle = nullptr; // signalled when operation completes
+            std::vector<uint8_t>     buffer;                // separate buffer
             TL::String               path;
             TL::Flags<FileEventType> flags;
             bool                     watchSubtree = false;
-            std::atomic<bool>        active{true};
-            std::thread              thread;
+            bool                     armed        = false; // have we issued an async ReadDirectoryChangesW?
         };
 
         TL::Map<TL::String, std::unique_ptr<WatchHandle>> watchList;
-        std::mutex                                        mutex;
-        std::condition_variable                           cv;
-        std::atomic<bool>                                 running{true};
 
         ~Impl()
         {
-            running = false;
-            cv.notify_all();
-            std::lock_guard<std::mutex> lock(mutex);
             for (auto& [_, handle] : watchList)
             {
-                handle->active = false;
-                if (handle->dirHandle != INVALID_HANDLE_VALUE)
-                    CancelIoEx(handle->dirHandle, nullptr);
-                if (handle->thread.joinable())
-                    handle->thread.join();
                 if (handle->dirHandle != INVALID_HANDLE_VALUE)
                     CloseHandle(handle->dirHandle);
             }
@@ -76,15 +59,10 @@ namespace TL
     {
     }
 
-    FileWatcher::~FileWatcher()
-    {
-        // The Impl destructor ensures all watcher threads are joined and directory handles are closed.
-        // Impl destructor handles cleanup
-    }
+    FileWatcher::~FileWatcher() = default;
 
     void FileWatcher::watch(StringView path, Flags<FileEventType> eventTypes, bool watchSubtree)
     {
-        std::lock_guard<std::mutex> lock(m_impl->mutex);
         if (m_impl->watchList.contains(path.data()))
             return;
 
@@ -93,9 +71,9 @@ namespace TL
         handle->flags        = eventTypes;
         handle->watchSubtree = watchSubtree;
 
-        auto absolutePath = std::filesystem::absolute(path.data());
+        auto absolutePath = std::filesystem::weakly_canonical(path.data()).generic_wstring();
         handle->dirHandle = ::CreateFileW(
-            absolutePath.c_str(),
+            absolutePath.data(),
             FILE_LIST_DIRECTORY,
             FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
             nullptr,
@@ -108,84 +86,20 @@ namespace TL
             auto error = getlastError();
             if (error != IOResultCode::Success)
             {
-                // LoglastError();
+                TL_LOG_ERROR("Failed to watch '{}'. Error: (TODO-insertt error report here).", path);
+                // log error
             }
             return;
         }
 
-        auto watchThread = [this, h = handle.get()]()
-        {
-            while (h->active)
-            {
-                DWORD bytesReturned = 0;
-                memset(&h->overlapped, 0, sizeof(OVERLAPPED));
-                BOOL success = ::ReadDirectoryChangesW(
-                    h->dirHandle,
-                    h->buffer,
-                    sizeof(h->buffer),
-                    TRUE,
-                    FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_DIR_NAME | FILE_NOTIFY_CHANGE_LAST_WRITE,
-                    nullptr,
-                    &h->overlapped,
-                    nullptr);
-                if (!success && GetLastError() != ERROR_IO_PENDING)
-                {
-                    // LoglastError();
-                    continue;
-                }
-
-                DWORD wait = WaitForSingleObjectEx(h->dirHandle, INFINITE, TRUE);
-                if (!h->active)
-                    break;
-
-                DWORD bytes;
-                if (!GetOverlappedResult(h->dirHandle, &h->overlapped, &bytes, TRUE))
-                    continue;
-
-                while (bytes > 0)
-                {
-                    auto* info = reinterpret_cast<FILE_NOTIFY_INFORMATION*>(h->buffer);
-                    FileEventType type = mapActionToEvent(info->Action);
-                    // switch ()
-                    // {
-
-                    // }
-                    if (h->flags & type)
-                    {
-                        FileEvent event;
-                        event.type                     = type;
-                        std::filesystem::path basePath = h->path;
-                        std::wstring          fileName(info->FileName, info->FileNameLength / sizeof(WCHAR));
-                        std::filesystem::path fullPath = basePath / fileName;
-                        event.path                     = TL::String(fullPath.string().c_str());
-                        broadcast(event);
-                    }
-                    if (info->NextEntryOffset == 0)
-                        break;
-                    // ptr += info->NextEntryOffset;
-                    h->size = bytes;
-                    bytes -= info->NextEntryOffset;
-                }
-            }
-        };
-
-        static std::thread t(watchThread);
-
         m_impl->watchList[TL::String(path.data(), path.size())] = std::move(handle);
-        m_impl->watchList[path.data()]                          = std::move(handle);
     }
 
     void FileWatcher::unwatch(StringView path)
     {
-        std::lock_guard<std::mutex> lock(m_impl->mutex);
-        auto                        it = m_impl->watchList.find(path.data());
+        auto it = m_impl->watchList.find(path.data());
         if (it != m_impl->watchList.end())
         {
-            it->second->active = false;
-            if (it->second->dirHandle != INVALID_HANDLE_VALUE)
-                CancelIoEx(it->second->dirHandle, nullptr);
-            if (it->second->thread.joinable())
-                it->second->thread.join();
             if (it->second->dirHandle != INVALID_HANDLE_VALUE)
                 CloseHandle(it->second->dirHandle);
             m_impl->watchList.erase(it);
@@ -194,7 +108,79 @@ namespace TL
 
     void FileWatcher::poll()
     {
-        // No-op: events are pushed from threads, poll is not needed for Win32 async
+        const DWORD mask = FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_DIR_NAME | FILE_NOTIFY_CHANGE_LAST_WRITE;
+
+        for (auto& [_, h] : m_impl->watchList)
+        {
+            if (!h->armed)
+                continue;
+
+            DWORD bytesTransferred = 0;
+            BOOL  completed        = ::GetOverlappedResult(h->dirHandle, &h->overlapped, &bytesTransferred, /*bWait=*/FALSE);
+
+            if (!completed)
+            {
+                DWORD err = GetLastError();
+                // Not finished yet — still pending
+                if (err == ERROR_IO_INCOMPLETE || err == ERROR_IO_PENDING)
+                    continue;
+                // Other error: consider handling/logging and re-arming or disabling this watch
+                continue;
+            }
+
+            // We have results in h->buffer with bytesTransferred bytes. Parse them.
+            uint8_t* ptr = h->buffer.data();
+            uint8_t* end = ptr + bytesTransferred;
+            while (ptr < end)
+            {
+                auto*         info = reinterpret_cast<FILE_NOTIFY_INFORMATION*>(ptr);
+                FileEventType type = mapActionToEvent(info->Action);
+
+                if (h->flags & type)
+                {
+                    FileEvent event;
+                    event.type = type;
+
+                    std::filesystem::path basePath = h->path;
+                    std::wstring          fileName(info->FileName, info->FileNameLength / sizeof(WCHAR));
+                    std::filesystem::path fullPath = basePath / fileName;
+                    event.path                     = TL::String(fullPath.string().c_str());
+
+                    broadcast(event);
+                }
+
+                if (info->NextEntryOffset == 0)
+                    break;
+                ptr += info->NextEntryOffset;
+            }
+
+            // Reset event and re-arm another async ReadDirectoryChangesW
+            ResetEvent(h->eventHandle);
+            ::memset(&h->overlapped, 0, sizeof(OVERLAPPED));
+            h->overlapped.hEvent = h->eventHandle;
+
+            BOOL ok = ::ReadDirectoryChangesW(
+                h->dirHandle,
+                h->buffer.data(),
+                static_cast<DWORD>(h->buffer.size()),
+                h->watchSubtree,
+                mask,
+                /*lpBytesReturned*/ nullptr,
+                &h->overlapped,
+                /*lpCompletionRoutine*/ nullptr);
+
+            if (!ok)
+            {
+                DWORD err = GetLastError();
+                if (err != ERROR_IO_PENDING)
+                {
+                    // failed to re-arm; mark not armed or cleanup
+                    h->armed = false;
+                    CloseHandle(h->dirHandle);
+                    CloseHandle(h->eventHandle);
+                }
+            }
+        }
     }
 
 } // namespace TL

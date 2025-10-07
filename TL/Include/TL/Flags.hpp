@@ -44,7 +44,7 @@ namespace TL
     class Flags
     {
     public:
-        using MaskType = typename std::underlying_type<BitType>::type;
+        using MaskType = typename std::underlying_type_t<BitType>;
 
         constexpr Flags() noexcept
             : m_mask(0)
