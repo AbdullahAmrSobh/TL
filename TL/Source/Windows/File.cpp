@@ -98,6 +98,7 @@ namespace TL
 
     IOResult File::read(String& string, uint64_t offset)
     {
+        // TL_ASSERT(string.size() >= size() - offset);
         if (string.empty())
             return 0;
 

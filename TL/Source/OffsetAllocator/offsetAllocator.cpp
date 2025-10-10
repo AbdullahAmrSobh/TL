@@ -2,8 +2,9 @@
 // MIT License (see file: LICENSE)
 
 #include "TL/OffsetAllocator/OffsetAllocator.hpp"
+#include "TL/Assert.hpp"
 
-#ifdef RHI_DEBUG
+#ifdef TL_DEBUG
     #include <Tl/Assert.hpp>
     #define ASSERT(x) TL_ASSERT(x)
 // #define DEBUG_VERBOSE

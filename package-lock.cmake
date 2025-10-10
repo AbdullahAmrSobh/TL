@@ -66,12 +66,12 @@ CPMAddPackage(
 # add_subdirectory(${lz4_SOURCE_DIR}/build/cmake ${CMAKE_BINARY_DIR}/lz4)
 # option(LZ4_BUILD_CLI OFF)
 
-# CPMAddPackage(
-# 	NAME json
-# 	GIT_REPOSITORY git@github.com:nlohmann/json.git
-# 	GIT_TAG v3.11.3
-# 	OPTIONS
-# )
+CPMAddPackage(
+	NAME           json
+	GIT_REPOSITORY git@github.com:nlohmann/json.git
+	GIT_TAG        v3.11.3
+	OPTIONS
+)
 
 # CPMAddPackage(
 #     NAME           taskflow

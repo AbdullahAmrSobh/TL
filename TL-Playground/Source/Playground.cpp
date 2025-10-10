@@ -10,7 +10,12 @@
 #include <TL/Assert.hpp>
 #include <TL/Stacktrace.hpp>
 #include <TL/FileSystem/FileWatcher.hpp>
+
 #include <thread>
+
+#include <nlohmann/json.hpp>
+
+#if 0
 
 class FooLibrary final : public TL::LibraryWatcher
 {
@@ -224,4 +229,11 @@ int main()
         }
         while(true);
     }
+}
+
+#endif
+
+int main()
+{
+
 }

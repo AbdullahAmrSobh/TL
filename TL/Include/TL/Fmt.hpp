@@ -190,6 +190,10 @@ namespace std
 
     // Set
 
-
-
 } // namespace std
+
+
+namespace TL::FMT
+{
+
+}

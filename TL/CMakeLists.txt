@@ -66,7 +66,7 @@ target_link_libraries(TL PRIVATE spdlog)
 
 # target_link_libraries(TL PUBLIC lz4)
 
-# target_link_libraries(TL PUBLIC nlohmann_json::nlohmann_json)
+target_link_libraries(TL PUBLIC nlohmann_json::nlohmann_json)
 
 target_link_libraries(TL PRIVATE mimalloc-static)
 
