@@ -62,14 +62,14 @@ namespace TL
             // if not started, allocate memory and exit
             if (!m_Started)
             {
-                return m_allocator.Allocate(size, alignment);
+                return m_allocator.allocate(size, alignment);
             }
 
             // total memory to allocated is the requested size + metadata size
             size_t          totalSizeToAllocate = size + sizeof(new_ptr_list_t);
 
             // allocated memory
-            void*           rawMem                = m_allocator.Allocate(totalSizeToAllocate, alignof(new_ptr_list_t)).ptr;
+            void*           rawMem                = m_allocator.allocate(totalSizeToAllocate, alignof(new_ptr_list_t)).ptr;
             new_ptr_list_t* pointerMetaDataRecord = static_cast<new_ptr_list_t*>(rawMem);
             memset(pointerMetaDataRecord, 0, sizeof(new_ptr_list_t));
 
@@ -137,7 +137,7 @@ namespace TL
                     }
 
                     // free the memory of the current item
-                    m_allocator.Release({metaDataBucketLinkedListElement, metaDataBucketLinkedListElement->size + sizeof(new_ptr_list_t)}, alignment);
+                    m_allocator.free({metaDataBucketLinkedListElement, metaDataBucketLinkedListElement->size + sizeof(new_ptr_list_t)}, alignment);
 
                     return;
                 }
@@ -146,7 +146,7 @@ namespace TL
             // if got to here it means memory was allocated before monitoring started. Simply free the memory and return
             TL_DEBUG_BREAK();
 
-            m_allocator.Release(block, alignment);
+            m_allocator.free(block, alignment);
         }
 
         void checkLeaks()
@@ -196,29 +196,29 @@ namespace TL
         MemPlumberImpl::getInstance().checkLeaks();
     }
 
-    Block MemPlumber::AllocateImpl(size_t size, size_t alignment)
+    Block MemPlumber::allocateImpl(size_t size, size_t alignment)
     {
         return MemPlumberImpl::getInstance().allocate(size, alignment);
     }
 
-    Block MemPlumber::ReallocateImpl(Block block, size_t newSize, size_t alignment)
+    Block MemPlumber::reallocateImpl(Block block, size_t newSize, size_t alignment)
     {
         // Simple implementation: allocate new, copy, release old
         // TODO: Implement real real realloc
         if (block.ptr == nullptr)
-            return AllocateImpl(newSize, alignment);
+            return allocateImpl(newSize, alignment);
 
-        Block newBlock = AllocateImpl(newSize, alignment);
+        Block newBlock = allocateImpl(newSize, alignment);
         if (newBlock.ptr && block.ptr)
         {
             size_t copySize = (block.size < newSize) ? block.size : newSize;
             memcpy(newBlock.ptr, block.ptr, copySize);
-            ReleaseImpl(block, alignment);
+            freeImpl(block, alignment);
         }
         return newBlock;
     }
 
-    void MemPlumber::ReleaseImpl(Block block, size_t alignment)
+    void MemPlumber::freeImpl(Block block, size_t alignment)
     {
         MemPlumberImpl::getInstance().release(block, alignment);
     }

@@ -3,6 +3,7 @@
 #include <format>
 
 #include "TL/Containers/String.hpp"
+#include "TL/Containers/StringView.hpp"
 
 namespace std
 {

@@ -2,11 +2,12 @@
 
 #include <memory>
 #include <utility>
-#include <TL/Containers.hpp>
+
+#include <TL/Containers/Vector.hpp>
 
 namespace TL
 {
-    // Custom deleter using Allocator
+        // Custom deleter using Allocator
     template<typename T>
     struct AllocatorDeleter
     {
@@ -14,37 +15,25 @@ namespace TL
         {
             if (ptr)
             {
-                ptr->~T();                  // Explicitly call the destructor
-                Release(ptr, 1); // Use the allocator to release memory
+                destruct(ptr);
             }
         }
     };
 
     template<typename T>
-    class Ptr : public std::unique_ptr<T, AllocatorDeleter<T>>
-    {
-    public:
-        using Base = std::unique_ptr<T, AllocatorDeleter<T>>;
-
-        // Inherit constructors from std::unique_ptr
-        using Base::Base;
-
-        // Implicit conversion from Ptr<Derived> to Ptr<Base>
-        template<typename U, typename = std::enable_if_t<std::is_base_of_v<T, U>>>
-        Ptr(Ptr<U>&& other) noexcept
-            : Base(other.release(), AllocatorDeleter<T>())
-        {
-        }
-
-        Ptr(const Ptr&)            = delete;
-        Ptr& operator=(const Ptr&) = delete;
-
-        Ptr(Ptr&& other) noexcept            = default;
-        Ptr& operator=(Ptr&& other) noexcept = default;
-    };
+    using Ptr = std::unique_ptr<T, AllocatorDeleter<T>>;
 
     template<typename T>
     using SharedRef = std::shared_ptr<T>;
+
+    template<typename T>
+    using WeakRef = std::weak_ptr<T>;
+
+    template<typename T>
+    using SharedRef = std::shared_ptr<T>;
+
+    template<typename T>
+    using Ref = std::shared_ptr<T>;
 
     template<typename T>
     using WeakRef = std::weak_ptr<T>;
@@ -53,11 +42,23 @@ namespace TL
     inline constexpr Ptr<T> CreatePtr(Args&&... args)
     {
         // Allocate memory through Allocator
-        T* memory = Allocate<T>(1);
+        T* memory = allocate<T>(1);
         // Use placement new to construct the object in allocated memory
         new (memory) T(std::forward<Args>(args)...);
         // Return Ptr with custom deleter
         return Ptr<T>(memory);
+    }
+
+    template<class T, class... Args>
+    inline constexpr Ref<T> CreateRef(Args... args)
+    {
+        return std::make_shared<T, Args...>(std::forward<Args>(args)...);
+    }
+
+    template<typename T, typename U, typename... Args>
+    inline constexpr T* EmplacePtr(TL::Vector<Ptr<U>>& container, Args... args)
+    {
+        return (T*)container.emplace_back(CreatePtr<T>(args...)).get();
     }
 
     template<typename T, typename U, typename... Args>
@@ -65,4 +66,5 @@ namespace TL
     {
         return (T*)container.emplace_back(CreatePtr<T>(std::forward<Args>(args)...)).get();
     }
+
 } // namespace TL

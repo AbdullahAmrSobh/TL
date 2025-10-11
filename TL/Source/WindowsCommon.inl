@@ -5,22 +5,17 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
-namespace TL
+namespace TL::windows
 {
-    inline static IOResultCode getlastError()
+    inline static IOResultCode getlastError(DWORD code)
     {
-        DWORD err = ::GetLastError();
-        switch (err)
+        switch (code)
         {
-        case ERROR_FILE_NOT_FOUND:
-        case ERROR_PATH_NOT_FOUND:
-            return IOResultCode::NotFound;
-        case ERROR_ACCESS_DENIED:
-            return IOResultCode::Denied;
-        case ERROR_HANDLE_EOF:
-            return IOResultCode::Eof;
-        case ERROR_DISK_FULL:
-            // return IOResultCode::DiskFull;
+        case ERROR_FILE_NOT_FOUND: return IOResultCode::NotFound;
+        case ERROR_PATH_NOT_FOUND: return IOResultCode::NotFound;
+        case ERROR_ACCESS_DENIED:  return IOResultCode::Denied;
+        case ERROR_HANDLE_EOF:     return IOResultCode::Eof;
+        case ERROR_DISK_FULL:      return IOResultCode::Full;
         // case ERROR_INVALID_HANDLE:
         //     return IOResultCode::InvalidHandle;
         // case ERROR_INVALID_PARAMETER:
@@ -63,9 +58,42 @@ namespace TL
         }
     }
 
-    inline static void LoglastError()
+    inline static TL::StringView errorToString(DWORD code)
     {
-        switch (::GetLastError())
+        switch (code)
+        {
+        case ERROR_FILE_NOT_FOUND:    return "ERROR_FILE_NOT_FOUND";
+        case ERROR_PATH_NOT_FOUND:    return "ERROR_PATH_NOT_FOUND";
+        case ERROR_ACCESS_DENIED:     return "ERROR_ACCESS_DENIED";
+        case ERROR_HANDLE_EOF:        return "ERROR_HANDLE_EOF";
+        case ERROR_DISK_FULL:         return "ERROR_DISK_FULL";
+        case ERROR_INVALID_HANDLE:    return "ERROR_INVALID_HANDLE";
+        case ERROR_INVALID_PARAMETER: return "ERROR_INVALID_PARAMETER";
+        case ERROR_SHARING_VIOLATION: return "ERROR_SHARING_VIOLATION";
+        case ERROR_LOCK_VIOLATION:    return "ERROR_LOCK_VIOLATION";
+        case ERROR_ALREADY_EXISTS:    return "ERROR_ALREADY_EXISTS";
+        case ERROR_FILE_EXISTS:       return "ERROR_FILE_EXISTS";
+        case ERROR_NOT_ENOUGH_MEMORY: return "ERROR_NOT_ENOUGH_MEMORY";
+        case ERROR_OUTOFMEMORY:       return "ERROR_OUTOFMEMORY";
+        case ERROR_OPERATION_ABORTED: return "ERROR_OPERATION_ABORTED";
+        case ERROR_IO_DEVICE:         return "ERROR_IO_DEVICE";
+        case ERROR_WRITE_PROTECT:     return "ERROR_WRITE_PROTECT";
+        case ERROR_READ_FAULT:        return "ERROR_READ_FAULT";
+        case ERROR_WRITE_FAULT:       return "ERROR_WRITE_FAULT";
+        case ERROR_BROKEN_PIPE:       return "ERROR_BROKEN_PIPE";
+        case ERROR_NO_MORE_FILES:     return "ERROR_NO_MORE_FILES";
+        case ERROR_CRC:               return "ERROR_CRC";
+        case ERROR_NOT_SUPPORTED:     return "ERROR_NOT_SUPPORTED";
+        case ERROR_TIMEOUT:           return "ERROR_TIMEOUT";
+        case ERROR_FILE_CORRUPT:      return "ERROR_FILE_CORRUPT";
+        case ERROR_FILE_TOO_LARGE:    return "ERROR_FILE_TOO_LARGE";
+        default:                      return "<unknown error code>";
+        }
+    }
+
+    inline static void logError(DWORD code)
+    {
+        switch (code)
         {
         case ERROR_FILE_NOT_FOUND:    TL_LOG_ERROR("Error: ERROR_FILE_NOT_FOUND"); break;
         case ERROR_PATH_NOT_FOUND:    TL_LOG_ERROR("Error: ERROR_PATH_NOT_FOUND"); break;
@@ -96,4 +124,4 @@ namespace TL
         }
     }
 
-} // namespace TL
+} // namespace TL::windows

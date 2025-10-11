@@ -10,6 +10,8 @@ namespace TL
         NotFound,
         Denied,
         Timeout,
+        Full,
+        InvalidParameter,
         Eof,
     };
 

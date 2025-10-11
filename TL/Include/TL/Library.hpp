@@ -3,6 +3,8 @@
 #include <TL/Export.hpp>
 #include <TL/Result.hpp>
 
+#include <TL/Containers/StringView.hpp>
+
 namespace TL
 {
     enum class LibraryOpenFlags
@@ -13,16 +15,16 @@ namespace TL
     class Library
     {
     public:
-        static Result<Library> Open(const char* path, LibraryOpenFlags flags = LibraryOpenFlags::None);
+        static Result<Library> open(TL::StringView path, LibraryOpenFlags flags = LibraryOpenFlags::None);
 
-        static void            Close(Library library);
+        static void            close(Library library);
 
-        void*                  GetProc(const char* procName);
+        void*                  getProc(TL::StringView procName);
 
         template<typename Proc>
-        Proc GetProc(const char* procName)
+        Proc getProc(TL::StringView procName)
         {
-            return reinterpret_cast<Proc>(GetProc(procName));
+            return reinterpret_cast<Proc>(getProc(procName));
         }
 
     private:

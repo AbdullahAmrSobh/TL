@@ -25,7 +25,6 @@
     #define TL_NO_UNIQUE_ADDRESS
 #endif
 
-
 #ifndef __has_cpp_attribute
     #define TL_NODISCARD
 #elif __has_cpp_attribute(nodiscard)
@@ -48,4 +47,18 @@
     #define TL_MAYBE_UNUSED [[maybe_unused]]
 #else
     #define TL_MAYBE_UNUSED
+#endif
+
+#if defined(__WIN32__) || defined(_WIN32) || defined(__WIN64__) || defined(_WIN64)
+    #define TL_PLATFORM_WINDOWS    1
+    #define TL_PLATFORM_LINUX      0
+    #define TL_PLATFORM_EMSCRIPTEN 0
+#elif defined(__EMSCRIPTEN__)
+    #define TL_PLATFORM_WINDOWS    0
+    #define TL_PLATFORM_LINUX      0
+    #define TL_PLATFORM_EMSCRIPTEN 1
+#else
+    #define TL_PLATFORM_WINDOWS    0
+    #define TL_PLATFORM_LINUX      1
+    #define TL_PLATFORM_EMSCRIPTEN 0
 #endif

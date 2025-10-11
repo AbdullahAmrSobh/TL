@@ -42,13 +42,13 @@ namespace TL
     }
 
     // Context impl
-    Context* Context::Get()
+    Context* Context::get()
     {
         auto stack = GetStatic();
         return &stack->t_ContextStack[stack->t_ContextStackCount - 1];
     }
 
-    Context* Context::Push(Context* ctx)
+    Context* Context::push(Context* ctx)
     {
         auto stack = GetStatic();
         TL_ASSERT(stack->t_ContextStackCount < ContextStack::k_MaxCount, "Context stack overflow: count exceeds ContextStack::k_MaxCount");
@@ -61,7 +61,7 @@ namespace TL
         return nullptr;
     }
 
-    Context* Context::Pop()
+    Context* Context::pop()
     {
         auto stack = GetStatic();
         if (stack->t_ContextStackCount > 1)

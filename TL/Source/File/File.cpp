@@ -1,5 +1,4 @@
-#include "TL/FileSystem/File.hpp"
-
+#include "TL/File/File.hpp"
 #include "WindowsCommon.inl"
 
 namespace TL
@@ -8,7 +7,7 @@ namespace TL
 
     File::File(StringView path, IOMode mode)
     {
-        auto err = open(path, mode);
+        open(path, mode);
     }
 
     File::~File()
@@ -21,6 +20,7 @@ namespace TL
         DWORD dwDesiredAccess       = 0;
         DWORD dwShareMode           = 0;
         DWORD dwCreationDisposition = 0;
+
         switch (mode)
         {
         case IOMode::Read:
@@ -28,35 +28,51 @@ namespace TL
             dwShareMode           = FILE_SHARE_READ;
             dwCreationDisposition = OPEN_EXISTING;
             break;
+
         case IOMode::Write:
             dwDesiredAccess       = GENERIC_WRITE;
             dwShareMode           = 0;
             dwCreationDisposition = CREATE_ALWAYS;
             break;
+
         case IOMode::Append:
             dwDesiredAccess       = FILE_APPEND_DATA;
             dwShareMode           = 0;
             dwCreationDisposition = OPEN_ALWAYS;
             break;
+
         case IOMode::Overwrite:
             dwDesiredAccess       = GENERIC_WRITE;
             dwShareMode           = 0;
             dwCreationDisposition = TRUNCATE_EXISTING;
             break;
+
         default:
-            // Handle invalid mode if necessary
-            break;
+            return IOResultCode::InvalidParameter;
         }
 
-        m_handle = ::CreateFile((LPCSTR)path.data(), dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, FILE_ATTRIBUTE_NORMAL, NULL);
-        if (m_handle)
-            getlastError();
+        m_handle = ::CreateFileA(
+            path.data(),
+            dwDesiredAccess,
+            dwShareMode,
+            nullptr,
+            dwCreationDisposition,
+            FILE_ATTRIBUTE_NORMAL,
+            nullptr);
+
+        if (m_handle == INVALID_HANDLE_VALUE)
+        {
+            DWORD code = ::GetLastError();
+            TL::windows::logError(code);
+            return TL::windows::getlastError(code);
+        }
+
         return IOResultCode::Success;
     }
 
     void File::close()
     {
-        if (m_handle)
+        if (m_handle && m_handle != INVALID_HANDLE_VALUE)
         {
             ::CloseHandle(m_handle);
             m_handle = nullptr;
@@ -67,7 +83,10 @@ namespace TL
     {
         LARGE_INTEGER fileSize;
         if (!::GetFileSizeEx(m_handle, &fileSize))
+        {
+            TL::windows::logError(::GetLastError());
             return 0;
+        }
         return static_cast<size_t>(fileSize.QuadPart);
     }
 
@@ -76,14 +95,17 @@ namespace TL
         LARGE_INTEGER zero = {0};
         LARGE_INTEGER pos;
         if (!::SetFilePointerEx(m_handle, zero, &pos, FILE_CURRENT))
+        {
+            TL::windows::logError(::GetLastError());
             return 0;
+        }
         return static_cast<size_t>(pos.QuadPart);
     }
 
     IOResult File::read(Block block, uint64_t offset)
     {
         if (!block.ptr || block.size == 0)
-            return 0;
+            return {0, IOResultCode::InvalidParameter};
 
         OVERLAPPED ov = {};
         ov.Offset     = static_cast<DWORD>(offset & 0xFFFFFFFF);
@@ -91,32 +113,43 @@ namespace TL
 
         DWORD bytesRead = 0;
         BOOL  ok        = ::ReadFile(m_handle, block.ptr, static_cast<DWORD>(block.size), &bytesRead, &ov);
+
         if (!ok)
-            getlastError();
-        return static_cast<size_t>(bytesRead);
+        {
+            DWORD code = ::GetLastError();
+            TL::windows::logError(code);
+            return {0, TL::windows::getlastError(code)};
+        }
+
+        return {bytesRead, IOResultCode::Success};
     }
 
     IOResult File::read(String& string, uint64_t offset)
     {
-        // TL_ASSERT(string.size() >= size() - offset);
         if (string.empty())
-            return 0;
+            return {0, IOResultCode::InvalidParameter};
 
         OVERLAPPED ov = {};
         ov.Offset     = static_cast<DWORD>(offset & 0xFFFFFFFF);
         ov.OffsetHigh = static_cast<DWORD>((offset >> 32) & 0xFFFFFFFF);
 
         DWORD bytesRead = 0;
-        BOOL  ok        = ::ReadFile(m_handle, &string[0], static_cast<DWORD>(string.size()), &bytesRead, &ov);
+        BOOL  ok        = ::ReadFile(m_handle, string.data(), static_cast<DWORD>(string.size()), &bytesRead, &ov);
+
         if (!ok)
-            LoglastError();
-        return static_cast<size_t>(bytesRead);
+        {
+            DWORD code = ::GetLastError();
+            TL::windows::logError(code);
+            return {0, TL::windows::getlastError(code)};
+        }
+
+        return {bytesRead, IOResultCode::Success};
     }
 
     IOResult File::write(Block block, uint64_t offset)
     {
         if (!block.ptr || block.size == 0)
-            return 0;
+            return {0, IOResultCode::InvalidParameter};
 
         OVERLAPPED ov = {};
         ov.Offset     = static_cast<DWORD>(offset & 0xFFFFFFFF);
@@ -124,15 +157,21 @@ namespace TL
 
         DWORD bytesWritten = 0;
         BOOL  ok           = ::WriteFile(m_handle, block.ptr, static_cast<DWORD>(block.size), &bytesWritten, &ov);
+
         if (!ok)
-            getlastError();
-        return static_cast<size_t>(bytesWritten);
+        {
+            DWORD code = ::GetLastError();
+            TL::windows::logError(code);
+            return {0, TL::windows::getlastError(code)};
+        }
+
+        return {bytesWritten, IOResultCode::Success};
     }
 
     IOResult File::write(String string, uint64_t offset)
     {
         if (string.empty())
-            return 0;
+            return {0, IOResultCode::InvalidParameter};
 
         OVERLAPPED ov = {};
         ov.Offset     = static_cast<DWORD>(offset & 0xFFFFFFFF);
@@ -140,8 +179,14 @@ namespace TL
 
         DWORD bytesWritten = 0;
         BOOL  ok           = ::WriteFile(m_handle, string.data(), static_cast<DWORD>(string.size()), &bytesWritten, &ov);
+
         if (!ok)
-            getlastError();
-        return static_cast<size_t>(bytesWritten);
+        {
+            DWORD code = ::GetLastError();
+            TL::windows::logError(code);
+            return {0, TL::windows::getlastError(code)};
+        }
+
+        return {bytesWritten, IOResultCode::Success};
     }
 } // namespace TL

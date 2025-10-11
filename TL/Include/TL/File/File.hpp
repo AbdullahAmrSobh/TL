@@ -1,7 +1,7 @@
 #pragma once
 
-#include "TL/String.hpp"
 #include "TL/Stream.hpp"
+#include "TL/Containers/StringView.hpp"
 
 namespace TL
 {

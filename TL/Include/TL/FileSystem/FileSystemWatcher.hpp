@@ -1,8 +1,11 @@
 #pragma once
 
 #include "TL/Event.hpp"
-#include "TL/String.hpp"
 #include "TL/Flags.hpp"
+
+#include "TL/Containers//Vector.hpp"
+#include "TL/Containers//String.hpp"
+#include "TL/Containers//StringView.hpp"
 
 namespace TL
 {

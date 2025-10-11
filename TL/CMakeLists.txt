@@ -11,17 +11,26 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/OffsetAllocator/OffsetAllocator.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Flags.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Log.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Containers.hpp
+
+
+    ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Containers/Vector.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Containers/Map.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Containers/Set.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Containers/String.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Containers/StringView.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Containers/STLAdapter.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Containers/Optional.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Containers/Function.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Containers/Varient.hpp
+
     ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Span.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/UniquePtr.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Ptr.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Serialization/Binary.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Stacktrace.hpp
 
     ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Context.hpp
 
     ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Library.hpp
-
-    ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/DynamicLibrary.hpp
 
     $<$<CXX_COMPILER_ID:MSVC>:${CMAKE_CURRENT_SOURCE_DIR}/TL.natvis>
 )
@@ -40,9 +49,11 @@ set(SOURCE_FILES
 
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/Context.cpp
 
-    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Windows/Library.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Windows/File.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Windows/FileWatcher.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Library/Library.cpp
+
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/File/File.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/FileSystem/FileSystem.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/FileSystem/FileSystemWatcher.cpp
 
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/DynamicLibrary.cpp
 
@@ -60,6 +71,7 @@ tl_add_target(
 target_compile_definitions(TL PUBLIC $<$<CONFIG:Debug>:TL_DEBUG>)
 
 target_include_directories(TL PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Include)
+target_include_directories(TL PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Source)
 target_include_directories(TL SYSTEM PUBLIC ${tracy_SOURCE_DIR}/public)
 
 target_link_libraries(TL PRIVATE spdlog)

@@ -2,7 +2,7 @@
 
 #include <TL/Assert.hpp>
 
-#include <TL/Containers.hpp>
+#include <TL/Containers/String.hpp>
 
 #define TL_DEFINE_POD_HASH(Type)                        \
     template<>                                          \

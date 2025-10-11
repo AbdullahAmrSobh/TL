@@ -17,125 +17,117 @@ namespace TL
         }
 
         // Get current active context
-        static Context*   Get();
+        static Context* get();
 
-        // Push new context on top of the stack and return current
-        static Context*   Push(Context* ctx);
+        // Push new context on top of the stack and return the previous one
+        static Context* push(Context* ctx);
 
-        // Pop and return current context
-        static Context*   Pop();
+        // Pop and return the current context
+        static Context* pop();
 
-        // Get current context active allocator
-        class IAllocator* GetAllocator() const { return m_allocator; }
+        // Get current context's active allocator
+        IAllocator* getAllocator() const { return m_allocator; }
 
     private:
         IAllocator* m_allocator = nullptr;
     };
 
+    // -------------------------------------------------------------------------
+    // Allocation Helpers (Consistent with IAllocator Interface)
+    // -------------------------------------------------------------------------
+
     // Allocate with explicit allocator
-    inline static Block Allocate(IAllocator* allocator, size_t size, size_t alignment)
+    inline Block allocate(IAllocator* allocator, size_t size, size_t alignment)
     {
-        return allocator->Allocate(size, alignment);
+        return allocator->allocate(size, alignment);
     }
 
     // Allocate with current context
-    inline static Block Allocate(size_t size, size_t alignment)
+    inline Block allocate(size_t size, size_t alignment)
     {
-        return Allocate(Context::Get()->GetAllocator(), size, alignment);
+        return allocate(Context::get()->getAllocator(), size, alignment);
     }
 
-    // Reallocate with explicit allocator
-    inline static Block Reallocate(IAllocator* allocator, Block block, size_t newSize, size_t alignment)
+    // Free with explicit allocator
+    inline void free(IAllocator* allocator, Block block, size_t alignment)
     {
-        return allocator->Reallocate(block, newSize, alignment);
+        allocator->free(block, alignment);
     }
 
-    // Reallocate with current context
-    inline static Block Reallocate(Block block, size_t newSize, size_t alignment)
+    // Free with current context
+    inline void free(Block block, size_t alignment)
     {
-        return Reallocate(Context::Get()->GetAllocator(), block, newSize, alignment);
+        free(Context::get()->getAllocator(), block, alignment);
     }
 
-    // Release with explicit allocator
-    inline static void Release(IAllocator* allocator, Block block, size_t alignment)
-    {
-        allocator->Release(block, alignment);
-    }
+    // -------------------------------------------------------------------------
+    // Typed Allocation Helpers
+    // -------------------------------------------------------------------------
 
-    // Release with current context
-    inline static void Release(Block block, size_t alignment)
-    {
-        Release(Context::Get()->GetAllocator(), block, alignment);
-    }
-
-    // Allocate typed with explicit allocator
     template<typename T>
-    inline static T* Allocate(IAllocator* allocator, size_t count = 1)
+    inline T* allocate(IAllocator* allocator, size_t count = 1)
     {
         size_t alignment = alignof(T);
-        size_t size      = sizeof(T) * count;
-        Block  block     = Allocate(allocator, size, alignment);
+        size_t size = sizeof(T) * count;
+        Block block = allocate(allocator, size, alignment);
         return reinterpret_cast<T*>(block.ptr);
     }
 
-    // Allocate typed with current context
     template<typename T>
-    inline static T* Allocate(size_t count = 1)
+    inline T* allocate(size_t count = 1)
     {
-        return Allocate<T>(Context::Get()->GetAllocator(), count);
+        return allocate<T>(Context::get()->getAllocator(), count);
     }
 
-    // Release typed with explicit allocator
     template<typename T>
-    inline static void Release(IAllocator* allocator, T* object, size_t count = 1)
+    inline void free(IAllocator* allocator, T* object, size_t count = 1)
     {
         if (!object)
             return;
         size_t alignment = alignof(T);
-        Block  block{reinterpret_cast<void*>(object), sizeof(T) * count};
-        Release(allocator, block, alignment);
+        Block block{ reinterpret_cast<void*>(object), sizeof(T) * count };
+        free(allocator, block, alignment);
     }
 
-    // Release typed with current context
     template<typename T>
-    inline static void Release(T* object, size_t count = 1)
+    inline void free(T* object, size_t count = 1)
     {
-        Release<T>(Context::Get()->GetAllocator(), object, count);
+        free<T>(Context::get()->getAllocator(), object, count);
     }
 
-    // Construct with explicit allocator
+    // -------------------------------------------------------------------------
+    // Construction Helpers
+    // -------------------------------------------------------------------------
+
     template<typename T, typename... Args>
-    inline static T* ConstructFrom(IAllocator* allocator, Args&&... args)
+    inline T* constructFrom(IAllocator* allocator, Args&&... args)
     {
-        T* ptr = Allocate<T>(allocator, 1);
+        T* ptr = allocate<T>(allocator, 1);
         if (ptr)
             new (ptr) T(std::forward<Args>(args)...);
         return ptr;
     }
 
-    // Construct with current context
     template<typename T, typename... Args>
-    inline static T* Construct(Args&&... args)
+    inline T* construct(Args&&... args)
     {
-        return ConstructFrom<T>(Context::Get()->GetAllocator(), std::forward<Args>(args)...);
+        return constructFrom<T>(Context::get()->getAllocator(), std::forward<Args>(args)...);
     }
 
-    // Destruct with explicit allocator
     template<typename T>
-    inline static void Destruct(IAllocator* allocator, T* object)
+    inline void destructFrom(IAllocator* allocator, T* object)
     {
         if (object)
         {
             object->~T();
-            Release<T>(allocator, object, 1);
+            free<T>(allocator, object, 1);
         }
     }
 
-    // Destruct with current context
     template<typename T>
-    inline static void Destruct(T* object)
+    inline void destruct(T* object)
     {
-        Destruct<T>(Context::Get()->GetAllocator(), object);
+        destructFrom(Context::get()->getAllocator(), object);
     }
 
 } // namespace TL

@@ -1,15 +1,16 @@
 #include <TL/Allocator/Arena.hpp>
 #include <TL/Allocator/MemPlumber.hpp>
-#include <TL/DynamicLibrary.hpp>
 #include <TL/Serialization/Binary.hpp>
 
 #include <TL/Serialization/Binary.hpp>
-#include <TL/Containers.hpp>
-#include <TL/FileSystem/File.hpp>
+#include <TL/Containers/Vector.hpp>
+#include <TL/Containers/Map.hpp>
+#include <TL/Containers/Set.hpp>
+#include <TL/File/File.hpp>
 #include <TL/Log.hpp>
 #include <TL/Assert.hpp>
 #include <TL/Stacktrace.hpp>
-#include <TL/FileSystem/FileWatcher.hpp>
+#include <TL/FileSystem/FileSystemWatcher.hpp>
 
 #include <thread>
 

@@ -49,8 +49,24 @@
     #define TL_ASSERT_3(expression, message, ...)   TL_INTERNAL_ASSERT_WITH_MSG(expression, message, __VA_ARGS__)
 
     // TODO: support varags
-    #define TL_UNREACHABLE()                        TL_ASSERT(false)
-    #define TL_UNREACHABLE_MSG(...)                 TL_ASSERT(false, __VA_ARGS__)
+    #define TL_UNREACHABLE()                                          \
+        {                                                             \
+            TL_LOG_ERROR("unreachable at {}:{}", __FILE__, __LINE__); \
+            while (true)                                              \
+            {                                                         \
+                TL_DEBUG_BREAK();                                     \
+            }                                                         \
+        }
+
+    #define TL_UNREACHABLE_MSG(...)                                   \
+        {                                                             \
+            TL_LOG_ERROR("unreachable at {}:{}", __FILE__, __LINE__); \
+            TL_LOG_ERROR(__VA_ARGS__);                                \
+            while (true)                                              \
+            {                                                         \
+                TL_DEBUG_BREAK();                                     \
+            }                                                         \
+        }
 
 #else
     #define TL_ASSERT(...)       ((void)0)

@@ -1,6 +1,8 @@
 #pragma once
 
-#include "TL/Containers.hpp"
+#include "TL/Containers/Map.hpp"
+#include "TL/Containers/Vector.hpp"
+#include "TL/Containers/Function.hpp"
 
 namespace TL
 {

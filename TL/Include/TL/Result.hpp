@@ -1,7 +1,8 @@
 #pragma once
 
 #include <TL/Assert.hpp>
-#include <TL/Containers.hpp>
+#include <TL/Containers/String.hpp>
+#include <TL/Containers/StringView.hpp>
 
 #include <type_traits>
 
@@ -39,10 +40,9 @@ namespace TL
         {
         }
 
-        template<typename... FMT_ARGS>
-        explicit Error(const char* fmt, FMT_ARGS... args)
+        explicit Error(TL::StringView fmt)
             : m_success(false)
-            , m_message(std::format(fmt, std::forward(args)...))
+            , m_message(fmt)
         {
         }
 
