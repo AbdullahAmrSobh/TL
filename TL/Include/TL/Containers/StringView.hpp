@@ -6,6 +6,7 @@ namespace TL
 {
     template<typename T>
     using BasicStringView = std::basic_string_view<T>;
+
     using StringView      = BasicStringView<char>;
     using WStringView     = BasicStringView<wchar_t>;
     using U8stringView    = BasicStringView<char8_t>;

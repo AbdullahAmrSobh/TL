@@ -126,7 +126,7 @@ namespace TL
             if (!success)
             {
                 DWORD code = ::GetLastError();
-                TL::windows::logError(code);
+                // TL::windows::logError(code);
                 continue;
             }
 

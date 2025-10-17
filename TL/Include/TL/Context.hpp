@@ -25,6 +25,9 @@ namespace TL
         // Pop and return the current context
         static Context* pop();
 
+        // return the default allocator
+        static IAllocator* getDefaultAllocator();
+
         // Get current context's active allocator
         IAllocator* getAllocator() const { return m_allocator; }
 

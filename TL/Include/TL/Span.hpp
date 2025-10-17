@@ -1,6 +1,7 @@
 #pragma once
 
 #include "TL/Assert.hpp"
+#include "TL/Compiler.hpp"
 
 #include <cstddef>
 #include <initializer_list>

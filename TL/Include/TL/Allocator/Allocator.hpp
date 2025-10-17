@@ -32,9 +32,15 @@ namespace TL
         }
 
         /// @fixme: make this pure function
-        virtual bool operator==(TL_MAYBE_UNUSED const IAllocator& other) const noexcept { return false; }
+        bool operator==(TL_MAYBE_UNUSED const IAllocator& other) const noexcept
+        {
+            return this == &other;
+        }
 
-        virtual bool operator!=(TL_MAYBE_UNUSED const IAllocator& other) const noexcept { return false; }
+        bool operator!=(TL_MAYBE_UNUSED const IAllocator& other) const noexcept
+        {
+            return this != &other;
+        }
 
     protected:
         virtual Block allocateImpl(size_t size, size_t alignment)                   = 0;

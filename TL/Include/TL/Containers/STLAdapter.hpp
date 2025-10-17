@@ -13,8 +13,8 @@ namespace TL
     class StlAllocatorAdapter
     {
     public:
-        static_assert(!std::is_const_v<T>, "STL forbids allocators for const types (allocator<const T> is ill-formed).");
-        static_assert(!std::is_function_v<T>, "STL forbids allocators for function types.");
+        static_assert(!std::is_const_v<T>,     "STL forbids allocators for const types (allocator<const T> is ill-formed).");
+        static_assert(!std::is_function_v<T>,  "STL forbids allocators for function types.");
         static_assert(!std::is_reference_v<T>, "STL forbids allocators for reference types.");
 
         using value_type      = T;

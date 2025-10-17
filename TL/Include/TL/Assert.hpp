@@ -73,5 +73,3 @@
     #define TL_UNREACHABLE()     ((void)0)
     #define TL_UNREACHABLE_MSG() ((void)0)
 #endif
-
-#include "TL/Compiler.hpp"

@@ -10,6 +10,7 @@
 #include <TL/Log.hpp>
 #include <TL/Assert.hpp>
 #include <TL/Stacktrace.hpp>
+#include <TL/Literals.hpp>
 #include <TL/FileSystem/FileSystemWatcher.hpp>
 
 #include <thread>
@@ -234,7 +235,55 @@ int main()
 
 #endif
 
+#include <TL/Context.hpp>
+
 int main()
 {
+    struct TestObject
+    {
+        int   x;
+        float y;
+        char _padd[16_mb];
+        char  tag;
 
+        TestObject(int a, float b, char c)
+            : x(a)
+            , y(b)
+            , tag(c)
+        {
+        }
+    };
+
+    TL::Arena     arena;
+
+    constexpr int kOuterLoops  = 1'000'000;
+    constexpr int kInnerAllocs = 64;
+
+    for (int i = 0; i < kOuterLoops; ++i)
+    {
+        // allocate a few objects per iteration
+        for (int j = 0; j < kInnerAllocs; ++j)
+        {
+            int         a = j;
+            float       b = j * 0.5f;
+            char        c = 'A' + (j % 26);
+
+            TestObject* obj = TL::constructFrom<TestObject>(&arena, a, b, c);
+            assert(obj);
+            assert(obj->x == a);
+            assert(obj->y == b);
+            assert(obj->tag == c);
+        }
+
+        // After allocations, reset the arena
+        arena.reset();
+
+        // Check that arena is reusing memory properly (no new allocations expected)
+        // This is indirect: if reset() failed, subsequent allocations would crash/assert.
+        if ((i % 100000) == 0)
+            printf("Iteration %d OK\n", i);
+    }
+
+    printf("Arena stress test completed successfully.\n");
+    return 0;
 }

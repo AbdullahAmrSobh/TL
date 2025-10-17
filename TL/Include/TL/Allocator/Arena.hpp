@@ -5,14 +5,13 @@
 
 namespace TL
 {
-    class TL_EXPORT Arena : public IAllocator
+    class TL_EXPORT Arena final : public IAllocator
     {
     public:
         Arena();
         ~Arena();
 
-        void Collect();
-        bool CheckOwned(const void* ptr);
+        void reset();
 
     private:
         Block allocateImpl(size_t size, size_t alignment) override;
@@ -20,6 +19,7 @@ namespace TL
         void  freeImpl(Block block, size_t alignment) override;
 
     private:
-        void* m_arena;
+        struct Impl;
+        Impl* m_arena;
     };
 } // namespace TL

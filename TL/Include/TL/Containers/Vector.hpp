@@ -11,5 +11,4 @@ namespace TL
 
     template<typename T, std::size_t Capacity = 16, bool AllowExceed = false>
     using SmallVector = std::vector<T, StlAllocatorAdapter<T>>; // Custom implementation may be needed for small storage.
-
 } // namespace TL
