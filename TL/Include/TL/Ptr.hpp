@@ -41,12 +41,7 @@ namespace TL
     template<class T, class... Args>
     inline constexpr Ptr<T> CreatePtr(Args&&... args)
     {
-        // Allocate memory through Allocator
-        T* memory = allocate<T>(1);
-        // Use placement new to construct the object in allocated memory
-        new (memory) T(std::forward<Args>(args)...);
-        // Return Ptr with custom deleter
-        return Ptr<T>(memory);
+        return Ptr<T>(construct<T>(std::forward<Args>(args)...));
     }
 
     template<class T, class... Args>

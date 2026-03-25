@@ -16,11 +16,11 @@ namespace TL
     {
         struct Watch
         {
-            HANDLE               handle = INVALID_HANDLE_VALUE;
-            TL::String           path;
-            Flags<FileEventType> eventTypes;
-            bool                 watchSubtree = false;
-            OVERLAPPED           overlapped   = {};
+            HANDLE                handle = INVALID_HANDLE_VALUE;
+            TL::String            path;
+            Flags<FileEventType>  eventTypes;
+            bool                  watchSubtree = false;
+            OVERLAPPED            overlapped   = {};
             TL::Vector<uint8_t>   buffer;
         };
 
@@ -111,7 +111,7 @@ namespace TL
             DWORD bytesReturned = 0;
             BOOL  success       = ::ReadDirectoryChangesW(
                 watch.handle,
-                fullPath.data(),
+                watch.buffer.data(),
                 static_cast<DWORD>(fullPath.size()),
                 watch.watchSubtree ? TRUE : FALSE,
                 FILE_NOTIFY_CHANGE_FILE_NAME |

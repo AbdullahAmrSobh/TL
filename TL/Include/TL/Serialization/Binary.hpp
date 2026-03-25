@@ -5,6 +5,8 @@
 #include "TL/Bits.hpp"
 #include "TL/Serialization/SerializeTraits.hpp"
 
+#include "TL/Stream.hpp"
+
 #include <vector>
 #include <unordered_map>
 #include <iostream>
@@ -14,11 +16,13 @@
 
 namespace TL
 {
+    // TODO: Breakdown to BinaryReader, BinaryWriter
     class BinaryArchive
     {
     public:
-        BinaryArchive(std::iostream& stream)
+        BinaryArchive(TL::IStream& stream)
             : m_stream(&stream)
+            , m_cursor(0)
         {
         }
 
@@ -28,35 +32,25 @@ namespace TL
         template<Deserializable<BinaryArchive> T>
         void Decode(T& value);
 
-        void StreamWrite(Block block);
-
-        void StreamRead(Block block);
-
-        template<typename T>
-        static void Save(const T& object, const char* path)
+        void StreamWrite(Block block)
         {
-            std::fstream      file{path, std::ios::binary | std::ios::out};
-            TL::BinaryArchive archive{file};
-            archive.Encode(object);
+            TL_MAYBE_UNUSED auto [cursor, result] = m_stream->write(block, m_cursor);
+            TL_ASSERT(IsSuccess(result));
+            m_cursor += cursor;
         }
 
-        template<typename T>
-        static T Load(const char* path)
+        void StreamRead(Block block)
         {
-            T                 object{};
-            std::fstream      file{path, std::ios::binary | std::ios::in};
-            TL::BinaryArchive archive{file};
-            archive.Decode(object);
-            return object;
+            TL_MAYBE_UNUSED auto [cursor, result] = m_stream->read(block, m_cursor);
+            TL_ASSERT(IsSuccess(result));
+            m_cursor += cursor;
         }
 
     private:
-        std::iostream* m_stream;
+        TL::IStream* m_stream = nullptr;
+        size_t       m_cursor = 0;
     };
-} // namespace TL
 
-namespace TL
-{
     template<Serializable<BinaryArchive> T>
     inline void BinaryArchive::Encode(const T& value)
     {
@@ -148,7 +142,14 @@ namespace TL
     inline void Encode(BinaryArchive& archive, const std::basic_string<CharType, CharTraits, AllocatorType>& value)
     {
         Encode(archive, value.size());
-        archive.StreamWrite(Block{.ptr = (void*)value.data(), .size = value.size() * sizeof(CharType)});
+        if (value.size() != 0)
+        {
+            archive.StreamWrite(Block{.ptr = (void*)value.data(), .size = value.size() * sizeof(CharType)});
+        }
+        else
+        {
+            // nothing to write
+        }
     }
 
     template<class CharType, class CharTraits, class AllocatorType>
@@ -293,4 +294,3 @@ namespace TL
         ::TL::Decode(archive, variable);                            \
     else                                                            \
         ::TL::Decode(archive, #variable, variable);
-

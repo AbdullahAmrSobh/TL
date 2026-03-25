@@ -16,6 +16,8 @@ namespace TL
     class File final : public IStream
     {
     public:
+
+        // remove ctor/dtor (make them default)
         File();
         File(StringView path, IOMode mode);
         ~File();

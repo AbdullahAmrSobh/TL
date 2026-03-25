@@ -143,6 +143,63 @@
     </Expand>
   </Type>
 
+  <!-- TL::Span -->
+  <Type Name="TL::Span&lt;*&gt;">
+    <DisplayString>TL::Span&lt;{m_data[0]}&gt; [{m_count}]</DisplayString>
+    <Expand>
+      <Item Name="[size]">m_count</Item>
+      <ArrayItems>
+        <Size>m_count</Size>
+        <ValuePointer>m_data</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+  
+  <!-- TL::StringView -->
+  <Type Name="TL::StringView">
+    <DisplayString>{_Mydata,[_Mysize]s}</DisplayString>
+    <StringView>_Mydata,[_Mysize]s</StringView>
+    <Expand>
+      <Item Name="[size]">_Mysize</Item>
+    </Expand>
+  </Type>
+
+  <!-- TL::WStringView -->
+  <Type Name="TL::WStringView">
+    <DisplayString>{_Mydata,[_Mysize]su}</DisplayString>
+    <StringView>_Mydata,[_Mysize]su</StringView>
+    <Expand>
+      <Item Name="[size]">_Mysize</Item>
+    </Expand>
+  </Type>
+
+  <!-- TL::U8stringView -->
+  <Type Name="TL::U8stringView">
+    <DisplayString>{_Mydata,[_Mysize]s8}</DisplayString>
+    <StringView>_Mydata,[_Mysize]s8</StringView>
+    <Expand>
+      <Item Name="[size]">_Mysize</Item>
+    </Expand>
+  </Type>
+
+  <!-- TL::U16stringView -->
+  <Type Name="TL::U16stringView">
+    <DisplayString>{_Mydata,[_Mysize]su}</DisplayString>
+    <StringView>_Mydata,[_Mysize]su</StringView>
+    <Expand>
+      <Item Name="[size]">_Mysize</Item>
+    </Expand>
+  </Type>
+
+  <!-- TL::U32stringView -->
+  <Type Name="TL::U32stringView">
+    <DisplayString>{_Mydata,[_Mysize]s32}</DisplayString>
+    <StringView>_Mydata,[_Mysize]s32</StringView>
+    <Expand>
+      <Item Name="[size]">_Mysize</Item>
+    </Expand>
+  </Type>
+
   <!-- TL::Optional -->
   <Type Name="TL::Optional&lt;*&gt;">
     <DisplayString Condition="_Has_value == true">TL::Optional&lt;{_Storage._Value}&gt;</DisplayString>

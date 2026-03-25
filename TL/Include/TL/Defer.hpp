@@ -41,4 +41,4 @@ namespace TL
 #define TL_CONCATENATE(x, y)        TL_CONCATENATE_DETAIL(x, y)
 
 // Defer macro to use a lambda without additional parentheses
-#define TL_defer                    [[maybe_unused]] auto TL_CONCATENATE(_tl_defer_, TL_CONCATENATE(__COUNTER__, __LINE__)) = [&]()
+#define TL_defer                    TL::Defer TL_CONCATENATE(_tl_defer_, TL_CONCATENATE(__COUNTER__, __LINE__)) = [&]()

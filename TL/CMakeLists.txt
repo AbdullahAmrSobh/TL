@@ -43,8 +43,6 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/OffsetAllocator/OffsetAllocator.cpp
 
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/Log.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Serialization/Serialization.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Serialization/Binary.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/Stacktrace.cpp
 
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/Context.cpp

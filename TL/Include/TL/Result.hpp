@@ -118,7 +118,7 @@ namespace TL
         {
             if constexpr (std::is_enum_v<ErrorType>)
             {
-                return IsSuccess(result);
+                return ::TL::IsSuccess(result);
             }
             else
             {

@@ -33,13 +33,21 @@ endif()
 # Enable developer mode
 set(TL_DEVELOPER_MODE ${PROJECT_IS_TOP_LEVEL})
 
-option(TL_BUILD_TESTS "Enable Tests" ${PROJECT_IS_TOP_LEVEL})
 
 # ==== Options ====
-option(TL_ENABLE_TRACY "Enable Tracy profiler" ON)
-option(TL_TRACY_MEMORY_PROFILING "Enable Tracy memory profiling" ON)
-option(TL_TRACK_ALLOCATION_SIZES "Enable collecting global allocation sizes, and report on exit" ON)
+option(TL_ENABLE_TRACY                "Enable Tracy profiler"                                                     ON)
+option(TL_TRACY_MEMORY_PROFILING      "Enable Tracy memory profiling"                                             ON)
+option(TL_TRACK_ALLOCATION_SIZES      "Enable collecting global allocation sizes, and report on exit"             ON)
 option(TL_TRACK_ALLOCATION_CALLSTACKS "Enable collecting global allocation callstacks and report on exit (SLOW!)" OFF)
+option(TL_BUILD_TESTS                 "Builds TL unittests"                                                       ${PROJECT_IS_TOP_LEVEL})
+
+# ==== Messages ===
+message(STATUS "TL config options")
+message(STATUS "TL_ENABLE_TRACY                : ${TL_ENABLE_TRACY}")
+message(STATUS "TL_TRACY_MEMORY_PROFILING      : ${TL_TRACY_MEMORY_PROFILING}")
+message(STATUS "TL_TRACK_ALLOCATION_SIZES      : ${TL_TRACK_ALLOCATION_SIZES}")
+message(STATUS "TL_TRACK_ALLOCATION_CALLSTACKS : ${TL_TRACK_ALLOCATION_CALLSTACKS}")
+message(STATUS "TL_BUILD_TESTS                 : ${TL_BUILD_TESTS}")
 
 # ==== Tracy Profiling ====
 if(TL_ENABLE_TRACY)

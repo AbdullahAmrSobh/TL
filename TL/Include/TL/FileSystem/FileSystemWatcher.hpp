@@ -43,7 +43,7 @@ namespace TL
         ~FileWatcher();
 
         // add a path to watch list
-        void watch(StringView path, Flags<FileEventType> eventTypes, bool watchSubtree);
+        void watch(StringView path, Flags<FileEventType> eventTypes, bool watchSubtree = false);
 
         // remove path from watch list
         void unwatch(StringView path);

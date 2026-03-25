@@ -1,6 +1,7 @@
 #include <cstdlib>
 #include <stdint.h>
 #include <stdio.h>
+#include <string.h>
 
 #include <TL/Stacktrace.hpp>
 #include "Tl/Allocator/MemPlumber.hpp"
@@ -87,6 +88,9 @@ namespace TL
             pointerMetaDataRecord->next = m_PointerListHashtable[hashIndex];
 
             // fill in the metadata
+            // skip the following callstacks
+            // MemPlumberImpl::allocate
+            // MemPlumber::allocateImpl
             pointerMetaDataRecord->stacktrace = CaptureStacktrace(5);
             pointerMetaDataRecord->size       = size;
 
@@ -184,6 +188,7 @@ namespace TL
                     metaDataBucketLinkedListElement = metaDataBucketLinkedListElement->next;
                 }
             }
+            printf("[TL::MemPlumber exit allocations count: %zu, Total allocation size: %zu]\n", memLeakCount, memLeakSize);
         }
     };
 

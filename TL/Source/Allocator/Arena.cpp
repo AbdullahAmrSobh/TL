@@ -11,19 +11,18 @@ namespace TL
     struct ArenaNode
     {
         ArenaNode*  next;
-        size_t      size;   // total block size (including header)
-        size_t      cursor; // offset from node base where next allocation will start
+        size_t      size;
+        size_t      cursor;  // absolute offset from node base ('this' pointer)
 
         inline void init(size_t totalBlockSize)
         {
             next   = nullptr;
             size   = totalBlockSize;
-            cursor = sizeof(ArenaNode); // absolute offset from node base
+            cursor = sizeof(ArenaNode);
         }
 
         inline void* allocate(size_t reqSize, size_t alignment)
         {
-            // sanitize alignment
             if (alignment == 0)
                 alignment = alignof(max_align_t);
             TL_ASSERT((alignment & (alignment - 1)) == 0, "alignment must be power of two");
@@ -37,7 +36,7 @@ namespace TL
             if (cursor + total <= size) // size is whole block size now
             {
                 void* ret = (void*)aligned;
-                cursor += (uint32_t)total; // if you must keep cursor small, validate/cast carefully
+                cursor += (uint32_t)total;
                 return ret;
             }
             return nullptr;

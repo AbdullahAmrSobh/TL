@@ -51,4 +51,13 @@ namespace TL
         NonCopyable& operator=(const NonCopyable&) = delete;
         ~NonCopyable()                             = default;
     };
+
+    inline static uint64_t hashBytes(TL::Block b)
+    {
+        if (b.ptr == nullptr || b.size == 0)
+            return 0;
+
+        auto s = TL::String(reinterpret_cast<const char*>(b.ptr), b.size);
+        return static_cast<uint64_t>(std::hash<TL::String>{}(s));
+    }
 } // namespace TL

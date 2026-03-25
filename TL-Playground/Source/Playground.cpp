@@ -236,54 +236,105 @@ int main()
 #endif
 
 #include <TL/Context.hpp>
+#include <TL/File/File.hpp>
+#include <TL/FileSystem/FileSystem.hpp>
+#include <TL/FileSystem/FileSystemWatcher.hpp>
+#include <TL/Ptr.hpp>
 
 int main()
 {
-    struct TestObject
-    {
-        int   x;
-        float y;
-        char _padd[16_mb];
-        char  tag;
-
-        TestObject(int a, float b, char c)
-            : x(a)
-            , y(b)
-            , tag(c)
-        {
-        }
+    TL::Vector<int>   v = {1, 2, 3, 4, 5};
+    TL::Map<int, int> m = {
+        {1, 9},
+        {8, 2},
+        {7, 3},
+        {6, 4},
+        {5, 3},
+        {4, 2},
     };
 
-    TL::Arena     arena;
+    TL::Set<int> s = {1, 1, 1, 2, 1, 1, 1, 2, 2, 2, 4, 3};
+    TL::Ptr<int> p = TL::CreatePtr<int>(1);
 
-    constexpr int kOuterLoops  = 1'000'000;
-    constexpr int kInnerAllocs = 64;
+    // struct TestObject
+    // {
+    //     int   x;
+    //     float y;
+    //     char _padd[16_mb];
+    //     char  tag;
 
-    for (int i = 0; i < kOuterLoops; ++i)
-    {
-        // allocate a few objects per iteration
-        for (int j = 0; j < kInnerAllocs; ++j)
-        {
-            int         a = j;
-            float       b = j * 0.5f;
-            char        c = 'A' + (j % 26);
+    //     TestObject(int a, float b, char c)
+    //         : x(a)
+    //         , y(b)
+    //         , tag(c)
+    //     {
+    //     }
+    // };
 
-            TestObject* obj = TL::constructFrom<TestObject>(&arena, a, b, c);
-            assert(obj);
-            assert(obj->x == a);
-            assert(obj->y == b);
-            assert(obj->tag == c);
-        }
+    // TL::Arena     arena;
 
-        // After allocations, reset the arena
-        arena.reset();
+    // constexpr int kOuterLoops  = 1'000'000;
+    // constexpr int kInnerAllocs = 64;
 
-        // Check that arena is reusing memory properly (no new allocations expected)
-        // This is indirect: if reset() failed, subsequent allocations would crash/assert.
-        if ((i % 100000) == 0)
-            printf("Iteration %d OK\n", i);
-    }
+    // for (int i = 0; i < kOuterLoops; ++i)
+    // {
+    //     // allocate a few objects per iteration
+    //     for (int j = 0; j < kInnerAllocs; ++j)
+    //     {
+    //         int         a = j;
+    //         float       b = j * 0.5f;
+    //         char        c = 'A' + (j % 26);
 
-    printf("Arena stress test completed successfully.\n");
-    return 0;
+    //         TestObject* obj = TL::constructFrom<TestObject>(&arena, a, b, c);
+    //         assert(obj);
+    //         assert(obj->x == a);
+    //         assert(obj->y == b);
+    //         assert(obj->tag == c);
+    //     }
+
+    //     // After allocations, reset the arena
+    //     arena.reset();
+
+    //     // Check that arena is reusing memory properly (no new allocations expected)
+    //     // This is indirect: if reset() failed, subsequent allocations would crash/assert.
+    //     if ((i % 100000) == 0)
+    //         printf("Iteration %d OK\n", i);
+    // }
+
+    // printf("Arena stress test completed successfully.\n");
+    // return 0;
+
+    // TL::FileWatcher watcher;
+    // watcher.watch("./watch-test", TL::FileEventType::Modified);
+    // watcher.subscribe(
+    //     [](const TL::FileEvent& event)
+    //     {
+    //         auto path    = event.path;
+    //         auto type    = event.type;
+    //         auto target  = event.target;
+    //         auto oldPath = event.oldPath;
+    //         TL_LOG_INFO("File event, path {}, type {}, target {}, oldPath {}", path, (int)type, (int)target, oldPath);
+
+    //         // auto f =  TL::File::open(path, TL::FileOpenMode::Read);
+    //         TL::File file;
+    //         if (file.open(path, TL::IOMode::Read) == TL::IOResultCode::Success)
+    //         {
+    //             TL::String content;
+    //             content.resize(file.size());
+
+    //             auto iores = file.read(content);
+    //             // TL_ASSERT(iores.IsSuccess());
+
+    //             TL_LOG_INFO("File content: {}", content);
+    //         }
+
+    //         return false;
+    //     });
+
+    // bool running = true;
+    // while (running)
+    // {
+    //     watcher.poll();
+    //     std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    // }
 }
