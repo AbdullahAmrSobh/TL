@@ -19,10 +19,10 @@
             {                                                                                    \
                 TL_LOG_ERROR("expression: {} failed at {}:{}", #expression, __FILE__, __LINE__); \
                 TL_LOG_ERROR(__VA_ARGS__);                                                       \
-                while (true)                                                                     \
+                do                                                                               \
                 {                                                                                \
                     TL_DEBUG_BREAK();                                                            \
-                }                                                                                \
+                } while (false);                                                                 \
             }                                                                                    \
         }
 
@@ -31,10 +31,10 @@
             if (!(expression))                                                                   \
             {                                                                                    \
                 TL_LOG_ERROR("expression: {} failed at {}:{}", #expression, __FILE__, __LINE__); \
-                while (true)                                                                     \
+                do                                                                               \
                 {                                                                                \
                     TL_DEBUG_BREAK();                                                            \
-                }                                                                                \
+                } while (false);                                                                 \
             }                                                                                    \
         }
 
