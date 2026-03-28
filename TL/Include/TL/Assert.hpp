@@ -13,29 +13,29 @@
         #define TL_DEBUG_BREAK() __debugbreak()
     #endif
 
-    #define TL_INTERNAL_ASSERT_WITH_MSG(expression, ...)                                         \
-        {                                                                                        \
-            if (!(expression))                                                                   \
-            {                                                                                    \
-                TL_LOG_ERROR("expression: {} failed at {}:{}", #expression, __FILE__, __LINE__); \
-                TL_LOG_ERROR(__VA_ARGS__);                                                       \
-                do                                                                               \
-                {                                                                                \
-                    TL_DEBUG_BREAK();                                                            \
-                } while (false);                                                                 \
-            }                                                                                    \
+    #define TL_INTERNAL_ASSERT_WITH_MSG(expression, ...)                                           \
+        {                                                                                          \
+            if (!(expression))                                                                     \
+            {                                                                                      \
+                ::TL::LogError("expression: {} failed at {}:{}", #expression, __FILE__, __LINE__); \
+                ::TL::LogError(__VA_ARGS__);                                                       \
+                do                                                                                 \
+                {                                                                                  \
+                    TL_DEBUG_BREAK();                                                              \
+                } while (false);                                                                   \
+            }                                                                                      \
         }
 
-    #define TL_INTERNAL_ASSERT_NO_MSG(_, expression)                                             \
-        {                                                                                        \
-            if (!(expression))                                                                   \
-            {                                                                                    \
-                TL_LOG_ERROR("expression: {} failed at {}:{}", #expression, __FILE__, __LINE__); \
-                do                                                                               \
-                {                                                                                \
-                    TL_DEBUG_BREAK();                                                            \
-                } while (false);                                                                 \
-            }                                                                                    \
+    #define TL_INTERNAL_ASSERT_NO_MSG(_, expression)                                               \
+        {                                                                                          \
+            if (!(expression))                                                                     \
+            {                                                                                      \
+                ::TL::LogError("expression: {} failed at {}:{}", #expression, __FILE__, __LINE__); \
+                do                                                                                 \
+                {                                                                                  \
+                    TL_DEBUG_BREAK();                                                              \
+                } while (false);                                                                   \
+            }                                                                                      \
         }
 
     #define TL_ASSERT(...)                          TL_ASSERT_CHOOSE(__VA_ARGS__, TL_ASSERT_3, TL_ASSERT_2, TL_ASSERT_1)(__VA_ARGS__)
@@ -49,23 +49,23 @@
     #define TL_ASSERT_3(expression, message, ...)   TL_INTERNAL_ASSERT_WITH_MSG(expression, message, __VA_ARGS__)
 
     // TODO: support varags
-    #define TL_UNREACHABLE()                                          \
-        {                                                             \
-            TL_LOG_ERROR("unreachable at {}:{}", __FILE__, __LINE__); \
-            while (true)                                              \
-            {                                                         \
-                TL_DEBUG_BREAK();                                     \
-            }                                                         \
+    #define TL_UNREACHABLE()                                            \
+        {                                                               \
+            ::TL::LogError("unreachable at {}:{}", __FILE__, __LINE__); \
+            do                                                          \
+            {                                                           \
+                TL_DEBUG_BREAK();                                       \
+            } while (false);                                            \
         }
 
-    #define TL_UNREACHABLE_MSG(...)                                   \
-        {                                                             \
-            TL_LOG_ERROR("unreachable at {}:{}", __FILE__, __LINE__); \
-            TL_LOG_ERROR(__VA_ARGS__);                                \
-            while (true)                                              \
-            {                                                         \
-                TL_DEBUG_BREAK();                                     \
-            }                                                         \
+    #define TL_UNREACHABLE_MSG(...)                                     \
+        {                                                               \
+            ::TL::LogError("unreachable at {}:{}", __FILE__, __LINE__); \
+            ::TL::LogError(__VA_ARGS__);                                \
+            do                                                          \
+            {                                                           \
+                TL_DEBUG_BREAK();                                       \
+            } while (false);                                            \
         }
 
 #else

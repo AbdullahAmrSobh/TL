@@ -1,4 +1,5 @@
 #include "TL/Library.hpp"
+#include "TL/Fmt.hpp"
 
 #include "WindowsCommon.inl"
 
@@ -21,7 +22,7 @@ namespace TL
             DWORD code = ::GetLastError();
             TL::windows::logError(code);
 
-            return Error(std::format("Failed to open library '{}': {} (code={})",
+            return Error(TL::fmt("Failed to open library '{}': {} (code={})",
                          path,
                          TL::windows::errorToString(code),
                          code));
@@ -51,10 +52,10 @@ namespace TL
             DWORD code = ::GetLastError();
             TL::windows::logError(code);
 
-            TL_LOG_ERROR("Failed to get procedure '{}' from library: {} (code={})",
-                         procName,
-                         TL::windows::errorToString(code),
-                         code);
+            ::TL::LogError("Failed to get procedure '{}' from library: {} (code={})",
+                           procName,
+                           TL::windows::errorToString(code),
+                           code);
             return nullptr;
         }
 

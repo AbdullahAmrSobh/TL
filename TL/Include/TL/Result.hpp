@@ -166,7 +166,7 @@ inline static Err TL_ERR_FROM_EXPR(Expr);
     {                                          \
         if (auto err = TL_ERR_FROM_EXPR(expr)) \
         {                                      \
-            TL_LOG_ERROR(__VA_ARGS__)          \
+            ::TL::LogError(__VA_ARGS__);       \
             return err;                        \
         }                                      \
         else                                   \

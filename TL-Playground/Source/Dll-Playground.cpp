@@ -15,11 +15,11 @@
 // extern "C" __declspec(dllexport) void __stdcall
 // TL_DllEntry(TL::LibraryLoaderAction action, void* state)
 // {
-//     TL_LOG_INFO("Hello, from DLL");
-//     // TL_LOG_INFO("Hello, from DLL");
-//     TL_LOG_INFO("Hello, from DLL");
-//     TL_LOG_INFO("Hello, from DLL");
-//     TL_LOG_INFO("Hello, from DLL");
-//     TL_LOG_INFO("Hello, from DLL After some --more update");
-//     TL_LOG_INFO("Hello, from DLL After some --even more update");
+//     TL::LogInfo("Hello, from DLL");
+//     // TL::LogInfo("Hello, from DLL");
+//     TL::LogInfo("Hello, from DLL");
+//     TL::LogInfo("Hello, from DLL");
+//     TL::LogInfo("Hello, from DLL");
+//     TL::LogInfo("Hello, from DLL After some --more update");
+//     TL::LogInfo("Hello, from DLL After some --even more update");
 // }

@@ -29,7 +29,7 @@ public:
 
     ~FooLibrary()
     {
-        TL_LOG_INFO("FooLibrary destroyed");
+        TL::LogInfo("FooLibrary destroyed");
     }
 
     void onUpdate(TL::LibraryLoaderAction action, void* state) override
@@ -37,13 +37,13 @@ public:
         switch (action)
         {
         case TL::LibraryLoaderAction::Load:
-            TL_LOG_INFO("Library loaded");
+            TL::LogInfo("Library loaded");
             break;
         case TL::LibraryLoaderAction::Unload:
-            TL_LOG_INFO("Library unloaded");
+            TL::LogInfo("Library unloaded");
             break;
         case TL::LibraryLoaderAction::Reload:
-            TL_LOG_INFO("Library reloaded");
+            TL::LogInfo("Library reloaded");
             break;
         default:
             break;
@@ -139,12 +139,12 @@ int main()
 
         for (auto i : TL::Span<const int>{1, 2, 3, 4, 5, 6})
         {
-            TL_LOG_INFO("{}", i);
+            TL::LogInfo("{}", i);
         }
 
         auto stacktrace = TL::CaptureStacktrace(0);
 
-        TL_LOG_WARNNING("Stack report: {}", TL::ReportStacktrace(stacktrace));
+        TL::LogWarn("Stack report: {}", TL::ReportStacktrace(stacktrace));
 
         Bar b;
         b.f     = 3.14f;
@@ -172,14 +172,14 @@ int main()
             decoder.Decode(decoded);
         }
 
-        TL_LOG_INFO(" f: {}, b: {}, n: {}", decoded.f, decoded.b, decoded.n);
+        TL::LogInfo(" f: {}, b: {}, n: {}", decoded.f, decoded.b, decoded.n);
         for (auto [key, value] : decoded.names)
         {
-            TL_LOG_INFO("{} {}", key, value);
+            TL::LogInfo("{} {}", key, value);
         }
         for (auto f : decoded.foos)
         {
-            TL_LOG_INFO("{} {}", f.i, f.b);
+            TL::LogInfo("{} {}", f.i, f.b);
         }
 
         struct Foo
@@ -215,7 +215,7 @@ int main()
             auto type = event.type;
             auto target = event.target;
             auto oldPath = event.oldPath;
-            TL_LOG_INFO("File event, path {}, type {}, target {}, oldPath {}", path, (int)type, (int)target, oldPath);
+            TL::LogInfo("File event, path {}, type {}, target {}, oldPath {}", path, (int)type, (int)target, oldPath);
             return false;
         });
 
@@ -223,7 +223,7 @@ int main()
         // auto typeI32 = builder.DeclareType(nullptr, builder.CreateId("I32"), TL::CodeGen::Type::Kind::I32);
         // auto typeSceneView = builder.DeclareType(nullptr, builder.CreateId("SceneView"), TL::CodeGen::Type::Kind::Struct);
         // builder.StructAddField(typeI32, builder.CreateId("foo"));
-        // TL_LOG_INFO("{}", builder.DumpCppCode());
+        // TL::LogInfo("{}", builder.DumpCppCode());
 
         do
         {
@@ -313,7 +313,7 @@ int main()
     //         auto type    = event.type;
     //         auto target  = event.target;
     //         auto oldPath = event.oldPath;
-    //         TL_LOG_INFO("File event, path {}, type {}, target {}, oldPath {}", path, (int)type, (int)target, oldPath);
+    //         TL::LogInfo("File event, path {}, type {}, target {}, oldPath {}", path, (int)type, (int)target, oldPath);
 
     //         // auto f =  TL::File::open(path, TL::FileOpenMode::Read);
     //         TL::File file;
@@ -325,7 +325,7 @@ int main()
     //             auto iores = file.read(content);
     //             // TL_ASSERT(iores.IsSuccess());
 
-    //             TL_LOG_INFO("File content: {}", content);
+    //             TL::LogInfo("File content: {}", content);
     //         }
 
     //         return false;

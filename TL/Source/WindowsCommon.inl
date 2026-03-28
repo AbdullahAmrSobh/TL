@@ -95,32 +95,32 @@ namespace TL::windows
     {
         switch (code)
         {
-        case ERROR_FILE_NOT_FOUND:    TL_LOG_ERROR("Error: ERROR_FILE_NOT_FOUND"); break;
-        case ERROR_PATH_NOT_FOUND:    TL_LOG_ERROR("Error: ERROR_PATH_NOT_FOUND"); break;
-        case ERROR_ACCESS_DENIED:     TL_LOG_ERROR("Error: ERROR_ACCESS_DENIED"); break;
-        case ERROR_HANDLE_EOF:        TL_LOG_ERROR("Error: ERROR_HANDLE_EOF"); break;
-        case ERROR_DISK_FULL:         TL_LOG_ERROR("Error: ERROR_DISK_FULL"); break;
-        case ERROR_INVALID_HANDLE:    TL_LOG_ERROR("Error: ERROR_INVALID_HANDLE"); break;
-        case ERROR_INVALID_PARAMETER: TL_LOG_ERROR("Error: ERROR_INVALID_PARAMETER"); break;
-        case ERROR_SHARING_VIOLATION: TL_LOG_ERROR("Error: ERROR_SHARING_VIOLATION"); break;
-        case ERROR_LOCK_VIOLATION:    TL_LOG_ERROR("Error: ERROR_LOCK_VIOLATION"); break;
-        case ERROR_ALREADY_EXISTS:    TL_LOG_ERROR("Error: ERROR_ALREADY_EXISTS"); break;
-        case ERROR_FILE_EXISTS:       TL_LOG_ERROR("Error: ERROR_FILE_EXISTS"); break;
-        case ERROR_NOT_ENOUGH_MEMORY: TL_LOG_ERROR("Error: ERROR_NOT_ENOUGH_MEMORY"); break;
-        case ERROR_OUTOFMEMORY:       TL_LOG_ERROR("Error: ERROR_OUTOFMEMORY"); break;
-        case ERROR_OPERATION_ABORTED: TL_LOG_ERROR("Error: ERROR_OPERATION_ABORTED"); break;
-        case ERROR_IO_DEVICE:         TL_LOG_ERROR("Error: ERROR_IO_DEVICE"); break;
-        case ERROR_WRITE_PROTECT:     TL_LOG_ERROR("Error: ERROR_WRITE_PROTECT"); break;
-        case ERROR_READ_FAULT:        TL_LOG_ERROR("Error: ERROR_READ_FAULT"); break;
-        case ERROR_WRITE_FAULT:       TL_LOG_ERROR("Error: ERROR_WRITE_FAULT"); break;
-        case ERROR_BROKEN_PIPE:       TL_LOG_ERROR("Error: ERROR_BROKEN_PIPE"); break;
-        case ERROR_NO_MORE_FILES:     TL_LOG_ERROR("Error: ERROR_NO_MORE_FILES"); break;
-        case ERROR_CRC:               TL_LOG_ERROR("Error: ERROR_CRC"); break;
-        case ERROR_NOT_SUPPORTED:     TL_LOG_ERROR("Error: ERROR_NOT_SUPPORTED"); break;
-        case ERROR_TIMEOUT:           TL_LOG_ERROR("Error: ERROR_TIMEOUT"); break;
-        case ERROR_FILE_CORRUPT:      TL_LOG_ERROR("Error: ERROR_FILE_CORRUPT"); break;
-        case ERROR_FILE_TOO_LARGE:    TL_LOG_ERROR("Error: ERROR_FILE_TOO_LARGE"); break;
-        default:                      TL_LOG_ERROR("Error: {}", ::GetLastError()); break;
+        case ERROR_FILE_NOT_FOUND:    ::TL::LogError("Error: ERROR_FILE_NOT_FOUND"); break;
+        case ERROR_PATH_NOT_FOUND:    ::TL::LogError("Error: ERROR_PATH_NOT_FOUND"); break;
+        case ERROR_ACCESS_DENIED:     ::TL::LogError("Error: ERROR_ACCESS_DENIED"); break;
+        case ERROR_HANDLE_EOF:        ::TL::LogError("Error: ERROR_HANDLE_EOF"); break;
+        case ERROR_DISK_FULL:         ::TL::LogError("Error: ERROR_DISK_FULL"); break;
+        case ERROR_INVALID_HANDLE:    ::TL::LogError("Error: ERROR_INVALID_HANDLE"); break;
+        case ERROR_INVALID_PARAMETER: ::TL::LogError("Error: ERROR_INVALID_PARAMETER"); break;
+        case ERROR_SHARING_VIOLATION: ::TL::LogError("Error: ERROR_SHARING_VIOLATION"); break;
+        case ERROR_LOCK_VIOLATION:    ::TL::LogError("Error: ERROR_LOCK_VIOLATION"); break;
+        case ERROR_ALREADY_EXISTS:    ::TL::LogError("Error: ERROR_ALREADY_EXISTS"); break;
+        case ERROR_FILE_EXISTS:       ::TL::LogError("Error: ERROR_FILE_EXISTS"); break;
+        case ERROR_NOT_ENOUGH_MEMORY: ::TL::LogError("Error: ERROR_NOT_ENOUGH_MEMORY"); break;
+        case ERROR_OUTOFMEMORY:       ::TL::LogError("Error: ERROR_OUTOFMEMORY"); break;
+        case ERROR_OPERATION_ABORTED: ::TL::LogError("Error: ERROR_OPERATION_ABORTED"); break;
+        case ERROR_IO_DEVICE:         ::TL::LogError("Error: ERROR_IO_DEVICE"); break;
+        case ERROR_WRITE_PROTECT:     ::TL::LogError("Error: ERROR_WRITE_PROTECT"); break;
+        case ERROR_READ_FAULT:        ::TL::LogError("Error: ERROR_READ_FAULT"); break;
+        case ERROR_WRITE_FAULT:       ::TL::LogError("Error: ERROR_WRITE_FAULT"); break;
+        case ERROR_BROKEN_PIPE:       ::TL::LogError("Error: ERROR_BROKEN_PIPE"); break;
+        case ERROR_NO_MORE_FILES:     ::TL::LogError("Error: ERROR_NO_MORE_FILES"); break;
+        case ERROR_CRC:               ::TL::LogError("Error: ERROR_CRC"); break;
+        case ERROR_NOT_SUPPORTED:     ::TL::LogError("Error: ERROR_NOT_SUPPORTED"); break;
+        case ERROR_TIMEOUT:           ::TL::LogError("Error: ERROR_TIMEOUT"); break;
+        case ERROR_FILE_CORRUPT:      ::TL::LogError("Error: ERROR_FILE_CORRUPT"); break;
+        case ERROR_FILE_TOO_LARGE:    ::TL::LogError("Error: ERROR_FILE_TOO_LARGE"); break;
+        default:                      ::TL::LogError("Error: {}", ::GetLastError()); break;
         }
     }
 

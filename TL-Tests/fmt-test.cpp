@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <TL/Fmt.hpp>
+#include <TL/Containers/StringView.hpp>
 
 #include <cstdint>
 

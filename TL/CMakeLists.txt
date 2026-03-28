@@ -11,6 +11,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/OffsetAllocator/OffsetAllocator.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Flags.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Log.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Fmt.hpp
 
 
     ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Containers/Vector.hpp
@@ -72,6 +73,7 @@ target_include_directories(TL PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Include)
 target_include_directories(TL PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Source)
 target_include_directories(TL SYSTEM PUBLIC ${tracy_SOURCE_DIR}/public)
 
+target_link_libraries(TL PUBLIC fmt::fmt)
 target_link_libraries(TL PRIVATE spdlog)
 
 # target_link_libraries(TL PUBLIC lz4)
