@@ -69,6 +69,19 @@ tl_add_target(
 )
 target_compile_definitions(TL PUBLIC $<$<CONFIG:Debug>:TL_DEBUG>)
 
+if(TL_ENABLE_TRACY)
+    target_compile_definitions(TL PUBLIC TRACY_ENABLE TL_ENABLE_TRACY)
+    if(TL_TRACY_MEMORY_PROFILING)
+        target_compile_definitions(TL PUBLIC TL_TRACY_MEMORY_PROFILING)
+    endif()
+endif()
+
+if(TL_TRACK_ALLOCATION_CALLSTACKS)
+    target_compile_definitions(TL PUBLIC TL_TRACK_ALLOCATION_CALLSTACKS)
+elseif(TL_TRACK_ALLOCATION_SIZES)
+    target_compile_definitions(TL PUBLIC TL_TRACK_ALLOCATION_SIZES)
+endif()
+
 target_include_directories(TL PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Include)
 target_include_directories(TL PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Source)
 target_include_directories(TL SYSTEM PUBLIC ${tracy_SOURCE_DIR}/public)

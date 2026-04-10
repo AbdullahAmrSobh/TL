@@ -49,29 +49,13 @@ message(STATUS "TL_TRACK_ALLOCATION_SIZES      : ${TL_TRACK_ALLOCATION_SIZES}")
 message(STATUS "TL_TRACK_ALLOCATION_CALLSTACKS : ${TL_TRACK_ALLOCATION_CALLSTACKS}")
 message(STATUS "TL_BUILD_TESTS                 : ${TL_BUILD_TESTS}")
 
-# ==== Tracy Profiling ====
-if(TL_ENABLE_TRACY)
-    add_compile_definitions(TRACY_ENABLE)
-    add_compile_definitions(TL_ENABLE_TRACY)
+# ==== Tracy / Allocation option validation ====
+if(TL_TRACY_MEMORY_PROFILING AND NOT TL_ENABLE_TRACY)
+    message(WARNING "TL_TRACY_MEMORY_PROFILING requires TL_ENABLE_TRACY to be ON.")
 endif()
 
-if(TL_TRACY_MEMORY_PROFILING)
-    if(NOT TL_ENABLE_TRACY)
-        message(WARNING "TL_TRACY_MEMORY_PROFILING requires TL_ENABLE_TRACY to be ON.")
-    else()
-        add_compile_definitions(TL_TRACY_MEMORY_PROFILING)
-    endif()
-endif()
-
-# ==== Allocation Tracking ====
 if(TL_TRACK_ALLOCATION_SIZES AND TL_TRACK_ALLOCATION_CALLSTACKS)
     message(WARNING "TL_TRACK_ALLOCATION_CALLSTACKS overrides TL_TRACK_ALLOCATION_SIZES. Only callstack tracking will be enabled.")
-endif()
-
-if(TL_TRACK_ALLOCATION_CALLSTACKS)
-    add_compile_definitions(TL_TRACK_ALLOCATION_CALLSTACKS)
-elseif(TL_TRACK_ALLOCATION_SIZES)
-    add_compile_definitions(TL_TRACK_ALLOCATION_SIZES)
 endif()
 
 # ---- Add dependencies ----

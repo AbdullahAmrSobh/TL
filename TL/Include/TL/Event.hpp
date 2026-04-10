@@ -65,7 +65,7 @@ namespace TL
         {
             if (handler(event) == true)
             {
-                // break;
+                break;
             }
         }
         // m_queue.push_back(event);
