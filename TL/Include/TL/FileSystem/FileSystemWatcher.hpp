@@ -17,6 +17,7 @@ namespace TL
         Modified = 1 << 2,
         Renamed  = 1 << 3,
     };
+    TL_DEFINE_FLAG_OPERATORS(FileEventType)
 
     enum class FileEventTarget
     {

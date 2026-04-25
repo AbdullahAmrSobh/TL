@@ -11,14 +11,10 @@ namespace TL
     {
         // Capture the current stacktrace, skipping the requested number of frames + this function
         std::stacktrace st = std::stacktrace::current(skipFramesCount + 1);
-        Stacktrace      result{};
-        for (size_t i = 0; i < st.size(); ++i)
-        {
-            if (st[i])
-                result[i] = st[i];
-            else
-                result[i] = {};
-        }
+        Stacktrace result{};
+        size_t     count = std::min(st.size(), result.size());
+        for (size_t i = 0; i < count; ++i)
+            result[i] = st[i] ? st[i] : std::stacktrace_entry{};
         return result;
     }
 
