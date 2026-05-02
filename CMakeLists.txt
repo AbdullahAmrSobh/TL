@@ -1,7 +1,5 @@
 cmake_minimum_required(VERSION 3.14)
 
-include(cmake/variables.cmake)
-
 # ---- In-source build guard ----
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
     message(
@@ -71,12 +69,3 @@ if(TL_BUILD_TESTS)
     enable_testing()
     add_subdirectory(TL-Tests)
 endif()
-
-# ---- Developer mode ----
-if(NOT TL_DEVELOPER_MODE)
-    return()
-elseif(NOT PROJECT_IS_TOP_LEVEL)
-    message(AUTHOR_WARNING "Developer mode is intended for developers of RHI")
-endif()
-
-include(cmake/dev-mode.cmake)
