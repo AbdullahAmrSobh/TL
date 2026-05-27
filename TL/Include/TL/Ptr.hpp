@@ -7,7 +7,7 @@
 
 namespace TL
 {
-        // Custom deleter using Allocator
+    // Custom deleter using Allocator
     template<typename T>
     struct AllocatorDeleter
     {

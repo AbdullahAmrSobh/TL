@@ -239,7 +239,11 @@ int main()
 #include <TL/File/File.hpp>
 #include <TL/FileSystem/FileSystem.hpp>
 #include <TL/FileSystem/FileSystemWatcher.hpp>
+#include <TL/Log.hpp>
 #include <TL/Ptr.hpp>
+
+#include <chrono>
+#include <thread>
 
 int main()
 {
@@ -304,37 +308,22 @@ int main()
     // printf("Arena stress test completed successfully.\n");
     // return 0;
 
-    // TL::FileWatcher watcher;
-    // watcher.watch("./watch-test", TL::FileEventType::Modified);
-    // watcher.subscribe(
-    //     [](const TL::FileEvent& event)
-    //     {
-    //         auto path    = event.path;
-    //         auto type    = event.type;
-    //         auto target  = event.target;
-    //         auto oldPath = event.oldPath;
-    //         TL::LogInfo("File event, path {}, type {}, target {}, oldPath {}", path, (int)type, (int)target, oldPath);
+    TL::FileWatcher watcher;
+    auto            events = TL::FileEventType::Added | TL::FileEventType::Removed |
+                  TL::FileEventType::Modified | TL::FileEventType::Renamed;
+    watcher.watch("./watch-test", events, true);
+    watcher.subscribe(
+        [](const TL::FileEvent& event)
+        {
+            TL::LogInfo("File event, path {}, type {}, target {}, oldPath {}",
+                        event.path, (int)event.type, (int)event.target, event.oldPath);
+            return false;
+        });
 
-    //         // auto f =  TL::File::open(path, TL::FileOpenMode::Read);
-    //         TL::File file;
-    //         if (file.open(path, TL::IOMode::Read) == TL::IOResultCode::Success)
-    //         {
-    //             TL::String content;
-    //             content.resize(file.size());
-
-    //             auto iores = file.read(content);
-    //             // TL_ASSERT(iores.IsSuccess());
-
-    //             TL::LogInfo("File content: {}", content);
-    //         }
-
-    //         return false;
-    //     });
-
-    // bool running = true;
-    // while (running)
-    // {
-    //     watcher.poll();
-    //     std::this_thread::sleep_for(std::chrono::milliseconds(500));
-    // }
+    bool running = true;
+    while (running)
+    {
+        watcher.poll();
+        std::this_thread::sleep_for(std::chrono::milliseconds(200));
+    }
 }
