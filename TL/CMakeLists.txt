@@ -70,7 +70,7 @@ tl_add_target(
 target_compile_definitions(TL PUBLIC $<$<CONFIG:Debug>:TL_DEBUG>)
 
 if(TL_ENABLE_TRACY)
-    target_compile_definitions(TL PUBLIC TRACY_ENABLE TL_ENABLE_TRACY)
+    target_compile_definitions(TL PUBLIC TRACY_ENABLE TL_ENABLE_TRACY TRACY_HAS_CALLSTACK TRACY_CALLSTACK)
     if(TL_TRACY_MEMORY_PROFILING)
         target_compile_definitions(TL PUBLIC TL_TRACY_MEMORY_PROFILING)
     endif()
