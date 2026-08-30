@@ -72,7 +72,9 @@ function(tl_add_target)
     endif()
 
     # Detect the current platform
-    if (WIN32 OR WIN64)
+    if (EMSCRIPTEN)
+        set(PLATFORM_NAME ${tl_add_target_NAME}_PLATFORM_EMSCRIPTEN)
+    elseif (WIN32 OR WIN64)
         set(PLATFORM_NAME ${tl_add_target_NAME}_PLATFORM_WINDOWS)
     elseif (ANDROID)
         set(PLATFORM_NAME ${tl_add_target_NAME}_PLATFORM_ANDROID)

@@ -22,7 +22,7 @@ namespace TL
         // mi_stats_print(nullptr);
     }
 
-    Block Mimalloc::allocateImpl(size_t size, size_t alignment)
+    Block Mimalloc::allocate(size_t size, size_t alignment)
     {
         TL_ASSERT(alignment != 0);
         TL_ASSERT(size != 0);
@@ -41,7 +41,7 @@ namespace TL
         return Block{ptr, size};
     }
 
-    Block Mimalloc::reallocateImpl(Block block, size_t newSize, size_t alignment)
+    Block Mimalloc::reallocate(Block block, size_t newSize, size_t alignment)
     {
         TL_ASSERT(alignment != 0);
         TL_ASSERT(block.size != 0);
@@ -69,7 +69,7 @@ namespace TL
         return Block{ptr, block.size};
     }
 
-    void Mimalloc::freeImpl(Block block, size_t alignment)
+    void Mimalloc::free(Block block, size_t alignment)
     {
         TL_ASSERT(alignment != 0);
         TL_ASSERT(block.size != 0);

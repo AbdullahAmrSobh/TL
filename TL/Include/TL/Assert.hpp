@@ -69,7 +69,7 @@
         }
 
 #else
-    #define TL_ASSERT(...)       ((void)0)
-    #define TL_UNREACHABLE()     ((void)0)
-    #define TL_UNREACHABLE_MSG() ((void)0)
+    #define TL_ASSERT(...)          ((void)0)
+    #define TL_UNREACHABLE()        ((void)0)
+    #define TL_UNREACHABLE_MSG(...) ((void)0)
 #endif

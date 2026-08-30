@@ -1,6 +1,6 @@
 #include "TL/Literals.hpp"
-#include "TL/Allocator/Arena.hpp"
 #include "TL/Context.hpp"
+#include "TL/Allocator/Arena.hpp"
 
 #include <climits> // for SIZE_MAX
 #include <cstddef> // for size_t
@@ -77,12 +77,12 @@ namespace TL
         {
             if (size == 0)
             {
-                TL_UNREACHABLE_MSG("Requested allocation size is zero");
+                // TL_UNREACHABLE_MSG("Requested allocation size is zero");
                 return nullptr;
             }
             else if (size > kMaxAllocationSize)
             {
-                TL_UNREACHABLE_MSG("Requested allocation exceeds 2 GB limit");
+                // TL_UNREACHABLE_MSG("Requested allocation exceeds 2 GB limit");
                 return nullptr;
             }
 
@@ -215,14 +215,14 @@ namespace TL
         delete m_arena;
     }
 
-    Block Arena::allocateImpl(size_t size, size_t alignment)
+    Block Arena::allocate(size_t size, size_t alignment)
     {
         void* ptr = m_arena->allocate(size, alignment);
         TL_ASSERT(ptr != nullptr);
         return {ptr, ptr ? size : 0};
     }
 
-    Block Arena::reallocateImpl(Block block, size_t newSize, size_t alignment)
+    Block Arena::reallocate(Block block, size_t newSize, size_t alignment)
     {
         void* ptr = m_arena->allocate(newSize, alignment);
         if (!ptr)
@@ -236,7 +236,7 @@ namespace TL
         return {ptr, newSize};
     }
 
-    void Arena::freeImpl(Block block, size_t alignment)
+    void Arena::free(Block block, size_t alignment)
     {
         // no-op for arena (free happens only on reset or clear)
         (void)block;

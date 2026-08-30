@@ -3,9 +3,17 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <TL/Stacktrace.hpp>
-#include "Tl/Allocator/MemPlumber.hpp"
-#include "Tl/Allocator/Mimalloc.hpp"
+#include <TL/Assert.hpp>
+#include <TL/Compiler.hpp>
+#include "TL/Allocator/MemPlumber.hpp"
+#include "TL/Allocator/Mimalloc.hpp"
+
+#include <memory>
+#include <string>
+
+#if !TL_PLATFORM_EMSCRIPTEN
+    #include <stacktrace>
+#endif
 
 #ifndef MEMPLUMBER_HASHTABLE_SIZE
     #define MEMPLUMBER_HASHTABLE_SIZE 16384
@@ -22,12 +30,40 @@ namespace TL
         Mimalloc m_allocator;
 
     private:
+#if TL_PLATFORM_EMSCRIPTEN
+        // <stacktrace> is not available under emscripten, keep an empty placeholder
+        struct Stacktrace
+        {
+        };
+#else
+        using Stacktrace = std::stacktrace;
+#endif
+
         struct new_ptr_list_t
         {
             new_ptr_list_t* next;
             Stacktrace      stacktrace;
             size_t          size;
         };
+
+        // Capture the current stacktrace, skipping the requested number of frames + this function
+        static Stacktrace CaptureStacktrace([[maybe_unused]] uint32_t skipFramesCount)
+        {
+#if TL_PLATFORM_EMSCRIPTEN
+            return {};
+#else
+            return std::stacktrace::current(skipFramesCount + 1);
+#endif
+        }
+
+        static std::string ReportStacktrace([[maybe_unused]] const Stacktrace& stacktrace)
+        {
+#if TL_PLATFORM_EMSCRIPTEN
+            return {};
+#else
+            return std::to_string(stacktrace);
+#endif
+        }
 
         new_ptr_list_t* m_PointerListHashtable[MEMPLUMBER_HASHTABLE_SIZE];
 
@@ -72,11 +108,12 @@ namespace TL
             // allocated memory
             void*           rawMem                = m_allocator.allocate(totalSizeToAllocate, alignof(new_ptr_list_t)).ptr;
             new_ptr_list_t* pointerMetaDataRecord = static_cast<new_ptr_list_t*>(rawMem);
-            memset(pointerMetaDataRecord, 0, sizeof(new_ptr_list_t));
 
             // if cannot allocate, return NULL
             if (pointerMetaDataRecord == NULL)
                 return {};
+
+            std::construct_at(pointerMetaDataRecord);
 
             // calculate the actual pointer to provide to the user
             void*  actualPointer = static_cast<char*>(rawMem) + sizeof(new_ptr_list_t);
@@ -91,7 +128,7 @@ namespace TL
             // skip the following callstacks
             // MemPlumberImpl::allocate
             // MemPlumber::allocateImpl
-            pointerMetaDataRecord->stacktrace = CaptureStacktrace(5);
+            pointerMetaDataRecord->stacktrace = CaptureStacktrace(7);
             pointerMetaDataRecord->size       = size;
 
             // put this metadata in the head of the list
@@ -141,22 +178,24 @@ namespace TL
                     }
 
                     // free the memory of the current item
-                    m_allocator.free({metaDataBucketLinkedListElement, metaDataBucketLinkedListElement->size + sizeof(new_ptr_list_t)}, alignment);
+                    size_t recordSize = metaDataBucketLinkedListElement->size + sizeof(new_ptr_list_t);
+                    std::destroy_at(metaDataBucketLinkedListElement);
+                    m_allocator.free({metaDataBucketLinkedListElement, recordSize}, alignment);
 
                     return;
                 }
             }
 
             // if got to here it means memory was allocated before monitoring started. Simply free the memory and return
-            TL_DEBUG_BREAK();
+            TL_ASSERT(false);
 
             m_allocator.free(block, alignment);
         }
 
         void checkLeaks()
         {
-            uint64_t memLeakCount = 0;
-            uint64_t memLeakSize  = 0;
+            size_t memLeakCount = 0;
+            size_t memLeakSize  = 0;
 
             // go over all buckets in the hashmap
             for (int index = 0; index < MEMPLUMBER_HASHTABLE_SIZE; ++index)
@@ -173,7 +212,7 @@ namespace TL
                 while (metaDataBucketLinkedListElement != NULL)
                 {
                     memLeakCount++;
-                    memLeakSize += (uint64_t)metaDataBucketLinkedListElement->size;
+                    memLeakSize += metaDataBucketLinkedListElement->size;
 
                     {
                         auto ptr = size_t((char*)metaDataBucketLinkedListElement + sizeof(new_ptr_list_t));
@@ -201,29 +240,29 @@ namespace TL
         MemPlumberImpl::getInstance().checkLeaks();
     }
 
-    Block MemPlumber::allocateImpl(size_t size, size_t alignment)
+    Block MemPlumber::allocate(size_t size, size_t alignment)
     {
         return MemPlumberImpl::getInstance().allocate(size, alignment);
     }
 
-    Block MemPlumber::reallocateImpl(Block block, size_t newSize, size_t alignment)
+    Block MemPlumber::reallocate(Block block, size_t newSize, size_t alignment)
     {
         // Simple implementation: allocate new, copy, release old
         // TODO: Implement real real realloc
         if (block.ptr == nullptr)
-            return allocateImpl(newSize, alignment);
+            return allocate(newSize, alignment);
 
-        Block newBlock = allocateImpl(newSize, alignment);
+        Block newBlock = allocate(newSize, alignment);
         if (newBlock.ptr && block.ptr)
         {
             size_t copySize = (block.size < newSize) ? block.size : newSize;
             memcpy(newBlock.ptr, block.ptr, copySize);
-            freeImpl(block, alignment);
+            free(block, alignment);
         }
         return newBlock;
     }
 
-    void MemPlumber::freeImpl(Block block, size_t alignment)
+    void MemPlumber::free(Block block, size_t alignment)
     {
         MemPlumberImpl::getInstance().release(block, alignment);
     }

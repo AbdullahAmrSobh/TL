@@ -8,7 +8,6 @@
 #include <TL/File/File.hpp>
 #include <TL/Log.hpp>
 #include <TL/Assert.hpp>
-#include <TL/Stacktrace.hpp>
 #include <TL/FileSystem/FileSystemWatcher.hpp>
 // #include <TL/DynamicLibrary.hpp>
 

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "TL/Log.hpp"
 #include "TL/Stream.hpp"
 
 #define WIN32_LEAN_AND_MEAN

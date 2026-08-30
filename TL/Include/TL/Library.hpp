@@ -28,6 +28,6 @@ namespace TL
         }
 
     private:
-        void* m_impl;
+        void* m_impl = nullptr;
     };
 } // namespace TL

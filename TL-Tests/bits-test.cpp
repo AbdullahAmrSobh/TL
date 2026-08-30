@@ -1,7 +1,5 @@
 #include <gtest/gtest.h>
 
-#include <TL/Bits.hpp>
-
 #include <cstdint>
 
 // Test fixture for Vector tests
@@ -33,7 +31,7 @@ TEST_F(BitsTest, ByteSwap)
     do                                                               \
     {                                                                \
         TYPE orig     = (VALUE);                                     \
-        TYPE swapped  = TL::ByteSwap(orig);                          \
+        TYPE swapped  = std::byteswap(orig);                          \
         TYPE expected = 0;                                           \
         for (size_t i = 0; i < sizeof(TYPE) * 8; ++i)                \
         {                                                            \
@@ -51,7 +49,7 @@ TEST_F(BitsTest, ByteSwap)
         using UInt = std::conditional_t<sizeof(TYPE) == 4, uint32_t, uint64_t>; \
         UInt orig_bits;                                                         \
         memcpy(&orig_bits, &orig, sizeof(TYPE));                                \
-        UInt swapped_bits = TL::ByteSwap(orig_bits);                            \
+        UInt swapped_bits = std::byteswap(orig_bits);                            \
         UInt expected     = 0;                                                  \
         for (size_t i = 0; i < sizeof(TYPE) * 8; ++i)                           \
         {                                                                       \

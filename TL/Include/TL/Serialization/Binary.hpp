@@ -2,7 +2,6 @@
 
 #include "TL/Block.hpp"
 #include "TL/Flags.hpp"
-#include "TL/Bits.hpp"
 #include "TL/Serialization/SerializeTraits.hpp"
 
 #include "TL/Stream.hpp"

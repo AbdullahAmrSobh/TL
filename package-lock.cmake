@@ -52,7 +52,7 @@ CPMAddPackage(
 CPMAddPackage(
 	NAME tracy
 	GIT_REPOSITORY git@github.com:wolfpld/tracy.git
-	GIT_TAG v0.11.1
+	GIT_TAG v0.14.1
 	DOWNLOAD_ONLY YES
 )
 

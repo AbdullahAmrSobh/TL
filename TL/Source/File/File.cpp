@@ -1,5 +1,8 @@
+#include "TL/Compiler.hpp"
 #include "TL/File/File.hpp"
-#include "WindowsCommon.inl"
+
+#if TL_PLATFORM_WINDOWS
+    #include "WindowsCommon.inl"
 
 namespace TL
 {
@@ -190,3 +193,68 @@ namespace TL
         return {bytesWritten, IOResultCode::Success};
     }
 } // namespace TL
+#else
+
+namespace TL
+{
+    File::File() = default;
+
+    File::File(StringView path, IOMode mode)
+    {
+        open(path, mode);
+    }
+
+    File::~File() = default;
+
+    IOResultCode File::open(StringView path, IOMode mode)
+    {
+        static_cast<void>(path);
+        static_cast<void>(mode);
+        return IOResultCode::Unknown;
+    }
+
+    void File::close()
+    {
+        m_handle = nullptr;
+    }
+
+    size_t File::size() const
+    {
+        return 0;
+    }
+
+    size_t File::position() const
+    {
+        return 0;
+    }
+
+    IOResult File::read(Block block, uint64_t offset)
+    {
+        static_cast<void>(block);
+        static_cast<void>(offset);
+        return {0, IOResultCode::Unknown};
+    }
+
+    IOResult File::read(String& string, uint64_t offset)
+    {
+        static_cast<void>(string);
+        static_cast<void>(offset);
+        return {0, IOResultCode::Unknown};
+    }
+
+    IOResult File::write(Block block, uint64_t offset)
+    {
+        static_cast<void>(block);
+        static_cast<void>(offset);
+        return {0, IOResultCode::Unknown};
+    }
+
+    IOResult File::write(String string, uint64_t offset)
+    {
+        static_cast<void>(string);
+        static_cast<void>(offset);
+        return {0, IOResultCode::Unknown};
+    }
+} // namespace TL
+
+#endif

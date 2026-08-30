@@ -14,37 +14,12 @@ namespace TL
         virtual ~IAllocator() = default;
 
         /// Allocates a block of memory with the given size and alignment.
-        Block allocate(size_t size, size_t alignment)
-        {
-            return allocateImpl(size, alignment);
-        }
+        virtual Block allocate(size_t size, size_t alignment) = 0;
 
         /// Reallocates a block of memory, return the block with the same ptr if it succeeded (with modified size)
-        Block reallocate(Block block, size_t newSize, size_t alignment)
-        {
-            return reallocateImpl(block, newSize, alignment);
-        }
+        virtual Block reallocate(Block block, size_t newSize, size_t alignment) = 0;
 
         /// Releases a previously allocated sblock of memory.
-        void free(Block block, size_t alignment)
-        {
-            return freeImpl(block, alignment);
-        }
-
-        /// @fixme: make this pure function
-        bool operator==(TL_MAYBE_UNUSED const IAllocator& other) const noexcept
-        {
-            return this == &other;
-        }
-
-        bool operator!=(TL_MAYBE_UNUSED const IAllocator& other) const noexcept
-        {
-            return this != &other;
-        }
-
-    protected:
-        virtual Block allocateImpl(size_t size, size_t alignment)                   = 0;
-        virtual Block reallocateImpl(Block block, size_t newSize, size_t alignment) = 0;
-        virtual void  freeImpl(Block block, size_t alignment)                       = 0;
+        virtual void free(Block block, size_t alignment) = 0;
     };
 } // namespace TL

@@ -1,7 +1,7 @@
 // (C) Sebastian Aaltonen 2023
 // MIT License (see file: LICENSE)
 
-#include "TL/OffsetAllocator/OffsetAllocator.hpp"
+#include "TL/OffsetAllocator/offsetAllocator.hpp"
 #include "TL/Assert.hpp"
 
 #ifdef TL_DEBUG

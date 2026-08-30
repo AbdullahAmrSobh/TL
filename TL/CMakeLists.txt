@@ -8,7 +8,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Allocator/Mimalloc.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Allocator/MemPlumber.hpp
 
-    ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/OffsetAllocator/OffsetAllocator.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/OffsetAllocator/offsetAllocator.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Flags.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Log.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Fmt.hpp
@@ -20,14 +20,11 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Containers/String.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Containers/StringView.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Containers/STLAdapter.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Containers/Optional.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Containers/Function.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Containers/Varient.hpp
 
     ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Span.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Ptr.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Serialization/Binary.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Stacktrace.hpp
 
     ${CMAKE_CURRENT_SOURCE_DIR}/Include/TL/Context.hpp
 
@@ -44,7 +41,6 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/OffsetAllocator/OffsetAllocator.cpp
 
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/Log.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Stacktrace.cpp
 
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/Context.cpp
 
@@ -70,7 +66,10 @@ tl_add_target(
 target_compile_definitions(TL PUBLIC $<$<CONFIG:Debug>:TL_DEBUG>)
 
 if(TL_ENABLE_TRACY)
-    target_compile_definitions(TL PUBLIC TRACY_ENABLE TL_ENABLE_TRACY TRACY_HAS_CALLSTACK TRACY_CALLSTACK)
+    target_compile_definitions(TL PUBLIC TRACY_ENABLE TL_ENABLE_TRACY)
+    if(NOT EMSCRIPTEN)
+        target_compile_definitions(TL PUBLIC TRACY_HAS_CALLSTACK TRACY_CALLSTACK)
+    endif()
     if(TL_TRACY_MEMORY_PROFILING)
         target_compile_definitions(TL PUBLIC TL_TRACY_MEMORY_PROFILING)
     endif()
@@ -94,6 +93,10 @@ target_link_libraries(TL PRIVATE spdlog)
 target_link_libraries(TL PUBLIC nlohmann_json::nlohmann_json)
 
 target_link_libraries(TL PRIVATE mimalloc-static)
+
+if(EMSCRIPTEN)
+    target_link_options(TL PUBLIC "SHELL:-sMALLOC=emmalloc")
+endif()
 
 if(NOT EMSCRIPTEN)
     target_link_libraries(TL PRIVATE Dbghelp.lib)

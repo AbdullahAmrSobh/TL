@@ -1,4 +1,7 @@
+#include "TL/Compiler.hpp"
 #include "TL/FileSystem/FileSystemWatcher.hpp"
+
+#if TL_PLATFORM_WINDOWS
 
 #include "WindowsCommon.inl"
 
@@ -240,3 +243,32 @@ namespace TL
         }
     }
 } // namespace TL
+#else
+
+namespace TL
+{
+    FileWatcher::FileWatcher()
+        : m_impl(nullptr)
+    {
+    }
+
+    FileWatcher::~FileWatcher() = default;
+
+    void FileWatcher::watch(StringView path, Flags<FileEventType> eventTypes, bool watchSubtree)
+    {
+        static_cast<void>(path);
+        static_cast<void>(eventTypes);
+        static_cast<void>(watchSubtree);
+    }
+
+    void FileWatcher::unwatch(StringView path)
+    {
+        static_cast<void>(path);
+    }
+
+    void FileWatcher::poll()
+    {
+    }
+} // namespace TL
+
+#endif

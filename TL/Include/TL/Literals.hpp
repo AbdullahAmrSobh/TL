@@ -1,41 +1,43 @@
 #pragma once
 
 #include <chrono>
+#include <cstddef>
+#include <cstdint>
 
 // Time
 
 // Seconds
-constexpr std::chrono::seconds operator""_s(size_t s)
+constexpr std::chrono::seconds operator""_s(unsigned long long s)
 {
     return std::chrono::seconds(s);
 }
 
 // Milliseconds
-constexpr std::chrono::milliseconds operator""_ms(size_t ms)
+constexpr std::chrono::milliseconds operator""_ms(unsigned long long ms)
 {
     return std::chrono::milliseconds(ms);
 }
 
 // Microseconds
-constexpr std::chrono::microseconds operator""_us(size_t us)
+constexpr std::chrono::microseconds operator""_us(unsigned long long us)
 {
     return std::chrono::microseconds(us);
 }
 
 // Nanoseconds
-constexpr std::chrono::nanoseconds operator""_ns(size_t ns)
+constexpr std::chrono::nanoseconds operator""_ns(unsigned long long ns)
 {
     return std::chrono::nanoseconds(ns);
 }
 
 // Minutes
-constexpr std::chrono::minutes operator""_min(size_t min)
+constexpr std::chrono::minutes operator""_min(unsigned long long min)
 {
     return std::chrono::minutes(min);
 }
 
 // Hours
-constexpr std::chrono::hours operator""_h(size_t h)
+constexpr std::chrono::hours operator""_h(unsigned long long h)
 {
     return std::chrono::hours(h);
 }
@@ -43,19 +45,19 @@ constexpr std::chrono::hours operator""_h(size_t h)
 /// sizes
 
 // kilobytes
-constexpr size_t operator""_kb(size_t kb)
+constexpr size_t operator""_kb(unsigned long long kb)
 {
     return 1000 * kb;
 }
 
 // megabytes
-constexpr size_t operator""_mb(size_t mb)
+constexpr size_t operator""_mb(unsigned long long mb)
 {
     return 1000 * 1000 * mb;
 }
 
 // gigabytes
-constexpr size_t operator""_gb(size_t gb)
+constexpr size_t operator""_gb(unsigned long long gb)
 {
     return 1000 * 1000 * 1000 * gb;
 }

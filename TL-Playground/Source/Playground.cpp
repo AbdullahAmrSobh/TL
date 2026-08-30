@@ -9,13 +9,14 @@
 #include <TL/File/File.hpp>
 #include <TL/Log.hpp>
 #include <TL/Assert.hpp>
-#include <TL/Stacktrace.hpp>
+#include <stacktrace>
 #include <TL/Literals.hpp>
 #include <TL/FileSystem/FileSystemWatcher.hpp>
 
 #include <thread>
 
 #include <nlohmann/json.hpp>
+
 
 #if 0
 
@@ -135,16 +136,12 @@ int main()
         TL_MAYBE_UNUSED auto _unusedBlock2 = TL::Allocate(12, 1);
 
         TL::Release(_unusedBlock, 1);
-        TL::Release(_unusedBlock2, 1);
+        // TL::Release(_unusedBlock2, 1);
 
         for (auto i : TL::Span<const int>{1, 2, 3, 4, 5, 6})
         {
             TL::LogInfo("{}", i);
         }
-
-        auto stacktrace = TL::CaptureStacktrace(0);
-
-        TL::LogWarn("Stack report: {}", TL::ReportStacktrace(stacktrace));
 
         Bar b;
         b.f     = 3.14f;
@@ -206,30 +203,24 @@ int main()
         // }
 
 
-        TL::FileWatcher watcher;
-        watcher.watch("I:/repos/TL/build/TL-Playground", TL::FileEventType::Modified, true);
+        // TL::FileWatcher watcher;
+        // watcher.watch("I:/repos/TL/build/TL-Playground", TL::FileEventType::Modified, true);
 
-        watcher.subscribe([](const TL::FileEvent& event)
-        {
-            auto path = event.path;
-            auto type = event.type;
-            auto target = event.target;
-            auto oldPath = event.oldPath;
-            TL::LogInfo("File event, path {}, type {}, target {}, oldPath {}", path, (int)type, (int)target, oldPath);
-            return false;
-        });
+        // watcher.subscribe([](const TL::FileEvent& event)
+        // {
+        //     auto path = event.path;
+        //     auto type = event.type;
+        //     auto target = event.target;
+        //     auto oldPath = event.oldPath;
+        //     TL::LogInfo("File event, path {}, type {}, target {}, oldPath {}", path, (int)type, (int)target, oldPath);
+        //     return false;
+        // });
 
-        // TL::CodeGen::Builder builder{};
-        // auto typeI32 = builder.DeclareType(nullptr, builder.CreateId("I32"), TL::CodeGen::Type::Kind::I32);
-        // auto typeSceneView = builder.DeclareType(nullptr, builder.CreateId("SceneView"), TL::CodeGen::Type::Kind::Struct);
-        // builder.StructAddField(typeI32, builder.CreateId("foo"));
-        // TL::LogInfo("{}", builder.DumpCppCode());
-
-        do
-        {
-            watcher.poll();
-        }
-        while(true);
+        // do
+        // {
+        //     watcher.poll();
+        // }
+        // while(true);
     }
 }
 
@@ -308,22 +299,25 @@ int main()
     // printf("Arena stress test completed successfully.\n");
     // return 0;
 
-    TL::FileWatcher watcher;
-    auto            events = TL::FileEventType::Added | TL::FileEventType::Removed |
-                  TL::FileEventType::Modified | TL::FileEventType::Renamed;
-    watcher.watch("./watch-test", events, true);
-    watcher.subscribe(
-        [](const TL::FileEvent& event)
-        {
-            TL::LogInfo("File event, path {}, type {}, target {}, oldPath {}",
-                        event.path, (int)event.type, (int)event.target, event.oldPath);
-            return false;
-        });
 
-    bool running = true;
-    while (running)
-    {
-        watcher.poll();
-        std::this_thread::sleep_for(std::chrono::milliseconds(200));
-    }
+    TL::Context::get()->getAllocator()->allocate(100, 8);
+
+    // TL::FileWatcher watcher;
+    // auto            events = TL::FileEventType::Added | TL::FileEventType::Removed |
+    //               TL::FileEventType::Modified | TL::FileEventType::Renamed;
+    // watcher.watch("./watch-test", events, true);
+    // watcher.subscribe(
+    //     [](const TL::FileEvent& event)
+    //     {
+    //         TL::LogInfo("File event, path {}, type {}, target {}, oldPath {}",
+    //                     event.path, (int)event.type, (int)event.target, event.oldPath);
+    //         return false;
+    //     });
+
+    // bool running = true;
+    // while (running)
+    // {
+    //     watcher.poll();
+    //     std::this_thread::sleep_for(std::chrono::milliseconds(200));
+    // }
 }
